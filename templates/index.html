@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="auto" data-contrast="normal">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SACA – Your Health Companion</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+
+<header>
+  <div class="logo"><a href="#home">SACA</a></div>
+  <div class="actions">
+    <select id="langSelect" aria-label="Language">
+      <option value="en">English</option>
+      <option value="ae">Aboriginal English</option>
+      <option value="es">Español</option>
+    </select>
+    <select id="themeSelect" aria-label="Theme">
+      <option value="auto">Auto</option>
+      <option value="light">Light</option>
+      <option value="dark">Dark</option>
+    </select>
+    <label><input type="checkbox" id="contrastToggle"/> High contrast</label>
+    <label><input type="checkbox" id="easyToggle"/> Easy Read</label>
+    <a href="#auth" id="openAuth">Login</a>
+  </div>
+</header>
+
+<main>
+  <!-- Home Section -->
+  <section id="home" class="page">
+    <h1>Your Health Companion</h1>
+    <h2>How are you feeling today?</h2>
+    <div id="questionContainer">
+      <p id="questionText"></p>
+      <input type="text" id="answerInput" placeholder="Type your answer"/>
+      <button id="nextQuestion">Next</button>
+    </div>
+
+    <div id="audioControls">
+      <button id="recordBtn">🎤 Record</button>
+      <button id="stopBtn" disabled>⏹ Stop</button>
+      <button id="uploadBtn" disabled>💾 Upload</button>
+    </div>
+    <audio id="audioPreview" controls></audio>
+
+    <button id="micHome">🎤 Tap to Speak</button>
+    <button id="saveFromHome">💾 Save</button>
+
+    <div id="sacaResult" style="margin-top:20px; border:1px solid #ccc; padding:10px; display:none;">
+      <h3>SACA Analysis:</h3>
+      <pre id="sacaText" style="white-space:pre-wrap;"></pre>
+    </div>
+  </section>
+
+  <!-- History Section -->
+  <section id="history" class="page hidden">
+    <h2>Your History</h2>
+    <table id="histTable">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Raw Input</th>
+          <th>Processed</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+    <button id="clearHistory">Clear All</button>
+    <button id="seedHistory">Add Sample</button>
+    <a href="#home">Back to Home</a>
+  </section>
+
+  <!-- Chat Section -->
+  <section id="chat" class="page hidden">
+    <h2>Chat with SACA</h2>
+    <div id="chatBody"></div>
+    <input id="chatInput" placeholder="Type your message"/>
+    <button id="chatSend">Send</button>
+    <a href="#home">Back</a>
+  </section>
+
+  <!-- Auth Section -->
+  <section id="auth" class="page hidden">
+    <h2>Login</h2>
+    <input type="email" id="loginEmail" placeholder="Email"/>
+    <input type="password" id="loginPass" placeholder="Password"/>
+    <button id="doLogin">Login</button>
+    <span id="loginOk" style="display:none;">Logged in!</span>
+    <a href="#home">Back</a>
+  </section>
+</main>
+
+<script src="/static/strings.js"></script>
+<script src="/static/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,2433 @@
+input,target
+ting,thing
+dis,this
+aks,ask
+lef,left
+han,hand
+hia,here
+dea,there
+I bin go,I went
+He done eat,He has eaten
+He runnin’,He is running
+They playin’,They are playing
+I didn’t do nothing,I didn’t do anything
+two girl,two girls
+the car belong my father,my father's car
+mob,family/community
+Group/family/community,family/community
+feel shame,feels shy/awkward
+Feeling shy/modest/respectful,feels shy/awkward
+deadly,very good/excellent
+Very good/excellent,very good/excellent
+Country,ancestral homeland
+Ancestral homeland,ancestral homeland
+sorry business,mourning / bereavement
+Mourning rituals and obligations,mourning / bereavement
+camp,home
+Home/camp,home
+yarning,storytelling
+Story-based sharing,storytelling
+brother/sister,brothers/sisters (kin)
+Broader than biological,brothers/sisters (kin)
+finish,finished
+Task completed,finished
+deadly,good
+Good,good
+rubbish,bad
+Bad,bad
+quick,fast
+Fast,fast
+slack,slow
+Slow,slow
+tomorra,tomorrow
+Tomorrow,tomorrow
+yestaday,yesterday
+Yesterday,yesterday
+bigfella,big
+Big,big
+lilfella,small
+Small,small
+camp,house/home
+House/home,house/home
+job,work/job
+Work/job,work/job
+schoolhouse,school
+School,school
+walkabout,walk
+Walk,walk
+yarn,talk
+Talk,talk
+corroboree,dance
+Dance (ceremony),dance
+saltwater,sea
+Sea,sea
+river,river
+River,river
+island,island
+Island,island
+tree,tree
+Tree,tree
+rain,rain
+Rain,rain
+sun,sun
+Sun,sun
+feel hot / got fever,I have a fever
+High body temperature; feverish,I have a fever
+I have a fever,Fever
+got cough,I have a cough
+Coughing fits; with/without mucus,I have a cough
+I have a cough,Cough
+short wind / hard to breathe,I am short of breath
+Hard to breathe,I am short of breath
+I am short of breath,Shortness of breath
+got wheeze / noisy chest,I am wheezing
+Whistling sound when breathing,I am wheezing
+I am wheezing,Wheeze
+chest sore / chest tight,I have chest pain
+Pain or tight feeling in the chest,I have chest pain
+I have chest pain,Chest pain
+throat sore,I have a sore throat
+Pain in throat,I have a sore throat
+I have a sore throat,Sore throat
+runny nose,I have a runny nose
+Nose dripping,I have a runny nose
+I have a runny nose,Runny nose
+sore head,I have a headache
+Pain in head,I have a headache
+I have a headache,Headache
+head spin,I feel dizzy
+Feeling the head spinning,I feel dizzy
+I feel dizzy,Dizziness
+sick in the stomach,I feel nauseous
+Feeling sick in the stomach,I feel nauseous
+I feel nauseous,Nausea
+spewin’ / throwing up,I am vomiting
+Throwing up,I am vomiting
+I am vomiting,Vomiting
+runny poo,I have diarrhoea
+Runny poo,I have diarrhoea
+I have diarrhoea,Diarrhoea
+belly sore,I have stomach pain
+Belly pain,I have stomach pain
+I have stomach pain,Abdominal pain
+back sore,I have back pain
+Pain in back,I have back pain
+I have back pain,Back pain
+joints sore,My joints hurt
+Pain in joints,My joints hurt
+My joints hurt,Joint pain
+skin rash / skin no good,I have a rash
+Skin rash,I have a rash
+I have a rash,Rash
+no strength / feel weak,I feel weak
+No strength,I feel weak
+I feel weak,Weakness
+I tired,I feel tired
+Very tired,I feel tired
+I feel tired,Fatigue
+mind mixed up,I feel confused
+"Mixed up, not clear",I feel confused
+I feel confused,Confusion
+bleeding / blood coming out,I am bleeding
+Blood coming out,I am bleeding
+I am bleeding,Bleeding
+head,head
+Head,head
+chest,chest
+Chest,chest
+belly,stomach/belly
+Belly,stomach/belly
+stomach/belly,Stomach
+back,back
+Back,back
+leg,leg
+Leg,leg
+arm,arm
+Arm,arm
+Hand,hand
+foot,foot
+Foot,foot
+eye,eye
+Eye,eye
+ear,ear
+Ear,ear
+skin,skin
+Skin,skin
+throat,throat
+Throat,throat
+got sugar / sugar sickness,I have diabetes
+Body can’t control sugar levels; needs insulin; 'sugar diabetes/sugar sickness',I have diabetes
+I have diabetes,Diabetes
+asthma / breathing sickness,I have asthma
+"Airways red and swollen; harder to breathe; symptoms: short breath, wheeze, cough, chest tight",I have asthma
+I have asthma,Asthma
+high pressure,I have high blood pressure
+High blood pressure,I have high blood pressure
+I have high blood pressure,Hypertension
+bad heart / heart problem,I have heart disease
+Fat builds up in heart blood pipes,I have heart disease
+I have heart disease,Heart disease
+kidney no good / kidney problem,I have kidney problems
+Kidneys not working well,I have kidney problems
+I have kidney problems,Kidney disease
+pregnant / got baby,I am pregnant
+Growing a baby,I am pregnant
+I am pregnant,Pregnancy
+chest infection,I have pneumonia
+Chest infection in the lungs,I have pneumonia
+I have pneumonia,Pneumonia
+got flu,I have the flu
+"Flu virus causing fever, cough",I have the flu
+I have the flu,Influenza
+got COVID / sick with COVID,I think I have COVID
+"Viral infection with cough/fever, can cause trouble breathing",I think I have COVID
+I think I have COVID,COVID-19
+bad germ from ground,I might have melioidosis
+"Serious sickness from soil/water in wet season; short breath, cough, fever",I might have melioidosis
+I might have melioidosis,Melioidosis
+rheumatic heart/fever,I had rheumatic fever
+Rheumatic fever/heart disease from Strep; needs antibiotics,I had rheumatic fever
+I had rheumatic fever,ARF/RHD
+I worried too much,I have anxiety
+"Worried a lot, hard to relax",I have anxiety
+I have anxiety,Anxiety
+feelin’ down long time,I have depression
+Very sad for a long time,I have depression
+I have depression,Depression
+need see doctor,I need to see a doctor
+Need to see a doctor,I need to see a doctor
+need medicine,I need medicine
+Need medicine,I need medicine
+need tablet for pain,I need painkillers
+Need pain tablets,I need painkillers
+need ambulance,I need an ambulance
+Need ambulance,I need an ambulance
+need go hospital,I need to go to hospital
+Go to hospital,I need to go to hospital
+need water,I need water
+Drink water / rehydrate,I need water
+I rest,I want to rest
+Rest,I want to rest
+keep eye on him,Keep watching him closely
+Keep watching closely,Keep watching him closely
+from yestaday,since yesterday
+Since yesterday,since yesterday
+for two day,for two days
+For two days,for two days
+from last week,since last week
+Since last week,since last week
+a little bit bad / proper bad,mild / moderate / severe
+Mild/Moderate/Severe,mild / moderate / severe
+sore eyes,I have sore eyes
+Eyes red or itchy,I have sore eyes
+I have sore eyes,Sore eyes
+ear sore,I have earache
+Ear is sore,I have earache
+I have earache,Earache
+tooth sore,I have toothache
+Tooth is sore,I have toothache
+I have toothache,Toothache
+hard to do poo,I am constipated
+Hard poo / can’t go,I am constipated
+I am constipated,Constipation
+blood in poo,There is blood in my stool
+Blood in poo,There is blood in my stool
+There is blood in my stool,Blood in stool
+blood in wee,There is blood in my urine
+Blood in wee,There is blood in my urine
+There is blood in my urine,Blood in urine
+wee burn / wee sore,It burns when I pee
+Wee burns / hurts,It burns when I pee
+It burns when I pee,Burning when urinating
+swollen / puffy,I am swollen
+Puffy / swollen,I am swollen
+I am swollen,Swelling
+bruise,I have a bruise
+Blue/black skin from hit,I have a bruise
+I have a bruise,Bruise
+I pass out,I fainted
+Pass out,I fainted
+I fainted,Fainting
+shaking fit,They had a seizure
+Shaking fit,They had a seizure
+They had a seizure,Seizure
+bad reaction,I have an allergic reaction
+Bad reaction to food/medicine,I have an allergic reaction
+I have an allergic reaction,Allergic reaction
+skin itchy,My skin is itchy
+Skin itchy,My skin is itchy
+My skin is itchy,Itch
+too dry / no water in body,I am dehydrated
+Too dry / not enough water,I am dehydrated
+I am dehydrated,Dehydration
+heat make me sick,I have heat stress
+Too hot / feel sick from heat,I have heat stress
+I have heat stress,Heat stress
+ear infection / bad ear,I have a middle ear infection
+Ear infection behind eardrum,I have a middle ear infection
+I have a middle ear infection,Otitis media
+sore eyes / eye infection,I have conjunctivitis
+Eye infection; red/itchy eyes,I have conjunctivitis
+I have conjunctivitis,Conjunctivitis
+skin mites / scabies,I have scabies
+Skin mites cause itchy rash,I have scabies
+I have scabies,Scabies
+skin sores / school sores,I have school sores
+Germ sores on skin (school sores),I have school sores
+I have school sores,Impetigo (skin sores)
+skin infection,I have cellulitis
+"Skin infection; hot, red, sore",I have cellulitis
+I have cellulitis,Cellulitis
+boil / pus lump,I have a boil
+Pus lump under skin,I have a boil
+I have a boil,Abscess/boil
+wee infection / water infection,I have a UTI
+Germ in wee pipe / bladder,I have a UTI
+I have a UTI,Urinary tract infection
+gastro / tummy bug,I have gastro
+Germ in belly: runny poo and spew,I have gastro
+I have gastro,Gastroenteritis
+chest infection / bad chest,I have bronchitis
+Chest infection in air pipes,I have bronchitis
+I have bronchitis,Bronchitis
+lung collapse / bad air around lung,I have a collapsed lung
+Air leak around lung,I have a collapsed lung
+I have a collapsed lung,Pneumothorax
+bone broken,I broke a bone
+Broken bone,I broke a bone
+I broke a bone,Fracture
+ankle sprain / twist,I sprained my ankle
+Stretched/torn ligaments,I sprained my ankle
+I sprained my ankle,Sprain
+got burn,I got burned
+Skin burned by heat/fire,I got burned
+I got burned,Burn
+poison make me sick,I have poisoning
+Bad chemical/medicine/food made me sick,I have poisoning
+I have poisoning,Poisoning
+snake bite,I got snake bite
+Bitten by snake,I got snake bite
+I got snake bite,Snake bite
+dog bite,Dog bit me
+Bitten by dog,Dog bit me
+Dog bit me,Dog bite
+sickness from sex / STI,I have an STI
+Germ passed during sex,I have an STI
+I have an STI,Sexually transmitted infection (STI)
+chlamydia,I have chlamydia
+A common STI,I have chlamydia
+I have chlamydia,Chlamydia
+gonorrhoea,I have gonorrhoea
+A common STI,I have gonorrhoea
+I have gonorrhoea,Gonorrhoea
+syphilis,I have syphilis
+Serious STI; needs penicillin,I have syphilis
+I have syphilis,Syphilis
+hep B / liver sickness,I have Hep B
+Germ hurts liver,I have Hep B
+I have Hep B,Hepatitis B
+hep C / liver sickness,I have Hep C
+Germ hurts liver,I have Hep C
+I have Hep C,Hepatitis C
+outer ear infection,I have outer ear infection
+Ear canal infection (swimmer’s ear),I have outer ear infection
+I have outer ear infection,Otitis externa
+sinus infection,I have sinusitis
+Infection in sinus,I have sinusitis
+I have sinusitis,Sinusitis
+tonsils sore / throat infection,I have tonsillitis
+Infection in tonsils; sore throat,I have tonsillitis
+I have tonsillitis,Tonsillitis
+breast infection,I have mastitis
+Breast infection (lactating),I have mastitis
+I have mastitis,Mastitis
+low blood / low iron,I have anaemia
+Low blood / low iron,I have anaemia
+I have anaemia,Anaemia
+low sugar,I have low sugar
+Low sugar; shaky/sweaty,I have low sugar
+I have low sugar,Hypoglycaemia
+high sugar,I have high sugar
+High sugar; thirsty/wee a lot,I have high sugar
+I have high sugar,Hyperglycaemia
+stroke / brain attack,I think it’s a stroke
+Blood not going to brain,I think it’s a stroke
+I think it’s a stroke,Stroke
+bad blood infection,I have sepsis
+Bad blood infection; very sick,I have sepsis
+I have sepsis,Sepsis
+bad lungs long time,I have COPD
+Long-term bad lungs,I have COPD
+I have COPD,COPD
+need baby check-up,I need antenatal care
+Care for pregnant woman before baby comes,I need antenatal care
+I need antenatal care,Antenatal care
+tummy tighten / pains coming,I have contractions
+Tummy tightenings before baby comes,I have contractions
+I have contractions,Contractions
+baby coming time,I am in labour
+Time when baby coming out,I am in labour
+I am in labour,Labour
+lost the baby,I had a miscarriage
+Baby lost before due time,I had a miscarriage
+I had a miscarriage,Miscarriage
+bleeding while pregnant,I have bleeding in pregnancy
+Bleeding from vagina when pregnant,I have bleeding in pregnancy
+I have bleeding in pregnancy,Bleeding in pregnancy
+baby not putting on weight,My baby not growing
+Baby not growing well,My baby not growing
+My baby not growing,Failure to thrive
+baby/child feel hot,My child has fever
+Hot baby / hot child,My child has fever
+My child has fever,Fever in child
+baby had a fit from fever,My child had a convulsion
+Fit from fever in child,My child had a convulsion
+My child had a convulsion,Febrile convulsion
+Worried a lot; heart racing,I have anxiety
+Very sad long time,I have depression
+too much grog / drunk,They are intoxicated
+Drunk; unsafe to care for self,They are intoxicated
+They are intoxicated,Alcohol intoxication
+shaking from no grog,He is in withdrawal
+Shakes/sweats when stop grog,He is in withdrawal
+He is in withdrawal,Alcohol withdrawal
+I smoke / smoke tobacco,I smoke
+Smokes cigarettes,I smoke
+I smoke,Smoking / tobacco use
+I use gunja / ice,I use drugs
+Using drugs like gunja/ice,I use drugs
+I use drugs,Substance use
+need germ-killing tablet,You need antibiotics
+Medicine that kills germs,You need antibiotics
+You need antibiotics,Take antibiotics
+take pain tablet / paracetamol,Take paracetamol
+Pain and fever tablet,Take paracetamol
+drink salty-sweet water,Drink rehydration fluid
+Drink water with salts/sugar,Drink rehydration fluid
+Drink rehydration fluid,Oral rehydration
+keep sore clean and covered,Keep the wound clean
+Keep it clean and covered,Keep the wound clean
+Keep the wound clean,Wound care
+come back if get worse,Come back if worse
+Come back if getting worse,Come back if worse
+Come back if worse,Return if worse
+come back in two day,Come back in 2 days
+See clinic again in 2 days,Come back in 2 days
+Come back in 2 days,Follow-up
+keep away from others,Stay isolated
+Stay away so others don’t get sick,Stay isolated
+Stay isolated,Isolation
+little bit bad,Mild
+A little bit sick,Mild
+proper bad (need clinic),Moderate
+Sicker; needs clinic today,Moderate
+real bad (need ambulance now),Severe
+Very sick; needs ambulance,Severe
+I finish them tablet,I finished the course
+All tablets taken,I finished the course
+I finished the course,I finished all tablets
+I didn’t eat nothing,I haven’t eaten
+No food eaten,I haven’t eaten
+pain more bad now,Pain worse now
+Pain worse than before,Pain worse now
+Pain worse now,Pain is getting worse
+She got heart go fast.,I have rapid heartbeat.
+Them kids got body weak.,He has body weakness.
+That one got shiverin’.,He has shivering.
+Me got body weak.,I have been experiencing body weakness.
+I bin throwin’ up.,The children have vomiting.
+I bin belly pain.,The child has abdominal pain.
+My cryin’ lot.,The children have crying a lot.
+That one got eyes blurry.,He has blurred vision.
+My cryin’ lot.,She has crying a lot.
+Old fella got back sore.,He has back pain.
+I bin blood nose.,The elderly man has nosebleed.
+She got belly pain.,I have abdominal pain.
+She got heart go fast.,She has rapid heartbeat.
+Old fella got ear sore.,She has earache.
+That one got leg swell up.,He has swollen leg.
+This one got cryin’ lot.,The children have crying a lot.
+He got heart go fast.,I have rapid heartbeat.
+She got leg swell up.,I have been experiencing swollen leg.
+That one got hungry all time.,My increased appetite.
+Me got sore throat.,The child has sore throat.
+Me got body weak.,She has body weakness.
+Me got skin rash.,I have skin rash.
+This one got cryin’ lot.,The child has crying a lot.
+Them kids got cough bad.,She has severe cough.
+This one got skin rash.,The children have skin rash.
+Them kids got can’t breathe good.,The children have shortness of breath.
+Lil one got can’t breathe good.,The children have shortness of breath.
+My belly pain.,My abdominal pain.
+She got belly pain.,The elderly man has abdominal pain.
+He got shiverin’.,The children have shivering.
+Them kids got cryin’ lot.,The child has crying a lot.
+My drink water plenty.,The children have excessive thirst.
+She got blood nose.,That person has nosebleed.
+He got blood nose.,The child has nosebleed.
+My blood nose.,He has nosebleed.
+Them kids got belly pain.,She has abdominal pain.
+Lil one got blood nose.,I have been experiencing nosebleed.
+She got ear sore.,The child has earache.
+Me got throwin’ up.,The elderly man has vomiting.
+Old fella got can’t walk good.,The elderly man has difficulty walking.
+Them kids got hungry all time.,That person has increased appetite.
+He got body weak.,I have body weakness.
+My cryin’ lot.,That person has crying a lot.
+I bin talkin’ funny.,The elderly man has slurred speech.
+She got chest tight.,This person has chest tightness.
+He got shiverin’.,That person has shivering.
+She got ear sore.,I have earache.
+He got talkin’ funny.,He has slurred speech.
+Old fella got leg swell up.,I have swollen leg.
+Them kids got skin rash.,The child has skin rash.
+I bin hungry all time.,My increased appetite.
+Me got head hurtin’.,The elderly man has headache.
+That one got heart go fast.,I have been experiencing rapid heartbeat.
+Old fella got heart go fast.,I have been experiencing rapid heartbeat.
+Lil one got sore throat.,The children have sore throat.
+Them kids got drink water plenty.,This person has excessive thirst.
+That one got ear sore.,I have been experiencing earache.
+Them kids got hungry all time.,I have been experiencing increased appetite.
+That one got heart go fast.,That person has rapid heartbeat.
+This one got can’t breathe good.,The child has shortness of breath.
+Lil one got drink water plenty.,This person has excessive thirst.
+Me got leg swell up.,This person has swollen leg.
+Me got blood nose.,I have been experiencing nosebleed.
+Lil one got blood nose.,That person has nosebleed.
+Old fella got head hurtin’.,This person has headache.
+She got vomit come up.,That person has vomiting.
+That one got belly pain.,I have been experiencing abdominal pain.
+Old fella got hungry all time.,That person has increased appetite.
+Old fella got cough bad.,The child has severe cough.
+He got skin rash.,He has skin rash.
+She got drink water plenty.,The elderly man has excessive thirst.
+Lil one got throwin’ up.,That person has vomiting.
+Them kids got hot all night.,She has fever.
+I bin talkin’ funny.,I have slurred speech.
+He got talkin’ funny.,The child has slurred speech.
+Me got cryin’ lot.,I have crying a lot.
+Me got cryin’ lot.,I have crying a lot.
+This one got can’t walk good.,This person has difficulty walking.
+Lil one got eyes blurry.,She has blurred vision.
+She got shiverin’.,That person has shivering.
+My can’t see straight.,She has blurred vision.
+Them kids got leg swell up.,I have swollen leg.
+This one got skin itchy.,I have been experiencing itchy skin.
+Old fella got skin rash.,This person has skin rash.
+I bin body weak.,That person has body weakness.
+Me got can’t see straight.,That person has blurred vision.
+I bin heart go fast.,I have rapid heartbeat.
+My sore throat.,The child has sore throat.
+That one got skin rash.,The elderly man has skin rash.
+Lil one got hot all night.,I have fever.
+She got leg swell up.,That person has swollen leg.
+That one got blood nose.,I have been experiencing nosebleed.
+He got hungry all time.,My increased appetite.
+I bin sore throat.,She has sore throat.
+My shiverin’.,She has shivering.
+He got vomit come up.,The child has vomiting.
+He got ear sore.,The elderly man has earache.
+My throwin’ up.,My vomiting.
+Them kids got drink water plenty.,He has excessive thirst.
+My shiverin’.,That person has shivering.
+Me got eyes blurry.,The elderly man has blurred vision.
+My skin rash.,My skin rash.
+This one got head hurtin’.,I have headache.
+Me got talkin’ funny.,I have slurred speech.
+She got cough bad.,The child has severe cough.
+Me got heart go fast.,The elderly man has rapid heartbeat.
+My shiverin’.,The elderly man has shivering.
+Me got skin itchy.,This person has itchy skin.
+That one got chest tight.,My chest tightness.
+He got chest tight.,This person has chest tightness.
+He got vomit come up.,The children have vomiting.
+That one got chest tight.,My chest tightness.
+Lil one got vomit come up.,The child has vomiting.
+Old fella got can’t see straight.,He has blurred vision.
+Lil one got vomit come up.,That person has vomiting.
+He got sore throat.,The children have sore throat.
+Old fella got hungry all time.,The child has increased appetite.
+This one got can’t see straight.,This person has blurred vision.
+Me got skin rash.,This person has skin rash.
+He got back sore.,I have back pain.
+She got head hurtin’.,She has headache.
+I bin belly pain.,This person has abdominal pain.
+Old fella got blood nose.,The child has nosebleed.
+My head hurtin’.,The child has headache.
+He got body weak.,I have been experiencing body weakness.
+This one got heart go fast.,That person has rapid heartbeat.
+This one got blood nose.,That person has nosebleed.
+She got can’t breathe good.,She has shortness of breath.
+She got ear sore.,The elderly man has earache.
+This one got heart go fast.,I have been experiencing rapid heartbeat.
+Old fella got throwin’ up.,I have been experiencing vomiting.
+I bin drink water plenty.,I have excessive thirst.
+This one got skin itchy.,The elderly man has itchy skin.
+This one got shiverin’.,She has shivering.
+This one got shiverin’.,The elderly man has shivering.
+My head hurtin’.,The elderly man has headache.
+She got can’t see straight.,I have been experiencing blurred vision.
+She got can’t breathe good.,I have been experiencing shortness of breath.
+She got belly pain.,That person has abdominal pain.
+She got skin rash.,The elderly man has skin rash.
+I bin ear sore.,The elderly man has earache.
+Lil one got body weak.,He has body weakness.
+That one got skin rash.,She has skin rash.
+That one got shiverin’.,That person has shivering.
+He got talkin’ funny.,That person has slurred speech.
+He got head hurtin’.,The elderly man has headache.
+Old fella got cryin’ lot.,That person has crying a lot.
+Them kids got drink water plenty.,That person has excessive thirst.
+That one got can’t see straight.,I have been experiencing blurred vision.
+I bin can’t walk good.,I have difficulty walking.
+Me got eyes blurry.,The child has blurred vision.
+This one got sore throat.,That person has sore throat.
+This one got vomit come up.,The children have vomiting.
+Lil one got hungry all time.,I have increased appetite.
+Old fella got heart go fast.,The children have rapid heartbeat.
+She got can’t see straight.,I have been experiencing blurred vision.
+She got cryin’ lot.,My crying a lot.
+I bin leg swell up.,My swollen leg.
+She got cough bad.,He has severe cough.
+I bin chest tight.,The children have chest tightness.
+Me got sore throat.,The child has sore throat.
+Lil one got back sore.,My back pain.
+She got eyes blurry.,I have been experiencing blurred vision.
+That one got heart go fast.,He has rapid heartbeat.
+She got throwin’ up.,The child has vomiting.
+Them kids got belly pain.,The elderly man has abdominal pain.
+This one got leg swell up.,The children have swollen leg.
+My belly pain.,She has abdominal pain.
+She got head hurtin’.,This person has headache.
+I bin head hurtin’.,I have headache.
+Lil one got drink water plenty.,That person has excessive thirst.
+She got back sore.,He has back pain.
+My talkin’ funny.,I have slurred speech.
+He got head hurtin’.,The children have headache.
+That one got chest tight.,The child has chest tightness.
+Old fella got throwin’ up.,That person has vomiting.
+Me got talkin’ funny.,This person has slurred speech.
+Old fella got can’t walk good.,She has difficulty walking.
+Them kids got heart go fast.,The child has rapid heartbeat.
+That one got belly pain.,That person has abdominal pain.
+Old fella got shiverin’.,The children have shivering.
+That one got talkin’ funny.,That person has slurred speech.
+She got talkin’ funny.,The children have slurred speech.
+That one got back sore.,I have back pain.
+Old fella got heart go fast.,I have rapid heartbeat.
+Lil one got hot all night.,She has fever.
+She got hungry all time.,That person has increased appetite.
+I bin shiverin’.,She has shivering.
+She got ear sore.,I have been experiencing earache.
+Lil one got hot all night.,This person has fever.
+I bin blood nose.,The children have nosebleed.
+This one got cryin’ lot.,The child has crying a lot.
+Them kids got head hurtin’.,He has headache.
+Them kids got ear sore.,She has earache.
+He got hungry all time.,This person has increased appetite.
+He got cough bad.,He has severe cough.
+I bin throwin’ up.,I have vomiting.
+That one got cryin’ lot.,I have crying a lot.
+She got leg swell up.,The child has swollen leg.
+She got chest tight.,She has chest tightness.
+That one got back sore.,I have back pain.
+This one got body weak.,The elderly man has body weakness.
+She got body weak.,The child has body weakness.
+She got ear sore.,The children have earache.
+Lil one got cryin’ lot.,That person has crying a lot.
+My vomit come up.,I have vomiting.
+Old fella got cough bad.,I have been experiencing severe cough.
+Old fella got talkin’ funny.,The child has slurred speech.
+Me got body weak.,That person has body weakness.
+Old fella got talkin’ funny.,That person has slurred speech.
+I bin skin itchy.,That person has itchy skin.
+My hungry all time.,She has increased appetite.
+My vomit come up.,That person has vomiting.
+He got throwin’ up.,This person has vomiting.
+Old fella got ear sore.,I have been experiencing earache.
+Old fella got can’t see straight.,I have blurred vision.
+I bin head hurtin’.,I have been experiencing headache.
+She got cough bad.,The child has severe cough.
+I bin throwin’ up.,My vomiting.
+I bin vomit come up.,That person has vomiting.
+He got leg swell up.,She has swollen leg.
+She got blood nose.,I have nosebleed.
+That one got vomit come up.,The elderly man has vomiting.
+Them kids got sore throat.,I have been experiencing sore throat.
+He got hungry all time.,That person has increased appetite.
+That one got leg swell up.,That person has swollen leg.
+I bin shiverin’.,My shivering.
+Lil one got can’t see straight.,That person has blurred vision.
+This one got can’t see straight.,I have blurred vision.
+She got hungry all time.,He has increased appetite.
+She got body weak.,This person has body weakness.
+She got throwin’ up.,The child has vomiting.
+Me got ear sore.,I have been experiencing earache.
+Old fella got hungry all time.,This person has increased appetite.
+I bin leg swell up.,She has swollen leg.
+Me got belly pain.,I have been experiencing abdominal pain.
+She got hungry all time.,The children have increased appetite.
+This one got can’t walk good.,He has difficulty walking.
+Lil one got vomit come up.,That person has vomiting.
+She got belly pain.,The child has abdominal pain.
+This one got throwin’ up.,The children have vomiting.
+My heart go fast.,This person has rapid heartbeat.
+My talkin’ funny.,The children have slurred speech.
+My cryin’ lot.,That person has crying a lot.
+Old fella got head hurtin’.,That person has headache.
+My body weak.,She has body weakness.
+This one got chest tight.,My chest tightness.
+This one got throwin’ up.,I have vomiting.
+I bin vomit come up.,This person has vomiting.
+She got head hurtin’.,This person has headache.
+She got can’t breathe good.,That person has shortness of breath.
+Them kids got skin itchy.,I have been experiencing itchy skin.
+She got sore throat.,My sore throat.
+Lil one got talkin’ funny.,This person has slurred speech.
+Lil one got throwin’ up.,That person has vomiting.
+Them kids got skin itchy.,I have been experiencing itchy skin.
+My sore throat.,That person has sore throat.
+That one got shiverin’.,I have been experiencing shivering.
+Lil one got sore throat.,This person has sore throat.
+That one got sore throat.,My sore throat.
+I bin head hurtin’.,She has headache.
+Lil one got can’t see straight.,My blurred vision.
+Them kids got drink water plenty.,He has excessive thirst.
+She got talkin’ funny.,My slurred speech.
+He got heart go fast.,This person has rapid heartbeat.
+Old fella got vomit come up.,The child has vomiting.
+Lil one got hot all night.,The child has fever.
+Old fella got hot all night.,The elderly man has fever.
+My sore throat.,The child has sore throat.
+She got can’t see straight.,My blurred vision.
+He got sore throat.,This person has sore throat.
+That one got leg swell up.,The elderly man has swollen leg.
+Old fella got can’t see straight.,She has blurred vision.
+Me got leg swell up.,The elderly man has swollen leg.
+I bin blood nose.,That person has nosebleed.
+Them kids got can’t see straight.,I have blurred vision.
+That one got cryin’ lot.,He has crying a lot.
+She got leg swell up.,I have been experiencing swollen leg.
+He got back sore.,I have been experiencing back pain.
+This one got cryin’ lot.,The elderly man has crying a lot.
+He got chest tight.,The children have chest tightness.
+He got belly pain.,I have abdominal pain.
+Lil one got sore throat.,This person has sore throat.
+I bin heart go fast.,That person has rapid heartbeat.
+This one got head hurtin’.,He has headache.
+She got blood nose.,He has nosebleed.
+Old fella got throwin’ up.,This person has vomiting.
+Lil one got back sore.,This person has back pain.
+Me got shiverin’.,She has shivering.
+That one got cryin’ lot.,The child has crying a lot.
+Old fella got chest tight.,I have been experiencing chest tightness.
+That one got eyes blurry.,The elderly man has blurred vision.
+This one got drink water plenty.,I have been experiencing excessive thirst.
+I bin throwin’ up.,The child has vomiting.
+Old fella got vomit come up.,That person has vomiting.
+My eyes blurry.,That person has blurred vision.
+Them kids got cryin’ lot.,This person has crying a lot.
+Me got ear sore.,My earache.
+I bin chest tight.,I have been experiencing chest tightness.
+Lil one got can’t see straight.,The elderly man has blurred vision.
+Me got skin itchy.,This person has itchy skin.
+He got skin rash.,I have skin rash.
+Me got hungry all time.,I have been experiencing increased appetite.
+This one got throwin’ up.,The elderly man has vomiting.
+She got chest tight.,I have been experiencing chest tightness.
+I bin can’t see straight.,That person has blurred vision.
+I bin skin itchy.,I have itchy skin.
+My skin itchy.,That person has itchy skin.
+I bin body weak.,The children have body weakness.
+Old fella got chest tight.,She has chest tightness.
+Old fella got shiverin’.,The children have shivering.
+Them kids got vomit come up.,She has vomiting.
+Me got skin rash.,This person has skin rash.
+That one got skin itchy.,This person has itchy skin.
+He got eyes blurry.,The child has blurred vision.
+This one got skin rash.,My skin rash.
+This one got can’t breathe good.,He has shortness of breath.
+Them kids got drink water plenty.,She has excessive thirst.
+This one got blood nose.,I have been experiencing nosebleed.
+Lil one got can’t walk good.,The children have difficulty walking.
+Lil one got ear sore.,He has earache.
+Lil one got skin itchy.,This person has itchy skin.
+She got chest tight.,The child has chest tightness.
+That one got vomit come up.,The elderly man has vomiting.
+Old fella got skin rash.,She has skin rash.
+Lil one got ear sore.,I have earache.
+He got shiverin’.,This person has shivering.
+He got ear sore.,I have been experiencing earache.
+This one got back sore.,The children have back pain.
+I bin skin rash.,I have been experiencing skin rash.
+Lil one got drink water plenty.,The children have excessive thirst.
+This one got belly pain.,The children have abdominal pain.
+Me got skin itchy.,The child has itchy skin.
+Me got eyes blurry.,He has blurred vision.
+My eyes blurry.,I have blurred vision.
+This one got blood nose.,He has nosebleed.
+Me got drink water plenty.,This person has excessive thirst.
+That one got hungry all time.,He has increased appetite.
+Lil one got hungry all time.,The elderly man has increased appetite.
+He got skin rash.,I have skin rash.
+Lil one got skin rash.,The child has skin rash.
+Old fella got blood nose.,The child has nosebleed.
+She got cough bad.,The child has severe cough.
+Lil one got drink water plenty.,He has excessive thirst.
+Them kids got shiverin’.,He has shivering.
+Them kids got chest tight.,That person has chest tightness.
+This one got leg swell up.,I have swollen leg.
+Me got sore throat.,I have been experiencing sore throat.
+This one got skin rash.,He has skin rash.
+Them kids got can’t breathe good.,My shortness of breath.
+My leg swell up.,I have swollen leg.
+That one got heart go fast.,The children have rapid heartbeat.
+Lil one got cough bad.,The elderly man has severe cough.
+He got throwin’ up.,This person has vomiting.
+This one got can’t walk good.,I have been experiencing difficulty walking.
+Them kids got hot all night.,This person has fever.
+That one got can’t breathe good.,The child has shortness of breath.
+Old fella got sore throat.,The child has sore throat.
+Me got body weak.,The elderly man has body weakness.
+I bin leg swell up.,The child has swollen leg.
+That one got throwin’ up.,He has vomiting.
+That one got cough bad.,I have severe cough.
+She got head hurtin’.,The children have headache.
+Old fella got can’t breathe good.,I have been experiencing shortness of breath.
+My leg swell up.,He has swollen leg.
+She got head hurtin’.,I have been experiencing headache.
+My can’t walk good.,I have been experiencing difficulty walking.
+This one got blood nose.,My nosebleed.
+My chest tight.,My chest tightness.
+Me got can’t see straight.,The elderly man has blurred vision.
+He got shiverin’.,This person has shivering.
+He got talkin’ funny.,My slurred speech.
+Them kids got blood nose.,My nosebleed.
+She got heart go fast.,I have been experiencing rapid heartbeat.
+That one got ear sore.,That person has earache.
+Them kids got belly pain.,I have been experiencing abdominal pain.
+Me got can’t see straight.,She has blurred vision.
+I bin belly pain.,This person has abdominal pain.
+She got shiverin’.,I have been experiencing shivering.
+Them kids got leg swell up.,She has swollen leg.
+Me got vomit come up.,This person has vomiting.
+That one got talkin’ funny.,This person has slurred speech.
+Me got body weak.,The child has body weakness.
+She got can’t walk good.,That person has difficulty walking.
+She got throwin’ up.,She has vomiting.
+Lil one got can’t see straight.,This person has blurred vision.
+She got back sore.,I have been experiencing back pain.
+Me got vomit come up.,I have vomiting.
+This one got throwin’ up.,My vomiting.
+He got heart go fast.,The child has rapid heartbeat.
+I bin cryin’ lot.,The elderly man has crying a lot.
+Lil one got can’t walk good.,The child has difficulty walking.
+She got can’t see straight.,My blurred vision.
+He got can’t breathe good.,I have shortness of breath.
+She got cough bad.,He has severe cough.
+Me got can’t walk good.,That person has difficulty walking.
+My cryin’ lot.,The children have crying a lot.
+My blood nose.,The elderly man has nosebleed.
+This one got sore throat.,She has sore throat.
+Them kids got hungry all time.,The child has increased appetite.
+Them kids got drink water plenty.,The child has excessive thirst.
+Old fella got belly pain.,I have abdominal pain.
+Me got eyes blurry.,The child has blurred vision.
+That one got vomit come up.,That person has vomiting.
+Old fella got back sore.,The children have back pain.
+Lil one got cough bad.,The elderly man has severe cough.
+He got can’t walk good.,I have difficulty walking.
+He got cryin’ lot.,My crying a lot.
+He got chest tight.,That person has chest tightness.
+Me got skin itchy.,This person has itchy skin.
+That one got skin rash.,The elderly man has skin rash.
+He got drink water plenty.,The children have excessive thirst.
+This one got can’t see straight.,My blurred vision.
+Lil one got hot all night.,That person has fever.
+He got eyes blurry.,He has blurred vision.
+Lil one got vomit come up.,The children have vomiting.
+Me got talkin’ funny.,I have slurred speech.
+This one got shiverin’.,The child has shivering.
+Lil one got vomit come up.,This person has vomiting.
+Lil one got blood nose.,The children have nosebleed.
+Old fella got hungry all time.,She has increased appetite.
+He got can’t walk good.,She has difficulty walking.
+Them kids got throwin’ up.,My vomiting.
+She got drink water plenty.,The elderly man has excessive thirst.
+Me got body weak.,He has body weakness.
+This one got ear sore.,I have earache.
+Lil one got ear sore.,I have earache.
+That one got body weak.,I have been experiencing body weakness.
+Me got can’t walk good.,I have difficulty walking.
+Them kids got throwin’ up.,That person has vomiting.
+I bin blood nose.,He has nosebleed.
+This one got ear sore.,The child has earache.
+That one got cryin’ lot.,I have been experiencing crying a lot.
+He got skin rash.,I have been experiencing skin rash.
+Me got skin rash.,My skin rash.
+Old fella got skin itchy.,The elderly man has itchy skin.
+My eyes blurry.,The child has blurred vision.
+Old fella got can’t breathe good.,That person has shortness of breath.
+Them kids got vomit come up.,I have vomiting.
+My talkin’ funny.,The children have slurred speech.
+My blood nose.,My nosebleed.
+Me got hungry all time.,The elderly man has increased appetite.
+Lil one got shiverin’.,She has shivering.
+That one got back sore.,She has back pain.
+This one got cough bad.,The child has severe cough.
+This one got cough bad.,The children have severe cough.
+Lil one got vomit come up.,My vomiting.
+I bin cryin’ lot.,I have been experiencing crying a lot.
+She got ear sore.,This person has earache.
+My head hurtin’.,The child has headache.
+She got head hurtin’.,This person has headache.
+My heart go fast.,He has rapid heartbeat.
+This one got hungry all time.,She has increased appetite.
+That one got back sore.,The children have back pain.
+Old fella got throwin’ up.,The children have vomiting.
+I bin heart go fast.,The children have rapid heartbeat.
+That one got back sore.,I have been experiencing back pain.
+He got hot all night.,She has fever.
+This one got cough bad.,The children have severe cough.
+She got cryin’ lot.,He has crying a lot.
+Me got can’t see straight.,The child has blurred vision.
+Me got can’t breathe good.,I have been experiencing shortness of breath.
+She got ear sore.,The children have earache.
+Me got can’t breathe good.,This person has shortness of breath.
+This one got can’t breathe good.,The child has shortness of breath.
+That one got chest tight.,I have chest tightness.
+This one got cryin’ lot.,I have been experiencing crying a lot.
+Lil one got back sore.,My back pain.
+He got eyes blurry.,The child has blurred vision.
+He got throwin’ up.,This person has vomiting.
+This one got blood nose.,I have nosebleed.
+Me got can’t see straight.,That person has blurred vision.
+She got skin rash.,That person has skin rash.
+This one got sore throat.,He has sore throat.
+He got drink water plenty.,This person has excessive thirst.
+Lil one got hungry all time.,The elderly man has increased appetite.
+Me got eyes blurry.,She has blurred vision.
+Old fella got sore throat.,My sore throat.
+That one got skin rash.,I have been experiencing skin rash.
+This one got throwin’ up.,He has vomiting.
+Them kids got chest tight.,The child has chest tightness.
+Me got head hurtin’.,That person has headache.
+Old fella got shiverin’.,He has shivering.
+I bin body weak.,The child has body weakness.
+She got blood nose.,I have been experiencing nosebleed.
+This one got drink water plenty.,I have been experiencing excessive thirst.
+Old fella got heart go fast.,I have been experiencing rapid heartbeat.
+This one got can’t see straight.,My blurred vision.
+Lil one got throwin’ up.,She has vomiting.
+Lil one got sore throat.,I have been experiencing sore throat.
+Lil one got can’t breathe good.,This person has shortness of breath.
+Me got leg swell up.,I have been experiencing swollen leg.
+This one got ear sore.,This person has earache.
+That one got head hurtin’.,The elderly man has headache.
+He got cryin’ lot.,This person has crying a lot.
+Lil one got hot all night.,That person has fever.
+I bin blood nose.,I have been experiencing nosebleed.
+She got eyes blurry.,The child has blurred vision.
+I bin can’t breathe good.,She has shortness of breath.
+She got eyes blurry.,The child has blurred vision.
+That one got skin rash.,The elderly man has skin rash.
+This one got shiverin’.,The child has shivering.
+Old fella got can’t breathe good.,My shortness of breath.
+That one got hungry all time.,The child has increased appetite.
+That one got belly pain.,She has abdominal pain.
+This one got blood nose.,She has nosebleed.
+She got hungry all time.,The elderly man has increased appetite.
+I bin cough bad.,This person has severe cough.
+Old fella got head hurtin’.,The elderly man has headache.
+My talkin’ funny.,She has slurred speech.
+My can’t breathe good.,My shortness of breath.
+Them kids got chest tight.,He has chest tightness.
+This one got can’t see straight.,That person has blurred vision.
+Me got heart go fast.,That person has rapid heartbeat.
+That one got body weak.,That person has body weakness.
+That one got chest tight.,The child has chest tightness.
+Old fella got cough bad.,I have severe cough.
+Old fella got can’t see straight.,The child has blurred vision.
+She got shiverin’.,He has shivering.
+That one got skin rash.,I have been experiencing skin rash.
+Me got head hurtin’.,That person has headache.
+Me got skin itchy.,I have been experiencing itchy skin.
+My can’t walk good.,This person has difficulty walking.
+This one got shiverin’.,I have shivering.
+Me got belly pain.,I have been experiencing abdominal pain.
+She got drink water plenty.,The child has excessive thirst.
+This one got blood nose.,The elderly man has nosebleed.
+I bin head hurtin’.,She has headache.
+She got eyes blurry.,He has blurred vision.
+Lil one got can’t walk good.,I have difficulty walking.
+Lil one got can’t breathe good.,He has shortness of breath.
+Them kids got back sore.,The children have back pain.
+He got skin itchy.,The elderly man has itchy skin.
+That one got back sore.,The child has back pain.
+Me got drink water plenty.,The children have excessive thirst.
+Them kids got cough bad.,My severe cough.
+She got sore throat.,That person has sore throat.
+Me got cryin’ lot.,My crying a lot.
+My chest tight.,She has chest tightness.
+My cryin’ lot.,I have been experiencing crying a lot.
+Me got skin itchy.,This person has itchy skin.
+Them kids got can’t see straight.,That person has blurred vision.
+Me got head hurtin’.,She has headache.
+She got throwin’ up.,I have been experiencing vomiting.
+Old fella got talkin’ funny.,I have slurred speech.
+Them kids got leg swell up.,The elderly man has swollen leg.
+Lil one got skin itchy.,She has itchy skin.
+My hot all night.,He has fever.
+He got belly pain.,The children have abdominal pain.
+Old fella got chest tight.,She has chest tightness.
+He got chest tight.,The children have chest tightness.
+She got heart go fast.,That person has rapid heartbeat.
+I bin talkin’ funny.,My slurred speech.
+Them kids got shiverin’.,She has shivering.
+That one got shiverin’.,I have been experiencing shivering.
+Me got head hurtin’.,I have been experiencing headache.
+She got body weak.,I have been experiencing body weakness.
+Me got skin rash.,I have skin rash.
+Old fella got vomit come up.,She has vomiting.
+He got head hurtin’.,This person has headache.
+Lil one got cryin’ lot.,My crying a lot.
+He got chest tight.,My chest tightness.
+Me got cough bad.,That person has severe cough.
+Me got can’t walk good.,This person has difficulty walking.
+Lil one got can’t see straight.,That person has blurred vision.
+She got ear sore.,The children have earache.
+This one got leg swell up.,He has swollen leg.
+Old fella got can’t walk good.,The elderly man has difficulty walking.
+My blood nose.,The child has nosebleed.
+I bin can’t walk good.,That person has difficulty walking.
+I bin eyes blurry.,That person has blurred vision.
+My head hurtin’.,That person has headache.
+Old fella got body weak.,The child has body weakness.
+He got can’t breathe good.,She has shortness of breath.
+My heart go fast.,I have rapid heartbeat.
+Lil one got sore throat.,This person has sore throat.
+He got can’t walk good.,This person has difficulty walking.
+She got cryin’ lot.,This person has crying a lot.
+That one got cough bad.,He has severe cough.
+That one got can’t see straight.,The elderly man has blurred vision.
+Lil one got cough bad.,He has severe cough.
+That one got can’t walk good.,The elderly man has difficulty walking.
+Them kids got leg swell up.,This person has swollen leg.
+My heart go fast.,He has rapid heartbeat.
+This one got blood nose.,He has nosebleed.
+I bin can’t breathe good.,That person has shortness of breath.
+This one got ear sore.,I have been experiencing earache.
+My skin rash.,I have skin rash.
+Lil one got back sore.,My back pain.
+Old fella got cryin’ lot.,The elderly man has crying a lot.
+Them kids got eyes blurry.,She has blurred vision.
+This one got drink water plenty.,She has excessive thirst.
+My shiverin’.,That person has shivering.
+He got talkin’ funny.,This person has slurred speech.
+My belly pain.,The elderly man has abdominal pain.
+This one got blood nose.,The child has nosebleed.
+This one got talkin’ funny.,I have slurred speech.
+I bin can’t breathe good.,The elderly man has shortness of breath.
+I bin ear sore.,He has earache.
+Old fella got can’t walk good.,She has difficulty walking.
+Old fella got skin itchy.,She has itchy skin.
+Them kids got drink water plenty.,I have been experiencing excessive thirst.
+She got vomit come up.,He has vomiting.
+This one got can’t walk good.,My difficulty walking.
+Lil one got throwin’ up.,That person has vomiting.
+That one got talkin’ funny.,She has slurred speech.
+I bin cryin’ lot.,She has crying a lot.
+My vomit come up.,The elderly man has vomiting.
+This one got leg swell up.,The children have swollen leg.
+Lil one got head hurtin’.,The child has headache.
+I bin can’t breathe good.,I have shortness of breath.
+That one got back sore.,She has back pain.
+Old fella got can’t walk good.,My difficulty walking.
+That one got throwin’ up.,The elderly man has vomiting.
+Lil one got hungry all time.,I have been experiencing increased appetite.
+Them kids got belly pain.,I have been experiencing abdominal pain.
+Them kids got leg swell up.,I have been experiencing swollen leg.
+My can’t breathe good.,The elderly man has shortness of breath.
+That one got head hurtin’.,The children have headache.
+My vomit come up.,The elderly man has vomiting.
+He got cough bad.,I have been experiencing severe cough.
+This one got can’t walk good.,That person has difficulty walking.
+My blood nose.,The child has nosebleed.
+This one got sore throat.,I have been experiencing sore throat.
+Lil one got skin rash.,That person has skin rash.
+Them kids got drink water plenty.,The children have excessive thirst.
+Them kids got blood nose.,She has nosebleed.
+Old fella got heart go fast.,She has rapid heartbeat.
+Me got hot all night.,She has fever.
+Lil one got body weak.,I have body weakness.
+She got back sore.,The child has back pain.
+I bin skin itchy.,This person has itchy skin.
+He got heart go fast.,The child has rapid heartbeat.
+I bin shiverin’.,I have been experiencing shivering.
+Lil one got body weak.,My body weakness.
+Me got can’t breathe good.,The child has shortness of breath.
+Them kids got skin rash.,The elderly man has skin rash.
+Old fella got can’t breathe good.,This person has shortness of breath.
+He got shiverin’.,He has shivering.
+He got chest tight.,He has chest tightness.
+Old fella got skin rash.,He has skin rash.
+Them kids got back sore.,The child has back pain.
+This one got chest tight.,I have been experiencing chest tightness.
+He got blood nose.,That person has nosebleed.
+Old fella got cough bad.,My severe cough.
+That one got hungry all time.,The elderly man has increased appetite.
+Me got shiverin’.,The children have shivering.
+She got back sore.,That person has back pain.
+I bin eyes blurry.,That person has blurred vision.
+Them kids got skin itchy.,My itchy skin.
+Lil one got hungry all time.,She has increased appetite.
+Lil one got can’t breathe good.,The elderly man has shortness of breath.
+I bin drink water plenty.,He has excessive thirst.
+Old fella got can’t breathe good.,He has shortness of breath.
+Them kids got belly pain.,He has abdominal pain.
+My ear sore.,She has earache.
+My vomit come up.,The child has vomiting.
+Lil one got sore throat.,He has sore throat.
+This one got skin itchy.,This person has itchy skin.
+Me got body weak.,That person has body weakness.
+Me got ear sore.,I have been experiencing earache.
+That one got talkin’ funny.,He has slurred speech.
+Me got vomit come up.,That person has vomiting.
+This one got belly pain.,The elderly man has abdominal pain.
+Old fella got chest tight.,This person has chest tightness.
+She got heart go fast.,He has rapid heartbeat.
+This one got drink water plenty.,My excessive thirst.
+That one got sore throat.,My sore throat.
+That one got ear sore.,She has earache.
+Me got talkin’ funny.,My slurred speech.
+He got back sore.,The children have back pain.
+I bin chest tight.,I have been experiencing chest tightness.
+Lil one got chest tight.,He has chest tightness.
+Me got ear sore.,I have been experiencing earache.
+This one got heart go fast.,This person has rapid heartbeat.
+Me got can’t see straight.,That person has blurred vision.
+Old fella got skin rash.,She has skin rash.
+Old fella got sore throat.,She has sore throat.
+This one got hungry all time.,That person has increased appetite.
+My cryin’ lot.,I have been experiencing crying a lot.
+Old fella got sore throat.,My sore throat.
+He got eyes blurry.,She has blurred vision.
+This one got vomit come up.,My vomiting.
+That one got hot all night.,This person has fever.
+I bin cough bad.,He has severe cough.
+That one got hungry all time.,That person has increased appetite.
+She got cough bad.,This person has severe cough.
+Old fella got hot all night.,He has fever.
+I bin shiverin’.,I have shivering.
+That one got talkin’ funny.,I have slurred speech.
+He got talkin’ funny.,The elderly man has slurred speech.
+He got blood nose.,The elderly man has nosebleed.
+She got eyes blurry.,The child has blurred vision.
+Old fella got ear sore.,I have been experiencing earache.
+This one got drink water plenty.,That person has excessive thirst.
+He got head hurtin’.,He has headache.
+Them kids got skin rash.,That person has skin rash.
+Them kids got vomit come up.,My vomiting.
+That one got body weak.,This person has body weakness.
+I bin ear sore.,That person has earache.
+Them kids got talkin’ funny.,The elderly man has slurred speech.
+That one got belly pain.,I have abdominal pain.
+Old fella got skin rash.,I have skin rash.
+Old fella got shiverin’.,My shivering.
+Old fella got sore throat.,I have sore throat.
+I bin skin rash.,I have been experiencing skin rash.
+That one got shiverin’.,My shivering.
+This one got ear sore.,My earache.
+Lil one got skin itchy.,This person has itchy skin.
+Them kids got skin itchy.,I have itchy skin.
+She got skin itchy.,That person has itchy skin.
+He got eyes blurry.,She has blurred vision.
+Old fella got skin rash.,My skin rash.
+She got cough bad.,He has severe cough.
+She got hot all night.,The elderly man has fever.
+This one got talkin’ funny.,I have slurred speech.
+Old fella got back sore.,The children have back pain.
+I bin sore throat.,He has sore throat.
+I bin body weak.,She has body weakness.
+Old fella got hot all night.,The children have fever.
+This one got ear sore.,I have earache.
+I bin leg swell up.,My swollen leg.
+Lil one got throwin’ up.,He has vomiting.
+This one got can’t see straight.,He has blurred vision.
+Lil one got skin itchy.,She has itchy skin.
+That one got can’t breathe good.,The children have shortness of breath.
+I bin cough bad.,He has severe cough.
+This one got heart go fast.,The elderly man has rapid heartbeat.
+Them kids got belly pain.,The elderly man has abdominal pain.
+He got belly pain.,The child has abdominal pain.
+She got hot all night.,I have been experiencing fever.
+Me got leg swell up.,She has swollen leg.
+Them kids got belly pain.,I have been experiencing abdominal pain.
+Old fella got eyes blurry.,The child has blurred vision.
+My back sore.,I have been experiencing back pain.
+That one got ear sore.,She has earache.
+This one got hot all night.,The elderly man has fever.
+I bin can’t walk good.,This person has difficulty walking.
+This one got can’t breathe good.,That person has shortness of breath.
+Me got blood nose.,I have been experiencing nosebleed.
+I bin chest tight.,The child has chest tightness.
+That one got body weak.,She has body weakness.
+He got hungry all time.,My increased appetite.
+Old fella got skin itchy.,The children have itchy skin.
+Me got blood nose.,That person has nosebleed.
+My back sore.,The elderly man has back pain.
+Me got chest tight.,The children have chest tightness.
+Me got can’t breathe good.,He has shortness of breath.
+She got talkin’ funny.,I have slurred speech.
+This one got skin itchy.,The elderly man has itchy skin.
+Old fella got leg swell up.,She has swollen leg.
+She got ear sore.,The children have earache.
+That one got cryin’ lot.,That person has crying a lot.
+My leg swell up.,That person has swollen leg.
+This one got hungry all time.,My increased appetite.
+Me got vomit come up.,He has vomiting.
+My body weak.,My body weakness.
+My skin itchy.,This person has itchy skin.
+Old fella got throwin’ up.,This person has vomiting.
+Old fella got leg swell up.,That person has swollen leg.
+That one got chest tight.,That person has chest tightness.
+That one got can’t walk good.,The children have difficulty walking.
+Old fella got vomit come up.,The elderly man has vomiting.
+Me got body weak.,The children have body weakness.
+My sore throat.,The elderly man has sore throat.
+She got skin itchy.,The children have itchy skin.
+That one got back sore.,The children have back pain.
+I bin shiverin’.,The child has shivering.
+My can’t see straight.,She has blurred vision.
+I bin drink water plenty.,The child has excessive thirst.
+I bin hot all night.,The child has fever.
+My blood nose.,This person has nosebleed.
+I bin vomit come up.,This person has vomiting.
+Old fella got vomit come up.,The elderly man has vomiting.
+Lil one got ear sore.,She has earache.
+Me got vomit come up.,She has vomiting.
+Them kids got cryin’ lot.,I have crying a lot.
+He got heart go fast.,The child has rapid heartbeat.
+My cough bad.,The child has severe cough.
+Old fella got body weak.,The child has body weakness.
+I bin throwin’ up.,That person has vomiting.
+Them kids got drink water plenty.,The elderly man has excessive thirst.
+Lil one got drink water plenty.,This person has excessive thirst.
+He got drink water plenty.,I have been experiencing excessive thirst.
+She got can’t breathe good.,This person has shortness of breath.
+Old fella got eyes blurry.,My blurred vision.
+Me got skin itchy.,The children have itchy skin.
+This one got back sore.,I have back pain.
+He got cough bad.,That person has severe cough.
+My hungry all time.,I have increased appetite.
+Old fella got sore throat.,I have sore throat.
+My can’t see straight.,He has blurred vision.
+He got heart go fast.,My rapid heartbeat.
+He got shiverin’.,I have shivering.
+I bin shiverin’.,The elderly man has shivering.
+Them kids got skin rash.,I have skin rash.
+I bin skin rash.,I have skin rash.
+He got can’t breathe good.,I have been experiencing shortness of breath.
+My hungry all time.,The children have increased appetite.
+Them kids got eyes blurry.,This person has blurred vision.
+Me got leg swell up.,That person has swollen leg.
+Them kids got hot all night.,The elderly man has fever.
+Lil one got can’t see straight.,I have blurred vision.
+Lil one got leg swell up.,The elderly man has swollen leg.
+Lil one got skin rash.,The child has skin rash.
+She got back sore.,I have been experiencing back pain.
+I bin drink water plenty.,The child has excessive thirst.
+My can’t see straight.,I have blurred vision.
+She got chest tight.,My chest tightness.
+Them kids got back sore.,I have back pain.
+Them kids got hungry all time.,This person has increased appetite.
+Lil one got can’t see straight.,The elderly man has blurred vision.
+Old fella got belly pain.,The elderly man has abdominal pain.
+That one got chest tight.,I have been experiencing chest tightness.
+Them kids got shiverin’.,This person has shivering.
+She got cryin’ lot.,I have crying a lot.
+My hungry all time.,The elderly man has increased appetite.
+She got shiverin’.,This person has shivering.
+I bin cough bad.,The child has severe cough.
+My heart go fast.,The child has rapid heartbeat.
+Old fella got eyes blurry.,I have blurred vision.
+He got leg swell up.,The children have swollen leg.
+He got cough bad.,The children have severe cough.
+That one got hungry all time.,My increased appetite.
+Me got vomit come up.,This person has vomiting.
+I bin head hurtin’.,My headache.
+Me got belly pain.,The elderly man has abdominal pain.
+Me got talkin’ funny.,She has slurred speech.
+That one got throwin’ up.,He has vomiting.
+I bin throwin’ up.,I have been experiencing vomiting.
+Me got can’t see straight.,I have been experiencing blurred vision.
+He got hot all night.,That person has fever.
+My sore throat.,I have been experiencing sore throat.
+I bin can’t walk good.,My difficulty walking.
+Old fella got back sore.,The children have back pain.
+I bin ear sore.,The children have earache.
+That one got chest tight.,He has chest tightness.
+Old fella got skin rash.,I have skin rash.
+Them kids got shiverin’.,This person has shivering.
+Old fella got throwin’ up.,That person has vomiting.
+This one got ear sore.,He has earache.
+That one got back sore.,She has back pain.
+Them kids got shiverin’.,The child has shivering.
+I bin eyes blurry.,This person has blurred vision.
+I bin back sore.,The elderly man has back pain.
+Me got hungry all time.,He has increased appetite.
+Me got body weak.,The child has body weakness.
+My drink water plenty.,My excessive thirst.
+This one got chest tight.,I have been experiencing chest tightness.
+That one got can’t walk good.,The children have difficulty walking.
+She got ear sore.,She has earache.
+Them kids got skin rash.,I have been experiencing skin rash.
+I bin ear sore.,The children have earache.
+Me got belly pain.,The children have abdominal pain.
+Me got skin itchy.,This person has itchy skin.
+That one got ear sore.,The children have earache.
+She got ear sore.,I have been experiencing earache.
+Me got ear sore.,That person has earache.
+He got vomit come up.,That person has vomiting.
+Them kids got talkin’ funny.,The children have slurred speech.
+This one got can’t see straight.,The child has blurred vision.
+Old fella got talkin’ funny.,She has slurred speech.
+Them kids got drink water plenty.,The child has excessive thirst.
+Me got ear sore.,She has earache.
+He got blood nose.,I have been experiencing nosebleed.
+Old fella got heart go fast.,That person has rapid heartbeat.
+Them kids got shiverin’.,The child has shivering.
+Old fella got talkin’ funny.,I have been experiencing slurred speech.
+My chest tight.,My chest tightness.
+That one got throwin’ up.,I have vomiting.
+Old fella got can’t breathe good.,The elderly man has shortness of breath.
+That one got can’t walk good.,This person has difficulty walking.
+Me got cough bad.,He has severe cough.
+Me got skin itchy.,The child has itchy skin.
+My throwin’ up.,The children have vomiting.
+Lil one got skin rash.,This person has skin rash.
+She got hungry all time.,He has increased appetite.
+My throwin’ up.,The elderly man has vomiting.
+Old fella got drink water plenty.,The child has excessive thirst.
+Me got sore throat.,The children have sore throat.
+This one got can’t breathe good.,I have shortness of breath.
+Them kids got throwin’ up.,That person has vomiting.
+This one got sore throat.,I have sore throat.
+He got can’t see straight.,My blurred vision.
+Me got talkin’ funny.,That person has slurred speech.
+This one got vomit come up.,This person has vomiting.
+I bin throwin’ up.,The elderly man has vomiting.
+Lil one got skin rash.,That person has skin rash.
+Them kids got drink water plenty.,The child has excessive thirst.
+This one got leg swell up.,He has swollen leg.
+Me got leg swell up.,This person has swollen leg.
+This one got leg swell up.,She has swollen leg.
+That one got chest tight.,That person has chest tightness.
+Old fella got can’t breathe good.,My shortness of breath.
+Lil one got skin rash.,He has skin rash.
+That one got can’t walk good.,The elderly man has difficulty walking.
+That one got throwin’ up.,The children have vomiting.
+I bin can’t walk good.,She has difficulty walking.
+My hot all night.,The elderly man has fever.
+She got can’t breathe good.,This person has shortness of breath.
+That one got heart go fast.,I have rapid heartbeat.
+Them kids got head hurtin’.,He has headache.
+Me got body weak.,The child has body weakness.
+He got belly pain.,This person has abdominal pain.
+Old fella got heart go fast.,My rapid heartbeat.
+This one got eyes blurry.,The elderly man has blurred vision.
+I bin cough bad.,I have severe cough.
+She got hungry all time.,She has increased appetite.
+Them kids got skin rash.,The elderly man has skin rash.
+Old fella got leg swell up.,My swollen leg.
+My throwin’ up.,I have vomiting.
+That one got hot all night.,I have been experiencing fever.
+Them kids got back sore.,She has back pain.
+Them kids got hot all night.,My fever.
+I bin can’t breathe good.,My shortness of breath.
+That one got talkin’ funny.,My slurred speech.
+I bin leg swell up.,He has swollen leg.
+She got body weak.,I have been experiencing body weakness.
+That one got can’t breathe good.,This person has shortness of breath.
+He got head hurtin’.,I have headache.
+She got can’t see straight.,My blurred vision.
+Me got vomit come up.,This person has vomiting.
+Me got can’t see straight.,I have blurred vision.
+Them kids got hungry all time.,This person has increased appetite.
+He got back sore.,My back pain.
+I bin can’t walk good.,This person has difficulty walking.
+He got can’t see straight.,This person has blurred vision.
+He got skin rash.,She has skin rash.
+This one got chest tight.,This person has chest tightness.
+That one got drink water plenty.,I have been experiencing excessive thirst.
+Them kids got skin itchy.,That person has itchy skin.
+That one got belly pain.,I have abdominal pain.
+He got heart go fast.,That person has rapid heartbeat.
+Me got cough bad.,That person has severe cough.
+My hungry all time.,The children have increased appetite.
+Lil one got body weak.,The children have body weakness.
+Them kids got belly pain.,This person has abdominal pain.
+Lil one got eyes blurry.,The elderly man has blurred vision.
+Lil one got talkin’ funny.,The elderly man has slurred speech.
+He got eyes blurry.,I have blurred vision.
+He got talkin’ funny.,I have slurred speech.
+He got can’t walk good.,The elderly man has difficulty walking.
+She got can’t breathe good.,The children have shortness of breath.
+That one got talkin’ funny.,He has slurred speech.
+Me got can’t see straight.,He has blurred vision.
+Old fella got sore throat.,The child has sore throat.
+I bin shiverin’.,He has shivering.
+He got hungry all time.,This person has increased appetite.
+This one got can’t see straight.,The elderly man has blurred vision.
+My hot all night.,She has fever.
+She got ear sore.,He has earache.
+Them kids got can’t breathe good.,She has shortness of breath.
+This one got heart go fast.,I have rapid heartbeat.
+Them kids got can’t walk good.,The child has difficulty walking.
+She got sore throat.,The elderly man has sore throat.
+Old fella got skin rash.,I have been experiencing skin rash.
+Them kids got shiverin’.,He has shivering.
+He got shiverin’.,The child has shivering.
+My sore throat.,This person has sore throat.
+He got vomit come up.,My vomiting.
+I bin throwin’ up.,The child has vomiting.
+I bin head hurtin’.,I have been experiencing headache.
+My drink water plenty.,I have been experiencing excessive thirst.
+Lil one got shiverin’.,I have shivering.
+Lil one got throwin’ up.,He has vomiting.
+That one got can’t walk good.,I have difficulty walking.
+This one got vomit come up.,She has vomiting.
+Them kids got shiverin’.,My shivering.
+Lil one got blood nose.,I have nosebleed.
+Me got can’t see straight.,The child has blurred vision.
+Old fella got shiverin’.,I have been experiencing shivering.
+Them kids got throwin’ up.,I have been experiencing vomiting.
+This one got cryin’ lot.,This person has crying a lot.
+He got ear sore.,My earache.
+Them kids got belly pain.,She has abdominal pain.
+Lil one got body weak.,I have body weakness.
+My sore throat.,The elderly man has sore throat.
+Lil one got chest tight.,This person has chest tightness.
+She got vomit come up.,I have vomiting.
+He got heart go fast.,I have rapid heartbeat.
+That one got ear sore.,That person has earache.
+She got body weak.,The elderly man has body weakness.
+Lil one got hungry all time.,My increased appetite.
+I bin skin itchy.,The children have itchy skin.
+Them kids got can’t breathe good.,My shortness of breath.
+He got hungry all time.,This person has increased appetite.
+He got can’t breathe good.,He has shortness of breath.
+Old fella got heart go fast.,I have rapid heartbeat.
+This one got chest tight.,This person has chest tightness.
+Me got body weak.,The elderly man has body weakness.
+Them kids got can’t breathe good.,The children have shortness of breath.
+My belly pain.,I have been experiencing abdominal pain.
+He got can’t breathe good.,He has shortness of breath.
+Them kids got vomit come up.,The elderly man has vomiting.
+This one got can’t breathe good.,He has shortness of breath.
+Old fella got cryin’ lot.,The elderly man has crying a lot.
+He got vomit come up.,This person has vomiting.
+He got eyes blurry.,This person has blurred vision.
+I bin back sore.,I have back pain.
+Lil one got can’t walk good.,I have been experiencing difficulty walking.
+I bin ear sore.,He has earache.
+My eyes blurry.,He has blurred vision.
+I bin eyes blurry.,My blurred vision.
+My hungry all time.,The children have increased appetite.
+Me got shiverin’.,I have shivering.
+That one got leg swell up.,That person has swollen leg.
+Lil one got skin itchy.,He has itchy skin.
+That one got cough bad.,The elderly man has severe cough.
+Lil one got chest tight.,She has chest tightness.
+Old fella got back sore.,The children have back pain.
+That one got can’t breathe good.,That person has shortness of breath.
+He got body weak.,He has body weakness.
+He got eyes blurry.,That person has blurred vision.
+Them kids got cryin’ lot.,The children have crying a lot.
+She got can’t walk good.,The child has difficulty walking.
+Lil one got eyes blurry.,This person has blurred vision.
+This one got hot all night.,I have fever.
+He got shiverin’.,That person has shivering.
+Old fella got body weak.,That person has body weakness.
+Lil one got belly pain.,My abdominal pain.
+Old fella got belly pain.,The child has abdominal pain.
+Old fella got can’t breathe good.,That person has shortness of breath.
+I bin skin itchy.,She has itchy skin.
+My ear sore.,He has earache.
+This one got skin rash.,He has skin rash.
+This one got eyes blurry.,I have been experiencing blurred vision.
+My leg swell up.,The elderly man has swollen leg.
+That one got can’t walk good.,He has difficulty walking.
+That one got back sore.,The elderly man has back pain.
+That one got skin itchy.,I have been experiencing itchy skin.
+Them kids got sore throat.,I have been experiencing sore throat.
+She got ear sore.,The elderly man has earache.
+She got drink water plenty.,The elderly man has excessive thirst.
+Lil one got can’t see straight.,She has blurred vision.
+I bin hungry all time.,This person has increased appetite.
+Old fella got cryin’ lot.,I have been experiencing crying a lot.
+Lil one got heart go fast.,She has rapid heartbeat.
+He got can’t breathe good.,He has shortness of breath.
+He got hot all night.,My fever.
+Me got skin itchy.,She has itchy skin.
+My talkin’ funny.,I have been experiencing slurred speech.
+Them kids got sore throat.,The children have sore throat.
+I bin can’t walk good.,He has difficulty walking.
+This one got throwin’ up.,I have vomiting.
+Old fella got ear sore.,The child has earache.
+Lil one got can’t walk good.,The child has difficulty walking.
+He got back sore.,He has back pain.
+He got eyes blurry.,The child has blurred vision.
+She got drink water plenty.,That person has excessive thirst.
+Them kids got back sore.,My back pain.
+She got shiverin’.,My shivering.
+This one got can’t walk good.,He has difficulty walking.
+Old fella got heart go fast.,The child has rapid heartbeat.
+That one got drink water plenty.,That person has excessive thirst.
+Old fella got can’t breathe good.,My shortness of breath.
+I bin belly pain.,My abdominal pain.
+This one got belly pain.,The child has abdominal pain.
+He got chest tight.,The child has chest tightness.
+Them kids got blood nose.,I have nosebleed.
+My leg swell up.,My swollen leg.
+He got cryin’ lot.,My crying a lot.
+She got vomit come up.,He has vomiting.
+Old fella got can’t walk good.,The elderly man has difficulty walking.
+My belly pain.,I have abdominal pain.
+Lil one got blood nose.,I have been experiencing nosebleed.
+Me got hot all night.,She has fever.
+My back sore.,This person has back pain.
+My cryin’ lot.,I have crying a lot.
+This one got heart go fast.,I have been experiencing rapid heartbeat.
+I bin shiverin’.,This person has shivering.
+She got eyes blurry.,The elderly man has blurred vision.
+My talkin’ funny.,The children have slurred speech.
+I bin cough bad.,The children have severe cough.
+Lil one got chest tight.,This person has chest tightness.
+Me got hungry all time.,I have been experiencing increased appetite.
+Them kids got eyes blurry.,I have blurred vision.
+She got belly pain.,That person has abdominal pain.
+Old fella got skin rash.,The child has skin rash.
+Me got talkin’ funny.,I have slurred speech.
+This one got can’t walk good.,I have been experiencing difficulty walking.
+That one got leg swell up.,I have swollen leg.
+She got talkin’ funny.,This person has slurred speech.
+He got ear sore.,The children have earache.
+Me got throwin’ up.,The children have vomiting.
+He got drink water plenty.,The elderly man has excessive thirst.
+My ear sore.,The children have earache.
+Lil one got blood nose.,That person has nosebleed.
+Them kids got skin rash.,This person has skin rash.
+He got belly pain.,That person has abdominal pain.
+She got hot all night.,He has fever.
+My eyes blurry.,This person has blurred vision.
+Lil one got skin rash.,I have skin rash.
+Old fella got talkin’ funny.,This person has slurred speech.
+My skin itchy.,The elderly man has itchy skin.
+That one got heart go fast.,I have been experiencing rapid heartbeat.
+Me got head hurtin’.,This person has headache.
+That one got cryin’ lot.,The children have crying a lot.
+Me got cryin’ lot.,The children have crying a lot.
+Them kids got can’t breathe good.,That person has shortness of breath.
+Them kids got cough bad.,This person has severe cough.
+That one got drink water plenty.,That person has excessive thirst.
+This one got cryin’ lot.,He has crying a lot.
+She got can’t breathe good.,She has shortness of breath.
+This one got blood nose.,The children have nosebleed.
+Me got blood nose.,I have been experiencing nosebleed.
+Them kids got cryin’ lot.,I have been experiencing crying a lot.
+Them kids got cough bad.,She has severe cough.
+She got can’t breathe good.,She has shortness of breath.
+I bin skin itchy.,I have been experiencing itchy skin.
+My blood nose.,I have been experiencing nosebleed.
+Them kids got back sore.,The children have back pain.
+Them kids got skin rash.,The elderly man has skin rash.
+My vomit come up.,The elderly man has vomiting.
+Me got throwin’ up.,He has vomiting.
+I bin skin rash.,She has skin rash.
+He got body weak.,The child has body weakness.
+This one got heart go fast.,My rapid heartbeat.
+He got belly pain.,The child has abdominal pain.
+Them kids got body weak.,The children have body weakness.
+Lil one got heart go fast.,He has rapid heartbeat.
+Them kids got can’t walk good.,She has difficulty walking.
+Me got skin rash.,My skin rash.
+She got head hurtin’.,My headache.
+My can’t see straight.,My blurred vision.
+This one got chest tight.,The elderly man has chest tightness.
+This one got skin rash.,She has skin rash.
+Me got can’t breathe good.,The child has shortness of breath.
+Them kids got throwin’ up.,I have vomiting.
+This one got hungry all time.,I have been experiencing increased appetite.
+I bin skin rash.,My skin rash.
+Me got drink water plenty.,I have been experiencing excessive thirst.
+That one got cough bad.,I have been experiencing severe cough.
+Me got cough bad.,My severe cough.
+That one got body weak.,My body weakness.
+That one got shiverin’.,The children have shivering.
+My blood nose.,This person has nosebleed.
+He got shiverin’.,The children have shivering.
+Me got drink water plenty.,The child has excessive thirst.
+Lil one got talkin’ funny.,The elderly man has slurred speech.
+Lil one got leg swell up.,The elderly man has swollen leg.
+Lil one got hot all night.,I have been experiencing fever.
+That one got throwin’ up.,This person has vomiting.
+Lil one got skin itchy.,That person has itchy skin.
+Them kids got talkin’ funny.,That person has slurred speech.
+He got blood nose.,This person has nosebleed.
+I bin body weak.,She has body weakness.
+She got blood nose.,The child has nosebleed.
+Lil one got cryin’ lot.,My crying a lot.
+Them kids got can’t breathe good.,She has shortness of breath.
+That one got ear sore.,My earache.
+He got can’t see straight.,He has blurred vision.
+Old fella got drink water plenty.,The children have excessive thirst.
+Old fella got hungry all time.,He has increased appetite.
+He got vomit come up.,I have vomiting.
+That one got eyes blurry.,That person has blurred vision.
+Them kids got talkin’ funny.,This person has slurred speech.
+My belly pain.,That person has abdominal pain.
+He got vomit come up.,I have vomiting.
+He got throwin’ up.,That person has vomiting.
+This one got cryin’ lot.,I have been experiencing crying a lot.
+Old fella got can’t breathe good.,The children have shortness of breath.
+Lil one got cough bad.,He has severe cough.
+My eyes blurry.,My blurred vision.
+Old fella got hot all night.,The elderly man has fever.
+She got can’t see straight.,I have blurred vision.
+This one got skin rash.,I have skin rash.
+I bin vomit come up.,The child has vomiting.
+Lil one got blood nose.,She has nosebleed.
+I bin belly pain.,I have abdominal pain.
+He got back sore.,The elderly man has back pain.
+He got cryin’ lot.,She has crying a lot.
+My eyes blurry.,My blurred vision.
+I bin hungry all time.,My increased appetite.
+My cough bad.,I have been experiencing severe cough.
+This one got chest tight.,I have chest tightness.
+She got head hurtin’.,I have been experiencing headache.
+Them kids got heart go fast.,This person has rapid heartbeat.
+He got heart go fast.,He has rapid heartbeat.
+I bin blood nose.,She has nosebleed.
+Me got vomit come up.,She has vomiting.
+Me got can’t walk good.,This person has difficulty walking.
+My can’t breathe good.,I have been experiencing shortness of breath.
+Me got talkin’ funny.,That person has slurred speech.
+Lil one got leg swell up.,The elderly man has swollen leg.
+My back sore.,He has back pain.
+Me got hot all night.,I have been experiencing fever.
+She got talkin’ funny.,The child has slurred speech.
+Old fella got can’t see straight.,The children have blurred vision.
+This one got shiverin’.,He has shivering.
+Old fella got heart go fast.,He has rapid heartbeat.
+He got can’t see straight.,She has blurred vision.
+That one got leg swell up.,The child has swollen leg.
+My cryin’ lot.,He has crying a lot.
+Them kids got ear sore.,I have earache.
+She got hungry all time.,The child has increased appetite.
+Me got skin itchy.,This person has itchy skin.
+Lil one got head hurtin’.,The elderly man has headache.
+He got head hurtin’.,The children have headache.
+She got eyes blurry.,This person has blurred vision.
+Lil one got can’t walk good.,She has difficulty walking.
+Lil one got leg swell up.,She has swollen leg.
+Me got back sore.,The children have back pain.
+Me got cryin’ lot.,The child has crying a lot.
+That one got belly pain.,The elderly man has abdominal pain.
+Them kids got hot all night.,The elderly man has fever.
+Lil one got skin itchy.,The children have itchy skin.
+That one got belly pain.,The children have abdominal pain.
+That one got can’t walk good.,I have difficulty walking.
+She got ear sore.,The children have earache.
+Lil one got chest tight.,The child has chest tightness.
+Them kids got can’t breathe good.,I have been experiencing shortness of breath.
+He got eyes blurry.,This person has blurred vision.
+Old fella got cough bad.,My severe cough.
+This one got cryin’ lot.,My crying a lot.
+Lil one got hot all night.,She has fever.
+Lil one got back sore.,She has back pain.
+He got skin itchy.,This person has itchy skin.
+Me got throwin’ up.,The children have vomiting.
+That one got talkin’ funny.,This person has slurred speech.
+He got shiverin’.,He has shivering.
+She got sore throat.,She has sore throat.
+This one got hungry all time.,That person has increased appetite.
+Lil one got heart go fast.,He has rapid heartbeat.
+He got talkin’ funny.,He has slurred speech.
+I bin cough bad.,My severe cough.
+Lil one got cough bad.,That person has severe cough.
+My back sore.,I have back pain.
+Them kids got body weak.,That person has body weakness.
+This one got leg swell up.,The child has swollen leg.
+Them kids got vomit come up.,That person has vomiting.
+I bin cough bad.,The elderly man has severe cough.
+My belly pain.,The children have abdominal pain.
+My leg swell up.,My swollen leg.
+I bin shiverin’.,The elderly man has shivering.
+Them kids got cryin’ lot.,That person has crying a lot.
+That one got drink water plenty.,The elderly man has excessive thirst.
+He got drink water plenty.,This person has excessive thirst.
+Lil one got back sore.,My back pain.
+This one got back sore.,She has back pain.
+This one got blood nose.,The elderly man has nosebleed.
+I bin can’t see straight.,The children have blurred vision.
+Them kids got throwin’ up.,The children have vomiting.
+That one got head hurtin’.,She has headache.
+Them kids got belly pain.,This person has abdominal pain.
+I bin chest tight.,The child has chest tightness.
+This one got can’t walk good.,I have been experiencing difficulty walking.
+My skin rash.,I have been experiencing skin rash.
+Them kids got body weak.,I have been experiencing body weakness.
+He got skin rash.,The child has skin rash.
+This one got can’t walk good.,He has difficulty walking.
+Me got eyes blurry.,That person has blurred vision.
+He got head hurtin’.,The elderly man has headache.
+Me got chest tight.,He has chest tightness.
+I bin throwin’ up.,The children have vomiting.
+I bin throwin’ up.,The child has vomiting.
+Old fella got chest tight.,She has chest tightness.
+That one got cryin’ lot.,She has crying a lot.
+Lil one got cough bad.,My severe cough.
+She got ear sore.,The children have earache.
+He got cough bad.,The children have severe cough.
+This one got sore throat.,I have been experiencing sore throat.
+Lil one got body weak.,This person has body weakness.
+Me got throwin’ up.,My vomiting.
+My talkin’ funny.,That person has slurred speech.
+My shiverin’.,I have shivering.
+Lil one got body weak.,She has body weakness.
+That one got belly pain.,My abdominal pain.
+Old fella got back sore.,The elderly man has back pain.
+I bin head hurtin’.,I have been experiencing headache.
+She got heart go fast.,I have rapid heartbeat.
+That one got back sore.,The elderly man has back pain.
+Lil one got eyes blurry.,He has blurred vision.
+That one got chest tight.,She has chest tightness.
+He got sore throat.,I have been experiencing sore throat.
+Lil one got can’t see straight.,She has blurred vision.
+This one got leg swell up.,The children have swollen leg.
+He got hot all night.,That person has fever.
+I bin cryin’ lot.,That person has crying a lot.
+Them kids got can’t breathe good.,The children have shortness of breath.
+Them kids got heart go fast.,The elderly man has rapid heartbeat.
+Lil one got belly pain.,I have abdominal pain.
+My heart go fast.,I have rapid heartbeat.
+Them kids got leg swell up.,The elderly man has swollen leg.
+Me got talkin’ funny.,I have been experiencing slurred speech.
+Old fella got sore throat.,The elderly man has sore throat.
+He got blood nose.,She has nosebleed.
+Old fella got hungry all time.,The elderly man has increased appetite.
+I bin heart go fast.,That person has rapid heartbeat.
+This one got head hurtin’.,I have been experiencing headache.
+Me got body weak.,I have been experiencing body weakness.
+Old fella got skin itchy.,The children have itchy skin.
+He got eyes blurry.,I have blurred vision.
+Them kids got vomit come up.,She has vomiting.
+Them kids got chest tight.,I have been experiencing chest tightness.
+Them kids got vomit come up.,The elderly man has vomiting.
+Lil one got sore throat.,She has sore throat.
+Me got chest tight.,This person has chest tightness.
+He got shiverin’.,He has shivering.
+Lil one got can’t walk good.,My difficulty walking.
+Lil one got can’t see straight.,He has blurred vision.
+She got hungry all time.,That person has increased appetite.
+He got can’t walk good.,That person has difficulty walking.
+I bin chest tight.,The elderly man has chest tightness.
+He got heart go fast.,The elderly man has rapid heartbeat.
+I bin head hurtin’.,The elderly man has headache.
+She got back sore.,The children have back pain.
+He got chest tight.,He has chest tightness.
+That one got blood nose.,She has nosebleed.
+Old fella got hot all night.,The child has fever.
+She got skin rash.,This person has skin rash.
+That one got cough bad.,She has severe cough.
+Old fella got talkin’ funny.,That person has slurred speech.
+That one got drink water plenty.,She has excessive thirst.
+Old fella got throwin’ up.,I have been experiencing vomiting.
+My cryin’ lot.,She has crying a lot.
+Me got can’t breathe good.,I have been experiencing shortness of breath.
+Lil one got cough bad.,The children have severe cough.
+Lil one got chest tight.,That person has chest tightness.
+Old fella got back sore.,The elderly man has back pain.
+My ear sore.,He has earache.
+This one got cryin’ lot.,That person has crying a lot.
+He got can’t see straight.,She has blurred vision.
+She got can’t breathe good.,The child has shortness of breath.
+Me got hot all night.,That person has fever.
+I bin body weak.,The children have body weakness.
+He got skin rash.,I have been experiencing skin rash.
+He got hungry all time.,I have increased appetite.
+She got hot all night.,The child has fever.
+My body weak.,I have body weakness.
+Lil one got hungry all time.,This person has increased appetite.
+I bin shiverin’.,That person has shivering.
+Me got talkin’ funny.,He has slurred speech.
+He got blood nose.,This person has nosebleed.
+He got shiverin’.,This person has shivering.
+Lil one got drink water plenty.,I have been experiencing excessive thirst.
+Me got can’t breathe good.,He has shortness of breath.
+Lil one got eyes blurry.,The elderly man has blurred vision.
+That one got cough bad.,The elderly man has severe cough.
+Lil one got belly pain.,The elderly man has abdominal pain.
+He got skin itchy.,The child has itchy skin.
+My hot all night.,My fever.
+That one got belly pain.,I have abdominal pain.
+I bin cough bad.,My severe cough.
+She got back sore.,The children have back pain.
+Me got can’t see straight.,That person has blurred vision.
+Lil one got head hurtin’.,He has headache.
+This one got leg swell up.,The child has swollen leg.
+Lil one got can’t walk good.,He has difficulty walking.
+Me got belly pain.,I have abdominal pain.
+She got can’t see straight.,My blurred vision.
+Lil one got ear sore.,She has earache.
+Old fella got back sore.,The children have back pain.
+I bin back sore.,That person has back pain.
+My cryin’ lot.,I have been experiencing crying a lot.
+Them kids got throwin’ up.,He has vomiting.
+This one got head hurtin’.,I have headache.
+That one got cryin’ lot.,My crying a lot.
+Lil one got can’t breathe good.,She has shortness of breath.
+My drink water plenty.,I have excessive thirst.
+That one got throwin’ up.,I have vomiting.
+Lil one got ear sore.,The child has earache.
+Old fella got body weak.,That person has body weakness.
+My leg swell up.,I have swollen leg.
+I bin back sore.,I have been experiencing back pain.
+Them kids got can’t breathe good.,The child has shortness of breath.
+He got drink water plenty.,I have been experiencing excessive thirst.
+He got blood nose.,That person has nosebleed.
+Old fella got head hurtin’.,That person has headache.
+Old fella got eyes blurry.,The children have blurred vision.
+This one got blood nose.,I have nosebleed.
+She got can’t breathe good.,The child has shortness of breath.
+This one got back sore.,That person has back pain.
+That one got can’t see straight.,That person has blurred vision.
+Old fella got sore throat.,I have sore throat.
+Lil one got sore throat.,The elderly man has sore throat.
+He got hungry all time.,My increased appetite.
+Old fella got cryin’ lot.,The elderly man has crying a lot.
+I bin vomit come up.,That person has vomiting.
+Them kids got cough bad.,I have been experiencing severe cough.
+That one got can’t breathe good.,I have been experiencing shortness of breath.
+She got blood nose.,I have nosebleed.
+Lil one got can’t see straight.,My blurred vision.
+She got drink water plenty.,The children have excessive thirst.
+She got vomit come up.,I have been experiencing vomiting.
+That one got leg swell up.,The child has swollen leg.
+My can’t breathe good.,My shortness of breath.
+She got skin itchy.,This person has itchy skin.
+Lil one got eyes blurry.,The child has blurred vision.
+He got heart go fast.,He has rapid heartbeat.
+Lil one got sore throat.,This person has sore throat.
+Old fella got shiverin’.,My shivering.
+That one got throwin’ up.,I have been experiencing vomiting.
+This one got blood nose.,This person has nosebleed.
+This one got chest tight.,She has chest tightness.
+This one got hot all night.,I have fever.
+That one got shiverin’.,He has shivering.
+Lil one got can’t see straight.,My blurred vision.
+He got sore throat.,The child has sore throat.
+She got can’t walk good.,The elderly man has difficulty walking.
+Lil one got leg swell up.,He has swollen leg.
+That one got skin itchy.,My itchy skin.
+She got talkin’ funny.,That person has slurred speech.
+She got chest tight.,My chest tightness.
+Me got back sore.,My back pain.
+Old fella got throwin’ up.,He has vomiting.
+My shiverin’.,My shivering.
+He got shiverin’.,I have been experiencing shivering.
+This one got hot all night.,He has fever.
+Me got shiverin’.,The elderly man has shivering.
+He got cough bad.,The children have severe cough.
+This one got chest tight.,He has chest tightness.
+This one got drink water plenty.,The elderly man has excessive thirst.
+Them kids got ear sore.,He has earache.
+This one got skin rash.,I have been experiencing skin rash.
+Lil one got cough bad.,This person has severe cough.
+She got cryin’ lot.,I have been experiencing crying a lot.
+Me got shiverin’.,She has shivering.
+Old fella got back sore.,The child has back pain.
+Old fella got can’t walk good.,He has difficulty walking.
+She got vomit come up.,This person has vomiting.
+Me got cough bad.,The child has severe cough.
+He got back sore.,I have back pain.
+He got talkin’ funny.,The children have slurred speech.
+I bin cryin’ lot.,My crying a lot.
+Old fella got heart go fast.,The elderly man has rapid heartbeat.
+Me got chest tight.,The child has chest tightness.
+He got heart go fast.,She has rapid heartbeat.
+This one got can’t see straight.,I have been experiencing blurred vision.
+He got can’t walk good.,She has difficulty walking.
+I bin talkin’ funny.,That person has slurred speech.
+Them kids got hungry all time.,I have been experiencing increased appetite.
+This one got cryin’ lot.,The elderly man has crying a lot.
+That one got shiverin’.,My shivering.
+He got skin rash.,She has skin rash.
+Them kids got hot all night.,The elderly man has fever.
+My eyes blurry.,This person has blurred vision.
+Them kids got talkin’ funny.,I have been experiencing slurred speech.
+My heart go fast.,My rapid heartbeat.
+He got chest tight.,The children have chest tightness.
+That one got eyes blurry.,This person has blurred vision.
+Them kids got belly pain.,She has abdominal pain.
+That one got chest tight.,The child has chest tightness.
+Old fella got sore throat.,I have sore throat.
+This one got drink water plenty.,The elderly man has excessive thirst.
+This one got ear sore.,The child has earache.
+Me got ear sore.,This person has earache.
+I bin hungry all time.,She has increased appetite.
+Them kids got heart go fast.,The child has rapid heartbeat.
+Lil one got hungry all time.,I have been experiencing increased appetite.
+That one got cough bad.,My severe cough.
+Me got head hurtin’.,She has headache.
+This one got can’t walk good.,That person has difficulty walking.
+She got can’t walk good.,My difficulty walking.
+Old fella got skin rash.,She has skin rash.
+Me got belly pain.,The child has abdominal pain.
+Me got can’t breathe good.,The children have shortness of breath.
+Them kids got cough bad.,That person has severe cough.
+Old fella got throwin’ up.,She has vomiting.
+She got eyes blurry.,The elderly man has blurred vision.
+I bin talkin’ funny.,I have been experiencing slurred speech.
+Old fella got vomit come up.,The children have vomiting.
+That one got shiverin’.,He has shivering.
+He got cough bad.,This person has severe cough.
+I bin can’t breathe good.,The child has shortness of breath.
+She got shiverin’.,He has shivering.
+Them kids got throwin’ up.,That person has vomiting.
+Them kids got throwin’ up.,That person has vomiting.
+That one got belly pain.,This person has abdominal pain.
+My ear sore.,The elderly man has earache.
+He got belly pain.,The children have abdominal pain.
+I bin cryin’ lot.,The children have crying a lot.
+That one got talkin’ funny.,He has slurred speech.
+He got vomit come up.,The child has vomiting.
+I bin heart go fast.,The children have rapid heartbeat.
+Old fella got drink water plenty.,He has excessive thirst.
+This one got hot all night.,The elderly man has fever.
+Lil one got drink water plenty.,My excessive thirst.
+She got hot all night.,The child has fever.
+That one got skin rash.,He has skin rash.
+Me got ear sore.,My earache.
+My can’t breathe good.,That person has shortness of breath.
+Old fella got can’t see straight.,She has blurred vision.
+Them kids got hungry all time.,The child has increased appetite.
+This one got can’t walk good.,The elderly man has difficulty walking.
+My hot all night.,The elderly man has fever.
+Lil one got hungry all time.,My increased appetite.
+Them kids got ear sore.,This person has earache.
+She got can’t walk good.,I have been experiencing difficulty walking.
+Old fella got body weak.,She has body weakness.
+Lil one got hungry all time.,The child has increased appetite.
+This one got throwin’ up.,The child has vomiting.
+Me got belly pain.,She has abdominal pain.
+I bin can’t breathe good.,My shortness of breath.
+He got head hurtin’.,He has headache.
+That one got belly pain.,The elderly man has abdominal pain.
+She got throwin’ up.,I have vomiting.
+Lil one got eyes blurry.,That person has blurred vision.
+He got cough bad.,My severe cough.
+Them kids got hot all night.,My fever.
+He got leg swell up.,The child has swollen leg.
+That one got belly pain.,I have abdominal pain.
+Old fella got throwin’ up.,She has vomiting.
+I bin heart go fast.,The children have rapid heartbeat.
+This one got can’t see straight.,The child has blurred vision.
+My cryin’ lot.,That person has crying a lot.
+Me got belly pain.,She has abdominal pain.
+Old fella got blood nose.,That person has nosebleed.
+I bin drink water plenty.,The elderly man has excessive thirst.
+Me got leg swell up.,I have been experiencing swollen leg.
+Old fella got can’t see straight.,This person has blurred vision.
+I bin body weak.,The child has body weakness.
+My hungry all time.,The children have increased appetite.
+He got leg swell up.,The children have swollen leg.
+Them kids got body weak.,The elderly man has body weakness.
+That one got heart go fast.,I have rapid heartbeat.
+Lil one got blood nose.,I have been experiencing nosebleed.
+He got cryin’ lot.,The child has crying a lot.
+Me got hungry all time.,The children have increased appetite.
+This one got can’t see straight.,That person has blurred vision.
+She got ear sore.,The child has earache.
+My body weak.,That person has body weakness.
+That one got cryin’ lot.,My crying a lot.
+Them kids got throwin’ up.,He has vomiting.
+Lil one got heart go fast.,He has rapid heartbeat.
+She got can’t walk good.,That person has difficulty walking.
+I bin cryin’ lot.,That person has crying a lot.
+Old fella got sore throat.,That person has sore throat.
+I bin cryin’ lot.,He has crying a lot.
+Lil one got body weak.,The elderly man has body weakness.
+Me got skin itchy.,I have itchy skin.
+This one got cough bad.,This person has severe cough.
+Them kids got can’t breathe good.,The child has shortness of breath.
+He got talkin’ funny.,The child has slurred speech.
+This one got belly pain.,I have been experiencing abdominal pain.
+My throwin’ up.,The child has vomiting.
+Them kids got drink water plenty.,My excessive thirst.
+Lil one got can’t walk good.,That person has difficulty walking.
+Old fella got drink water plenty.,I have been experiencing excessive thirst.
+My drink water plenty.,He has excessive thirst.
+I bin heart go fast.,She has rapid heartbeat.
+Lil one got heart go fast.,That person has rapid heartbeat.
+She got drink water plenty.,He has excessive thirst.
+Them kids got blood nose.,My nosebleed.
+Them kids got cryin’ lot.,I have been experiencing crying a lot.
+Old fella got talkin’ funny.,That person has slurred speech.
+I bin hot all night.,This person has fever.
+Old fella got vomit come up.,The elderly man has vomiting.
+I bin ear sore.,She has earache.
+This one got leg swell up.,My swollen leg.
+This one got can’t see straight.,I have been experiencing blurred vision.
+That one got blood nose.,This person has nosebleed.
+He got head hurtin’.,That person has headache.
+Me got ear sore.,This person has earache.
+Lil one got heart go fast.,He has rapid heartbeat.
+Them kids got eyes blurry.,The child has blurred vision.
+Them kids got body weak.,That person has body weakness.
+My blood nose.,He has nosebleed.
+Old fella got eyes blurry.,This person has blurred vision.
+That one got can’t breathe good.,She has shortness of breath.
+Me got talkin’ funny.,I have been experiencing slurred speech.
+My leg swell up.,The children have swollen leg.
+Me got heart go fast.,He has rapid heartbeat.
+Them kids got can’t breathe good.,The child has shortness of breath.
+That one got back sore.,He has back pain.
+My shiverin’.,I have shivering.
+My chest tight.,I have been experiencing chest tightness.
+That one got chest tight.,The elderly man has chest tightness.
+She got ear sore.,I have been experiencing earache.
+My shiverin’.,He has shivering.
+Lil one got cryin’ lot.,He has crying a lot.
+Old fella got vomit come up.,The children have vomiting.
+Them kids got back sore.,This person has back pain.
+Them kids got hot all night.,The children have fever.
+He got vomit come up.,The child has vomiting.
+I bin skin rash.,The children have skin rash.
+My can’t see straight.,The child has blurred vision.
+Them kids got vomit come up.,She has vomiting.
+Old fella got shiverin’.,The elderly man has shivering.
+This one got heart go fast.,My rapid heartbeat.
+Them kids got leg swell up.,I have swollen leg.
+My skin rash.,He has skin rash.
+My drink water plenty.,The child has excessive thirst.
+She got hungry all time.,The children have increased appetite.
+He got hungry all time.,He has increased appetite.
+Old fella got back sore.,He has back pain.
+Me got skin itchy.,My itchy skin.
+She got cryin’ lot.,The child has crying a lot.
+She got blood nose.,I have been experiencing nosebleed.
+I bin ear sore.,The child has earache.
+I bin hot all night.,The elderly man has fever.
+Me got hungry all time.,I have been experiencing increased appetite.
+Old fella got drink water plenty.,The child has excessive thirst.
+She got body weak.,I have body weakness.
+Old fella got hungry all time.,I have been experiencing increased appetite.
+That one got shiverin’.,The children have shivering.
+Them kids got back sore.,I have been experiencing back pain.
+Lil one got drink water plenty.,The children have excessive thirst.
+Me got eyes blurry.,I have been experiencing blurred vision.
+That one got chest tight.,The children have chest tightness.
+My heart go fast.,This person has rapid heartbeat.
+She got throwin’ up.,This person has vomiting.
+She got blood nose.,The elderly man has nosebleed.
+That one got shiverin’.,The elderly man has shivering.
+My hungry all time.,He has increased appetite.
+Old fella got ear sore.,I have earache.
+Old fella got cryin’ lot.,The children have crying a lot.
+Them kids got body weak.,He has body weakness.
+My throwin’ up.,That person has vomiting.
+That one got can’t see straight.,I have been experiencing blurred vision.
+That one got blood nose.,That person has nosebleed.
+He got chest tight.,I have been experiencing chest tightness.
+I bin belly pain.,This person has abdominal pain.
+This one got shiverin’.,I have been experiencing shivering.
+Old fella got can’t breathe good.,That person has shortness of breath.
+She got cryin’ lot.,I have been experiencing crying a lot.
+Me got eyes blurry.,I have been experiencing blurred vision.
+Me got cryin’ lot.,I have crying a lot.
+That one got heart go fast.,That person has rapid heartbeat.
+This one got can’t walk good.,My difficulty walking.
+Lil one got belly pain.,He has abdominal pain.
+Me got skin itchy.,I have been experiencing itchy skin.
+Old fella got body weak.,I have body weakness.
+Me got sore throat.,The elderly man has sore throat.
+Old fella got can’t see straight.,The child has blurred vision.
+Old fella got eyes blurry.,This person has blurred vision.
+Them kids got drink water plenty.,The children have excessive thirst.
+I bin heart go fast.,The children have rapid heartbeat.
+Lil one got belly pain.,I have been experiencing abdominal pain.
+Lil one got sore throat.,This person has sore throat.
+I bin can’t walk good.,This person has difficulty walking.
+I bin skin rash.,I have skin rash.
+This one got vomit come up.,The children have vomiting.
+He got can’t breathe good.,That person has shortness of breath.
+Me got ear sore.,The children have earache.
+I bin head hurtin’.,This person has headache.
+Lil one got eyes blurry.,She has blurred vision.
+My skin rash.,My skin rash.
+That one got drink water plenty.,I have been experiencing excessive thirst.
+Me got throwin’ up.,I have vomiting.
+Me got hungry all time.,The children have increased appetite.
+My heart go fast.,She has rapid heartbeat.
+My can’t see straight.,The child has blurred vision.
+Old fella got cryin’ lot.,He has crying a lot.
+Me got belly pain.,The elderly man has abdominal pain.
+Old fella got head hurtin’.,I have been experiencing headache.
+Old fella got heart go fast.,He has rapid heartbeat.
+He got cryin’ lot.,I have crying a lot.
+Them kids got blood nose.,My nosebleed.
+I bin can’t breathe good.,The children have shortness of breath.
+Them kids got cough bad.,I have severe cough.
+Me got vomit come up.,This person has vomiting.
+She got shiverin’.,He has shivering.
+That one got skin rash.,I have skin rash.
+I bin hungry all time.,The elderly man has increased appetite.
+This one got hot all night.,The child has fever.
+Lil one got back sore.,He has back pain.
+She got eyes blurry.,The child has blurred vision.
+That one got chest tight.,I have chest tightness.
+Lil one got vomit come up.,The children have vomiting.
+Lil one got talkin’ funny.,The child has slurred speech.
+Them kids got leg swell up.,The elderly man has swollen leg.
+I bin throwin’ up.,The child has vomiting.
+Old fella got back sore.,This person has back pain.
+My skin itchy.,The child has itchy skin.
+Them kids got talkin’ funny.,She has slurred speech.
+I bin skin itchy.,The children have itchy skin.
+Me got cryin’ lot.,The elderly man has crying a lot.
+Them kids got cough bad.,She has severe cough.
+That one got throwin’ up.,The elderly man has vomiting.
+I bin can’t breathe good.,The children have shortness of breath.
+Me got blood nose.,My nosebleed.
+Them kids got belly pain.,The children have abdominal pain.
+Old fella got belly pain.,This person has abdominal pain.
+My skin rash.,This person has skin rash.
+That one got body weak.,The children have body weakness.
+I bin talkin’ funny.,The children have slurred speech.
+Me got sore throat.,That person has sore throat.
+This one got talkin’ funny.,This person has slurred speech.
+This one got hot all night.,That person has fever.
+Old fella got skin rash.,The elderly man has skin rash.
+My skin rash.,The children have skin rash.
+He got throwin’ up.,This person has vomiting.
+She got body weak.,My body weakness.
+Them kids got cough bad.,He has severe cough.
+My cough bad.,I have been experiencing severe cough.
+That one got talkin’ funny.,She has slurred speech.
+He got hot all night.,She has fever.
+Lil one got eyes blurry.,I have been experiencing blurred vision.
+He got sore throat.,This person has sore throat.
+She got heart go fast.,I have rapid heartbeat.
+Lil one got skin rash.,The child has skin rash.
+That one got hungry all time.,She has increased appetite.
+This one got blood nose.,He has nosebleed.
+Lil one got hot all night.,That person has fever.
+He got vomit come up.,I have vomiting.
+Them kids got vomit come up.,I have vomiting.
+That one got vomit come up.,I have been experiencing vomiting.
+This one got head hurtin’.,That person has headache.
+Them kids got can’t breathe good.,The child has shortness of breath.
+I bin skin rash.,The children have skin rash.
+Lil one got throwin’ up.,This person has vomiting.
+He got talkin’ funny.,My slurred speech.
+My can’t see straight.,He has blurred vision.
+This one got back sore.,The child has back pain.
+I bin can’t see straight.,He has blurred vision.
+I bin vomit come up.,The children have vomiting.
+She got throwin’ up.,My vomiting.
+Old fella got cough bad.,She has severe cough.
+Lil one got cryin’ lot.,My crying a lot.
+My belly pain.,The child has abdominal pain.
+Me got belly pain.,The children have abdominal pain.
+Old fella got skin rash.,She has skin rash.
+My leg swell up.,That person has swollen leg.
+Lil one got eyes blurry.,The child has blurred vision.
+I bin body weak.,He has body weakness.
+That one got chest tight.,The child has chest tightness.
+He got hungry all time.,I have been experiencing increased appetite.
+Lil one got body weak.,The child has body weakness.
+She got sore throat.,I have been experiencing sore throat.
+That one got back sore.,My back pain.
+She got eyes blurry.,The child has blurred vision.
+She got drink water plenty.,That person has excessive thirst.
+Lil one got sore throat.,She has sore throat.
+That one got sore throat.,I have been experiencing sore throat.
+That one got sore throat.,She has sore throat.
+Old fella got can’t breathe good.,This person has shortness of breath.
+Them kids got drink water plenty.,That person has excessive thirst.
+Them kids got leg swell up.,My swollen leg.
+Old fella got cough bad.,The child has severe cough.
+She got hot all night.,This person has fever.
+She got can’t walk good.,He has difficulty walking.
+She got drink water plenty.,The children have excessive thirst.
+He got cough bad.,The elderly man has severe cough.
+Them kids got cough bad.,The child has severe cough.
+She got skin itchy.,The child has itchy skin.
+He got head hurtin’.,The child has headache.
+Them kids got body weak.,The child has body weakness.
+That one got vomit come up.,The elderly man has vomiting.
+Lil one got belly pain.,I have abdominal pain.
+Them kids got belly pain.,She has abdominal pain.
+That one got talkin’ funny.,This person has slurred speech.
+I bin skin itchy.,This person has itchy skin.
+I bin ear sore.,I have earache.
+That one got belly pain.,That person has abdominal pain.
+My body weak.,He has body weakness.
+Me got cough bad.,The elderly man has severe cough.
+Them kids got chest tight.,The elderly man has chest tightness.
+Lil one got hungry all time.,That person has increased appetite.
+I bin head hurtin’.,My headache.
+Them kids got shiverin’.,The children have shivering.
+Lil one got skin itchy.,She has itchy skin.
+Them kids got belly pain.,The elderly man has abdominal pain.
+Old fella got ear sore.,That person has earache.
+My skin rash.,This person has skin rash.
+This one got back sore.,This person has back pain.
+He got body weak.,I have body weakness.
+She got cough bad.,She has severe cough.
+That one got can’t walk good.,She has difficulty walking.
+That one got skin rash.,This person has skin rash.
+Lil one got talkin’ funny.,I have slurred speech.
+He got shiverin’.,He has shivering.
+I bin cryin’ lot.,This person has crying a lot.
+She got can’t breathe good.,The child has shortness of breath.
+My back sore.,She has back pain.
+Lil one got can’t breathe good.,That person has shortness of breath.
+My drink water plenty.,I have been experiencing excessive thirst.
+This one got ear sore.,The elderly man has earache.
+Old fella got leg swell up.,This person has swollen leg.
+Old fella got throwin’ up.,That person has vomiting.
+Old fella got talkin’ funny.,My slurred speech.
+That one got leg swell up.,This person has swollen leg.
+He got cryin’ lot.,My crying a lot.
+This one got throwin’ up.,The child has vomiting.
+Them kids got skin rash.,I have skin rash.
+My shiverin’.,I have shivering.
+Me got shiverin’.,This person has shivering.
+That one got hungry all time.,She has increased appetite.
+Old fella got heart go fast.,I have rapid heartbeat.
+He got blood nose.,The child has nosebleed.
+This one got can’t walk good.,That person has difficulty walking.
+Old fella got skin itchy.,The elderly man has itchy skin.
+This one got hungry all time.,The elderly man has increased appetite.
+He got skin itchy.,The elderly man has itchy skin.
+That one got vomit come up.,The child has vomiting.
+Them kids got ear sore.,The child has earache.
+Old fella got drink water plenty.,The elderly man has excessive thirst.
+He got hungry all time.,She has increased appetite.
+Old fella got head hurtin’.,The child has headache.
+My chest tight.,That person has chest tightness.
+I bin heart go fast.,That person has rapid heartbeat.
+My skin rash.,He has skin rash.
+I bin skin rash.,My skin rash.
+My belly pain.,My abdominal pain.
+Me got back sore.,The elderly man has back pain.
+Them kids got cryin’ lot.,My crying a lot.
+Me got belly pain.,She has abdominal pain.
+Old fella got blood nose.,I have nosebleed.
+She got head hurtin’.,My headache.
+She got hot all night.,He has fever.
+Me got leg swell up.,I have swollen leg.
+I bin talkin’ funny.,She has slurred speech.
+Old fella got body weak.,My body weakness.
+My skin rash.,My skin rash.
+This one got eyes blurry.,My blurred vision.
+Old fella got throwin’ up.,The children have vomiting.
+That one got belly pain.,I have abdominal pain.
+Me got chest tight.,The child has chest tightness.
+Lil one got vomit come up.,I have vomiting.
+My vomit come up.,This person has vomiting.
+He got cough bad.,That person has severe cough.
+This one got belly pain.,I have been experiencing abdominal pain.
+She got drink water plenty.,I have been experiencing excessive thirst.
+He got cough bad.,The elderly man has severe cough.
+Me got belly pain.,He has abdominal pain.
+She got talkin’ funny.,I have been experiencing slurred speech.
+He got can’t see straight.,My blurred vision.
+My can’t see straight.,He has blurred vision.
+That one got cough bad.,That person has severe cough.
+That one got blood nose.,The children have nosebleed.
+This one got skin rash.,That person has skin rash.
+Them kids got throwin’ up.,This person has vomiting.
+This one got belly pain.,The child has abdominal pain.
+Them kids got vomit come up.,My vomiting.
+He got cough bad.,The children have severe cough.
+She got ear sore.,My earache.
+He got ear sore.,The children have earache.
+She got hungry all time.,I have been experiencing increased appetite.
+He got blood nose.,My nosebleed.
+That one got cryin’ lot.,My crying a lot.
+Lil one got cryin’ lot.,I have been experiencing crying a lot.
+He got hot all night.,He has fever.
+This one got cryin’ lot.,I have been experiencing crying a lot.
+Old fella got sore throat.,That person has sore throat.
+I bin blood nose.,The child has nosebleed.
+Old fella got skin rash.,This person has skin rash.
+Me got head hurtin’.,I have been experiencing headache.
+Lil one got drink water plenty.,She has excessive thirst.
+I bin talkin’ funny.,The children have slurred speech.
+My drink water plenty.,He has excessive thirst.
+Old fella got hot all night.,My fever.
+My cryin’ lot.,I have crying a lot.
+She got can’t see straight.,I have blurred vision.
+He got skin itchy.,That person has itchy skin.
+Me got can’t walk good.,That person has difficulty walking.
+He got vomit come up.,That person has vomiting.
+She got shiverin’.,This person has shivering.
+He got chest tight.,He has chest tightness.
+Old fella got can’t breathe good.,I have shortness of breath.
+Lil one got blood nose.,This person has nosebleed.
+I bin belly pain.,That person has abdominal pain.
+I bin vomit come up.,The child has vomiting.
+My belly pain.,I have abdominal pain.
+That one got cryin’ lot.,The child has crying a lot.
+Me got shiverin’.,She has shivering.
+She got skin itchy.,That person has itchy skin.
+Lil one got skin rash.,He has skin rash.
+Old fella got eyes blurry.,She has blurred vision.
+Them kids got vomit come up.,She has vomiting.
+Lil one got shiverin’.,He has shivering.
+Them kids got leg swell up.,My swollen leg.
+Me got ear sore.,This person has earache.
+He got throwin’ up.,She has vomiting.
+She got blood nose.,The elderly man has nosebleed.
+Old fella got skin rash.,My skin rash.
+My head hurtin’.,That person has headache.
+He got shiverin’.,My shivering.
+Them kids got cryin’ lot.,He has crying a lot.
+That one got back sore.,I have back pain.
+Lil one got hot all night.,She has fever.
+My back sore.,The elderly man has back pain.
+I bin body weak.,She has body weakness.
+This one got hot all night.,My fever.
+Me got throwin’ up.,That person has vomiting.
+Me got cough bad.,She has severe cough.
+Old fella got sore throat.,My sore throat.
+That one got can’t walk good.,This person has difficulty walking.
+Them kids got ear sore.,My earache.
+He got can’t see straight.,This person has blurred vision.
+Them kids got blood nose.,He has nosebleed.
+He got throwin’ up.,The child has vomiting.
+Old fella got sore throat.,My sore throat.
+This one got belly pain.,The children have abdominal pain.
+Lil one got leg swell up.,I have swollen leg.
+She got vomit come up.,The child has vomiting.
+My hungry all time.,The child has increased appetite.
+My leg swell up.,She has swollen leg.
+This one got skin rash.,That person has skin rash.
+Me got can’t breathe good.,The elderly man has shortness of breath.
+This one got heart go fast.,The child has rapid heartbeat.
+This one got ear sore.,He has earache.
+This one got belly pain.,The children have abdominal pain.
+She got ear sore.,My earache.
+Them kids got vomit come up.,This person has vomiting.
+This one got can’t breathe good.,That person has shortness of breath.
+My can’t breathe good.,I have been experiencing shortness of breath.
+Old fella got blood nose.,The child has nosebleed.
+He got cough bad.,This person has severe cough.
+That one got throwin’ up.,That person has vomiting.
+That one got shiverin’.,My shivering.
+She got body weak.,That person has body weakness.
+Old fella got drink water plenty.,She has excessive thirst.
+Lil one got body weak.,This person has body weakness.
+He got can’t walk good.,That person has difficulty walking.
+That one got can’t breathe good.,The child has shortness of breath.
+He got body weak.,He has body weakness.
+Lil one got head hurtin’.,The child has headache.
+Them kids got chest tight.,This person has chest tightness.
+He got cough bad.,That person has severe cough.
+He got drink water plenty.,The child has excessive thirst.
+Old fella got hungry all time.,I have increased appetite.
+My can’t see straight.,I have blurred vision.
+She got hot all night.,The child has fever.
+This one got skin rash.,The child has skin rash.
+This one got blood nose.,I have nosebleed.
+That one got talkin’ funny.,The children have slurred speech.
+This one got back sore.,I have been experiencing back pain.
+Lil one got can’t walk good.,I have been experiencing difficulty walking.
+Me got talkin’ funny.,She has slurred speech.
+Old fella got cough bad.,He has severe cough.
+He got cryin’ lot.,The elderly man has crying a lot.
+She got ear sore.,I have been experiencing earache.
+Me got cough bad.,The children have severe cough.
+Them kids got can’t breathe good.,I have shortness of breath.
+I bin belly pain.,My abdominal pain.
+That one got can’t see straight.,My blurred vision.
+Them kids got blood nose.,That person has nosebleed.
+She got heart go fast.,The child has rapid heartbeat.
+Lil one got ear sore.,I have earache.
+I bin skin itchy.,I have been experiencing itchy skin.
+He got heart go fast.,My rapid heartbeat.
+Them kids got head hurtin’.,I have been experiencing headache.
+This one got leg swell up.,The elderly man has swollen leg.
+Old fella got cough bad.,This person has severe cough.
+Me got vomit come up.,My vomiting.
+She got talkin’ funny.,He has slurred speech.
+Lil one got vomit come up.,This person has vomiting.
+Old fella got back sore.,He has back pain.
+Lil one got vomit come up.,That person has vomiting.
+Me got sore throat.,The elderly man has sore throat.
+Them kids got eyes blurry.,The elderly man has blurred vision.
+She got shiverin’.,The elderly man has shivering.
+This one got chest tight.,I have chest tightness.
+I bin skin itchy.,My itchy skin.
+Me got drink water plenty.,My excessive thirst.
+Lil one got belly pain.,She has abdominal pain.
+Old fella got belly pain.,He has abdominal pain.
+I bin leg swell up.,My swollen leg.
+My shiverin’.,My shivering.
+Lil one got heart go fast.,This person has rapid heartbeat.
+He got hot all night.,He has fever.
+I bin skin rash.,I have been experiencing skin rash.
+Me got back sore.,He has back pain.
+He got vomit come up.,He has vomiting.
+My cryin’ lot.,I have been experiencing crying a lot.
+My talkin’ funny.,The children have slurred speech.
+My chest tight.,The children have chest tightness.
+He got heart go fast.,I have rapid heartbeat.
+That one got chest tight.,The elderly man has chest tightness.
+He got hot all night.,My fever.
+Old fella got throwin’ up.,She has vomiting.
+She got can’t walk good.,She has difficulty walking.
+Old fella got talkin’ funny.,He has slurred speech.
+Lil one got talkin’ funny.,He has slurred speech.
+Them kids got cough bad.,The child has severe cough.
+Me got belly pain.,That person has abdominal pain.
+My belly pain.,He has abdominal pain.
+He got sore throat.,That person has sore throat.
+That one got throwin’ up.,I have vomiting.
+I bin back sore.,He has back pain.
+Old fella got eyes blurry.,The elderly man has blurred vision.
+Lil one got throwin’ up.,That person has vomiting.
+She got sore throat.,I have sore throat.
+Them kids got shiverin’.,He has shivering.
+He got skin rash.,She has skin rash.
+Old fella got blood nose.,The child has nosebleed.
+That one got skin rash.,I have skin rash.
+That one got eyes blurry.,I have blurred vision.
+This one got cryin’ lot.,My crying a lot.
+He got ear sore.,The child has earache.
+Me got cryin’ lot.,The elderly man has crying a lot.
+She got shiverin’.,This person has shivering.
+He got talkin’ funny.,My slurred speech.
+Lil one got hungry all time.,My increased appetite.
+Me got cryin’ lot.,The child has crying a lot.
+He got ear sore.,I have been experiencing earache.
+Me got leg swell up.,I have been experiencing swollen leg.
+I bin drink water plenty.,The children have excessive thirst.
+He got heart go fast.,The elderly man has rapid heartbeat.
+That one got ear sore.,The child has earache.
+She got vomit come up.,He has vomiting.
+She got body weak.,The child has body weakness.
+Old fella got can’t walk good.,The child has difficulty walking.
+That one got hot all night.,I have been experiencing fever.
+Lil one got can’t breathe good.,My shortness of breath.
+Lil one got blood nose.,This person has nosebleed.
+Old fella got can’t see straight.,The elderly man has blurred vision.
+Lil one got back sore.,The children have back pain.
+Them kids got skin itchy.,She has itchy skin.
+She got drink water plenty.,My excessive thirst.
+Me got can’t walk good.,My difficulty walking.
