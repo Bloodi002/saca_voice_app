@@ -14,7 +14,7 @@
   function applyEasy(){ document.body.classList.toggle('easy-read', !!prefs.easy); }
 
   function t(path){
-    const parts = path.split('.'); let cur = STR[prefs.lang||'en']||STR.en;
+    const parts = path.split('.'); let cur = STR?.[prefs.lang||'en']||STR?.en||{};
     for(const p of parts) if(cur && p in cur) cur = cur[p]; else return null;
     return cur;
   }
@@ -29,19 +29,19 @@
     });
   }
   function initPrefsUI(){
-    langSelect.value = prefs.lang||'en';
-    themeSelect.value = prefs.theme||'auto';
-    contrastToggle.checked = prefs.contrast==='high';
-    easyToggle.checked = !!prefs.easy;
+    if(langSelect) langSelect.value = prefs.lang||'en';
+    if(themeSelect) themeSelect.value = prefs.theme||'auto';
+    if(contrastToggle) contrastToggle.checked = prefs.contrast==='high';
+    if(easyToggle) easyToggle.checked = !!prefs.easy;
     applyTheme(); applyContrast(); applyEasy(); applyStrings();
   }
-  langSelect.addEventListener('change', ()=>{ prefs.lang=langSelect.value; savePrefs(); applyStrings(); });
-  themeSelect.addEventListener('change', ()=>{ prefs.theme=themeSelect.value; savePrefs(); applyTheme(); });
-  contrastToggle.addEventListener('change', ()=>{ prefs.contrast=contrastToggle.checked?'high':'normal'; savePrefs(); applyContrast(); });
-  easyToggle.addEventListener('change', ()=>{ prefs.easy=!!easyToggle.checked; savePrefs(); applyEasy(); });
+  langSelect?.addEventListener('change', ()=>{ prefs.lang=langSelect.value; savePrefs(); applyStrings(); });
+  themeSelect?.addEventListener('change', ()=>{ prefs.theme=themeSelect.value; savePrefs(); applyTheme(); });
+  contrastToggle?.addEventListener('change', ()=>{ prefs.contrast=contrastToggle.checked?'high':'normal'; savePrefs(); applyContrast(); });
+  easyToggle?.addEventListener('change', ()=>{ prefs.easy=!!easyToggle.checked; savePrefs(); applyEasy(); });
   window.addEventListener('load', initPrefsUI);
 
-  // ---------------------- NLP / Triage ----------------------
+  // ---------------------- NLP helpers ----------------------
   const RULES = {
     categories: [
       {key:'breathing',terms:['trouble breathing','shortness of breath','wheeze','asthma','can’t breathe','cant breathe','breathless']},
@@ -54,7 +54,6 @@
     severe:['severe','unconscious','not breathing','stopped breathing','blue lips','heavy bleeding','spurting blood','chest pain','shortness of breath','can’t breathe','cant breathe','numbness','weakness one side','stroke','anaphylaxis','allergic reaction','seizure','fitting'],
     moderate:['moderate','worsening','high fever','persistent','vomiting','dehydration','pain 7/10','blood in','wheeze','asthma flare']
   };
-
   function processNLP(text){ return (text||'').trim().replace(/\s+/g,' ').toLowerCase(); }
   function assessSeverity(text){
     const tt = processNLP(text);
@@ -82,48 +81,66 @@
   qs('#seedHistory')?.addEventListener('click',()=>{ const seed=[{ts:Date.now()-86400000,raw:'chest pain',nlp:processNLP('chest pain')}]; writeHist([...seed,...readHist()]); renderHistory(); });
   window.addEventListener('load', renderHistory);
 
-  // ---------------------- Question Flow ----------------------
+  // ---------------------- Question Flow (aligned with backend) ----------------------
+  // Keep the order matching saca_predictor.py: 'questions' there has 5 items.
   const questions = [
     { text: "1️⃣ How are you feeling today?", type: "text" },
     { text: "2️⃣ How long have you been feeling this?", type: "choice", options: ["A few hours","A day","2–3 days","A week or more"] },
-    { text: "3️⃣ How bad is the issue?", type: "choice", options: ["Light","Medium","Severe"] },
-    { text: "4️⃣ Have you noticed other symptoms?", type: "choice", options: ["Fever","Nausea","Cough","Diarrhea","Chest pain","Dizziness","None"] }
+    { text: "How bad is the issue?", type: "choice", options: ["Light","Medium","Severe"] },
+    { text: "3️⃣ Have you noticed any other symptoms?", type: "choice", options: ["Fever","Nausea or vomiting","Cough or breathing difficulty","Diarrhea","Chest pain or tightness","Dizziness or fatigue","None of these"] },
+    { text: "4️⃣ Does it get better or worse after any of these?", type: "choice", options: ["After eating","When resting","When moving or standing","Changes randomly","Not sure"] }
   ];
+
   let currentQuestion = 0;
-  const questionText = qs('#questionText'), answerInput = qs('#answerInput'), nextBtn = qs('#nextQuestion');
+  let currentAnswers = [];            // answers for this session only
 
-  let currentAnswers = []; // NEW: only answers for current question flow
+  const questionText = qs('#questionText');
+  const answerInput  = qs('#answerInput');
+  const nextBtn      = qs('#nextQuestion');
 
-function saveAnswer(answer){
+  function resetFlow(){
+    currentQuestion = 0;
+    currentAnswers = [];
+    questionText.textContent = '';
+    if(answerInput){ answerInput.value=''; answerInput.style.display='block'; }
+    nextBtn?.style && (nextBtn.style.display='inline-block');
+  }
+
+  function saveAnswer(answer){
     if(!answer) return;
-
-    // Add to current session answers
     currentAnswers.push(answer);
 
-    // Optionally, also store in local history
-    const historyArr = JSON.parse(localStorage.getItem('sacaHistory')||'[]');
-    historyArr.push({ ts: Date.now(), answer });
-    localStorage.setItem('sacaHistory', JSON.stringify(historyArr));
+    // optional: also store in local history
+    const historyArr = JSON.parse(localStorage.getItem(LS_KEY)||'[]');
+    historyArr.unshift({ ts: Date.now(), raw: answer, nlp: processNLP(answer) });
+    localStorage.setItem(LS_KEY, JSON.stringify(historyArr));
     renderHistory();
-}
-
-
+  }
 
   function showQuestion(index){
     if(index >= questions.length){
       questionText.textContent = "✅ Thank you! Your responses have been recorded.";
-      answerInput.style.display = "none"; nextBtn.style.display = "none";
+      if(answerInput) answerInput.style.display = "none";
+      if(nextBtn) nextBtn.style.display = "none";
       const oldChoices = qs('#choicesContainer'); if(oldChoices) oldChoices.remove();
-      submitSACA();
+      submitSACA(); // submit when done
       return;
     }
+
     const q = questions[index];
     questionText.textContent = q.text;
+
     const oldChoices = qs('#choicesContainer'); if(oldChoices) oldChoices.remove();
+
     if(q.type==='text'){
-      answerInput.style.display='block'; answerInput.value=''; nextBtn.style.display='inline-block';
+      if(answerInput){
+        answerInput.style.display='block';
+        answerInput.value='';
+      }
+      if(nextBtn) nextBtn.style.display='inline-block';
     } else if(q.type==='choice'){
-      answerInput.style.display='none'; nextBtn.style.display='none';
+      if(answerInput) answerInput.style.display='none';
+      if(nextBtn) nextBtn.style.display='none';
       const choicesDiv = document.createElement('div'); choicesDiv.id='choicesContainer';
       q.options.forEach(opt=>{
         const btn = document.createElement('button'); btn.textContent=opt; btn.classList.add('choiceBtn');
@@ -134,68 +151,77 @@ function saveAnswer(answer){
     }
   }
 
-  nextBtn.addEventListener('click', ()=>{
-    const ans = answerInput.value.trim();
+  nextBtn?.addEventListener('click', ()=>{
+    const ans = (answerInput?.value||'').trim();
     if(ans){ saveAnswer(ans); currentQuestion++; showQuestion(currentQuestion); } else alert('Enter answer first.');
   });
-  answerInput.addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); nextBtn.click(); } });
+  answerInput?.addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); nextBtn?.click(); } });
   showQuestion(currentQuestion);
 
   // ---------------------- Audio ----------------------
   let mediaRecorder, audioChunks = [];
   const recordBtn = qs("#recordBtn"), stopBtn = qs("#stopBtn"), uploadBtn = qs("#uploadBtn"), audioPreview = qs("#audioPreview");
 
-  recordBtn.addEventListener("click", async ()=>{
+  recordBtn?.addEventListener("click", async ()=>{
     audioChunks=[]; const stream = await navigator.mediaDevices.getUserMedia({ audio:true });
     mediaRecorder = new MediaRecorder(stream); mediaRecorder.start();
-    recordBtn.disabled=true; stopBtn.disabled=false;
+    if(recordBtn) recordBtn.disabled=true; if(stopBtn) stopBtn.disabled=false;
     mediaRecorder.ondataavailable = e=>audioChunks.push(e.data);
-    mediaRecorder.onstop = ()=>{ audioPreview.src=URL.createObjectURL(new Blob(audioChunks,{type:'audio/wav'})); uploadBtn.disabled=false; };
+    mediaRecorder.onstop = ()=>{
+      if(audioPreview) audioPreview.src=URL.createObjectURL(new Blob(audioChunks,{type:'audio/wav'}));
+      if(uploadBtn) uploadBtn.disabled=false;
+    };
   });
-  stopBtn.addEventListener("click", ()=>{ mediaRecorder.stop(); recordBtn.disabled=false; stopBtn.disabled=true; });
+  stopBtn?.addEventListener("click", ()=>{ mediaRecorder?.stop(); if(recordBtn) recordBtn.disabled=false; if(stopBtn) stopBtn.disabled=true; });
 
   // ---------------------- Submit ----------------------
- window.submitSACA = async function(audioBlob=null){
+  window.submitSACA = async function(audioBlob=null){
     if(currentAnswers.length === 0){
-        alert("Please answer all questions before submitting.");
-        return;
+      alert("Please answer all questions before submitting.");
+      return;
     }
 
-    // Only include the current session's answers
-    const normalizedText = currentAnswers.join(",\n        ");
+    // Build a human-readable text preview (for UI)
+    const normalizedText = currentAnswers.join(", ");
 
+    // Build multipart form payload for FastAPI
     const formData = new FormData();
     if(audioBlob) formData.append("file", audioBlob, "user_audio.wav");
-    formData.append("answers", JSON.stringify({ text: normalizedText }));
+
+    // IMPORTANT: send as { answers: [...] }  (this is what your FastAPI expects)
+    formData.append("answers", JSON.stringify({ answers: currentAnswers }));
+
+    console.log("Submitting answers array to backend:", currentAnswers);
 
     try {
-        const res = await fetch("/upload-audio", { method:"POST", body: formData });
-        if(!res.ok){ alert("Upload failed"); return; }
-        const data = await res.json();
-        console.log("SACA Response:", data);
+      const res = await fetch("/upload-audio", { method:"POST", body: formData });
+      if(!res.ok){ alert("Upload failed"); return; }
+      const data = await res.json();
+      console.log("SACA Response:", data);
 
-        // Display results
-        const sacaResultDiv = document.querySelector("#sacaResult");
-        const sacaText = document.querySelector("#sacaText");
-
+      // Display results
+      const sacaResultDiv = document.querySelector("#sacaResult");
+      const sacaText = document.querySelector("#sacaText");
+      if(sacaText){
         sacaText.textContent =
-          `Normalized Text:\n${normalizedText}\n\n` +
+          `Normalized Text (client preview):\n${normalizedText}\n\n` +
+          `Server normalized text:\n${data.nlp_text || '(empty)'}\n\n` +
           `SACA Result:\n${data.result}\n\n` +
           `Download Audio: ${data.download || "No audio submitted"}`;
+      }
+      if(sacaResultDiv) sacaResultDiv.style.display = "block";
 
-        sacaResultDiv.style.display = "block";
-
-        // Clear session answers after submit if needed
-        currentAnswers = [];
+      // Clear for next run
+      currentAnswers = [];
     } catch(err){
-        console.error(err);
-        alert("Upload failed");
+      console.error(err);
+      alert("Upload failed");
     }
-};
+  };
 
-
-
-
-  uploadBtn.addEventListener("click", ()=>{ if(audioChunks.length>0) submitSACA(new Blob(audioChunks,{type:'audio/wav'})); else submitSACA(); });
+  uploadBtn?.addEventListener("click", ()=>{
+    if(audioChunks.length>0) submitSACA(new Blob(audioChunks,{type:'audio/wav'}));
+    else submitSACA();
+  });
 
 })();

@@ -1,118 +1,100 @@
 # ============================================================
-# 🧠 SACA Predictor (Final Stable Version)
+# 🧠 SACA Predictor (Hybrid Confidence-Boosted Final Version)
 # ============================================================
 
 import os
 import numpy as np
 import joblib
-from sentence_transformers import SentenceTransformer
+import torch
+import re
+from sentence_transformers import SentenceTransformer, util
 
 
 # ------------------------------------------------------------
 # 1️⃣ Load all models
 # ------------------------------------------------------------
-def load_models(base_dir="."):
+def load_models(base_dir="models"):
     models = {}
 
-    # --- Load pickle-based models
-    models["guard_model"] = joblib.load(os.path.join(base_dir, "guard_model.pkl"))
-    models["disease_model"] = joblib.load(os.path.join(base_dir, "disease_model.pkl"))
-    models["severity_model"] = joblib.load(os.path.join(base_dir, "severity_model.pkl"))
+    # Core models
     models["tfidf"] = joblib.load(os.path.join(base_dir, "tfidf.pkl"))
-    models["severity_vectorizer"] = joblib.load(os.path.join(base_dir, "severity_vectorizer.pkl"))
     models["label_encoder"] = joblib.load(os.path.join(base_dir, "label_encoder.pkl"))
+    models["disease_model"] = joblib.load(os.path.join(base_dir, "disease_model.pkl"))   # Calibrated LR
+    models["xgb_model"] = joblib.load(os.path.join(base_dir, "combined_features.pkl"))   # XGBoost Ensemble
+
+    # Severity + Vectorizer
+    models["severity_model"] = joblib.load(os.path.join(base_dir, "severity_model.pkl"))
+    models["severity_vectorizer"] = joblib.load(os.path.join(base_dir, "severity_vectorizer.pkl"))
+
+    # Sentence-BERT semantic support
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+    models["sentence_model"] = SentenceTransformer("all-MiniLM-L6-v2", device=device)
+
+    # Reference embeddings and labels
+    models["ref_embs"] = torch.load(os.path.join(base_dir, "guard_model.pkl"))
+    models["ref_labels"] = joblib.load(os.path.join(base_dir, "ref_labels.pkl"))
+
+
     return models
 
 
+# ------------------------------------------------------------
+# 2️⃣ Text Preprocessing
+# ------------------------------------------------------------
+def clean_text(t):
+    t = str(t).lower()
+    replacements = {
+        "sick": "ill", "throwing up": "vomiting", "tired": "fatigue",
+        "pain in chest": "chest pain", "hard to breathe": "breathlessness",
+        "difficulty breathing": "breathlessness", "weak": "fatigue",
+        "nauseous": "vomiting", "shivering": "chills", "sore throat": "throat pain"
+    }
+    for k, v in replacements.items():
+        t = t.replace(k, v)
+    t = re.sub(r"[^a-z\s]", " ", t)
+    t = re.sub(r"\s+", " ", t).strip()
+    return t
+
 
 # ------------------------------------------------------------
-# 2️⃣ Predict whether user input is a symptom
+# 3️⃣ Predict Disease (Hybrid Logistic + XGB + Semantic)
 # ------------------------------------------------------------
-def predict_guard(user_text, models):
+def predict_disease(user_text, models, blend_weights=(0.7, 0.2, 0.1)):
     tfidf = models["tfidf"]
-    guard = models["guard_model"]
-    sent_model = models.get("sentence_model", None)
-
-    features = tfidf.transform([user_text])
-    expected = guard.get_booster().num_features()
-    actual = features.shape[1]
-
-    # Handle mismatch between TF-IDF and model
-    if actual != expected:
-        fixed = np.zeros((1, expected))
-        fixed[:, :min(expected, actual)] = features.toarray()[:, :min(expected, actual)]
-        features = fixed
-
-    base_prob = guard.predict_proba(features)[0][1]
-
-    # Default similarity in case sentence_model fails
-    sim = 0.0
-
-    # Try semantic similarity if sentence_model exists
-    if sent_model is not None:
-        try:
-            symptom_refs = [
-                "I have pain", "I feel dizzy", "I have a fever", "I am vomiting",
-                "My throat hurts", "I have chest pain", "I feel weak", "I am coughing"
-            ]
-            ref_emb = sent_model.encode(symptom_refs)
-            user_emb = sent_model.encode([user_text])
-            sim = np.max(
-                np.dot(ref_emb, user_emb.T)
-                / (np.linalg.norm(ref_emb, axis=1)[:, None] * np.linalg.norm(user_emb))
-            )
-        except Exception as e:
-            print(f"⚠️ Sentence model similarity failed: {e}")
-            sim = 0.0
-
-    # Keyword boost
-    medical_keywords = [
-        "pain", "hurt", "ache", "fever", "vomit", "bleed", "rash", "cough",
-        "nausea", "dizzy", "throat", "tired", "chest", "infection", "cramp",
-        "sore", "weak", "burning", "itch", "swelling"
-    ]
-    num_kw = sum(kw in user_text.lower() for kw in medical_keywords)
-    keyword_boost = min(num_kw * 0.05, 0.25)
-
-    # Weighted combination
-    prob = 0.6 * base_prob + 0.3 * sim + 0.1 * keyword_boost
-
-    # Filter out greetings or too-short texts
-    common_words = ["hello", "hi", "morning", "hey", "thanks", "okay"]
-    if len(user_text.split()) < 3 or any(w in user_text.lower() for w in common_words):
-        prob -= 0.35
-
-    prob = np.clip(prob, 0, 1)
-
-    if prob >= 0.55:
-        label = "Symptom"
-    elif prob >= 0.45:
-        label = "Uncertain"
-    else:
-        label = "Non-symptom"
-
-    return label, round(float(prob), 3)
-
-
-
-# ------------------------------------------------------------
-# 3️⃣ Predict disease
-# ------------------------------------------------------------
-def predict_disease(user_text, models):
-    tfidf = models["tfidf"]
-    model = models["disease_model"]
+    lr_model = models["disease_model"]
+    xgb_model = models["xgb_model"]
     le = models["label_encoder"]
+    sent_model = models["sentence_model"]
+    ref_embs = models["ref_embs"]
+    ref_labels = models["ref_labels"]
 
-    features = tfidf.transform([user_text])
-    pred = model.predict_proba(features)[0]
-    label_index = np.argmax(pred)
-    label = le.inverse_transform([label_index])[0]
-    confidence = np.max(pred)
-    return f"💊 Predicted disease: {label}", confidence
+    text_input_clean = clean_text(user_text)
+    tfidf_vec = tfidf.transform([text_input_clean])
+
+    # Logistic & XGB probabilities
+    lr_probs = lr_model.predict_proba(tfidf_vec)[0]
+    xgb_probs = xgb_model.predict_proba(tfidf_vec)[0]
+    blended = blend_weights[0]*lr_probs + blend_weights[1]*xgb_probs
+
+    # Semantic cosine boost
+    user_emb = sent_model.encode([text_input_clean], convert_to_tensor=True)
+    cos_scores = util.pytorch_cos_sim(user_emb, ref_embs).cpu().numpy()[0]
+    semantic_boost = blend_weights[2]*cos_scores.max()
+    blended[np.argmax(blended)] += semantic_boost
+    blended = np.clip(blended, 0, 1); blended /= blended.sum()
+
+    # Top predictions
+    top_index = np.argmax(blended)
+    label = le.inverse_transform([top_index])[0]
+    confidence = float(blended[top_index])
+    top3_idx = blended.argsort()[-3:][::-1]
+    top3 = [(le.inverse_transform([i])[0], float(blended[i])) for i in top3_idx]
+
+    return f"💊 Predicted disease: {label}", confidence, top3
 
 
 # ------------------------------------------------------------
-# 4️⃣ Predict severity
+# 4️⃣ Predict severity (unchanged)
 # ------------------------------------------------------------
 def predict_severity(user_text, models):
     vec = models["severity_vectorizer"]
@@ -141,14 +123,11 @@ def predict_severity(user_text, models):
 
     boost = 0.0
     if any(w in text for w in severe_words):
-        base_level = "🔴 Severe"
-        boost += 0.25
+        base_level = "🔴 Severe"; boost += 0.25
     elif any(w in text for w in moderate_words):
-        base_level = "🟠 Moderate"
-        boost += 0.15
+        base_level = "🟠 Moderate"; boost += 0.15
     elif any(w in text for w in mild_words):
-        base_level = "🟢 Mild"
-        boost -= 0.05
+        base_level = "🟢 Mild"; boost -= 0.05
 
     if text.count(" and ") + text.count(",") >= 2:
         if base_level == "🟢 Mild":
@@ -160,22 +139,13 @@ def predict_severity(user_text, models):
 
 
 # ------------------------------------------------------------
-# 5️⃣ Unified pipeline
+# 5️⃣ Unified Pipeline (Guard removed for Hybrid model)
 # ------------------------------------------------------------
 def predict_from_text(norm_text, models):
-    guard_label, guard_prob = predict_guard(norm_text, models)
-    disease_out, disease_conf = predict_disease(norm_text, models)
+    disease_out, disease_conf, top3 = predict_disease(norm_text, models)
     severity_out, severity_conf = predict_severity(norm_text, models)
 
-    symptom_status = ""
-    if guard_label == "Non-symptom":
-        symptom_status = f"💬 Non-symptom (confidence: {guard_prob:.2f}) — may not be medical."
-    elif guard_label == "Uncertain":
-        symptom_status = f"🤔 Uncertain (confidence: {guard_prob:.2f}) — please clarify."
-    else:
-        symptom_status = f"✅ Symptom detected (confidence: {guard_prob:.2f})"
-
-    # Add advice based on severity
+    # Compose advice
     if "Mild" in severity_out:
         advice = "🩺 Monitor symptoms and rest. Stay hydrated."
     elif "Moderate" in severity_out:
@@ -183,12 +153,19 @@ def predict_from_text(norm_text, models):
     else:
         advice = "🚨 Seek immediate medical attention."
 
+    # Format readable output
+    top3_display = "\n".join([f"   - {lbl:<30} ({conf:.2f})" for lbl, conf in top3])
     return (
-        f"{symptom_status}\n"
         f"{disease_out} (confidence: {disease_conf:.2f})\n"
         f"{severity_out} (confidence: {severity_conf:.2f})\n"
-        f"Advice: {advice}"
+        f"Advice: {advice}\n\n"
+        f"🔍 Top 3 Predictions:\n{top3_display}"
     )
+
+
+# ------------------------------------------------------------
+# 6️⃣ Questions for UI flow (unchanged)
+# ------------------------------------------------------------
 questions = [
     {"text": "1️⃣ How are you feeling today?", "type": "text"},
     {"text": "2️⃣ How long have you been feeling this?", "type": "choice",
@@ -199,3 +176,20 @@ questions = [
     {"text": "4️⃣ Does it get better or worse after any of these?", "type": "choice",
      "options": ["After eating", "When resting", "When moving or standing", "Changes randomly", "Not sure"]}
 ]
+
+
+# ------------------------------------------------------------
+# 7️⃣ Version & Diagnostics
+# ------------------------------------------------------------
+import sklearn
+print("scikit-learn version:", sklearn.__version__)
+
+from joblib import load
+tfidf = load("models/tfidf.pkl")
+print("TF-IDF vocab size:", len(tfidf.vocabulary_))
+
+# Optional manual test
+if __name__ == "__main__":
+    MODELS = load_models()
+    sample = "I have been having headaches and vomiting since morning."
+    print("\n🧪 Test Run\n", predict_from_text(sample, MODELS))

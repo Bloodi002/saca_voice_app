@@ -47,7 +47,7 @@ async def upload_audio(
             data = json.loads(answers)
             user_answers = data.get("answers", [])
             # Combine questions and answers for SACA predictor
-            norm_text = " ".join(f"{q['text']} {a}" for q, a in zip(questions, user_answers)).strip()
+            norm_text = " ".join(user_answers).strip()
         except Exception as e:
             return JSONResponse({"error": f"Failed to parse answers: {e}"}, status_code=400)
     else:
@@ -56,6 +56,10 @@ async def upload_audio(
         user_answers = []
 
     # Run SACA prediction
+    print("====================================")
+    print(f"🧠 NORMALIZED TEXT SENT TO MODEL:\n{norm_text}")
+    print("====================================")
+
     saca_result = predict_from_text(norm_text, MODELS)
     severity_line = saca_result.split("\n")[2] if len(saca_result.split("\n")) >= 3 else ""
 
