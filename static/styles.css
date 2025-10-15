@@ -55,7 +55,7 @@ header {
   border-radius: 24px; /* rounded corners */
   box-shadow: 0 16px 40px rgba(35, 31, 32, 0.08);
 
-  position: sticky;
+  
   top: 24px; /* keep a comfortable gap from the top */
   z-index: 100;
 
