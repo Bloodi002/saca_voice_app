@@ -1,82 +1,127 @@
+from pathlib import Path
+import json
+import os
+import uuid
+
 from fastapi import FastAPI, UploadFile, File, Form, Request
-from fastapi.responses import JSONResponse, FileResponse, HTMLResponse
+from fastapi.responses import FileResponse, HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-import os, uuid, json
+
+from pipeline.pipeline import VoiceToTextPipeline
 from saca_predictor import load_models, predict_from_text, questions
 
-app = FastAPI()
+app = FastAPI(title="SACA Voice App")
 
-RESULTS_DIR = "results"
-os.makedirs(RESULTS_DIR, exist_ok=True)
+RESULTS_DIR = Path("results")
+RESULTS_DIR.mkdir(exist_ok=True)
 
-# Serve static files (JS/CSS/images)
+# Serve static files (JS/CSS)
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
-# Templates folder for HTML
+# Templates folder
 templates = Jinja2Templates(directory="templates")
 
-# Load SACA models once
+# Load AI components
 MODELS = load_models(base_dir="models")
+VOICE_PIPE = VoiceToTextPipeline()  # Initialize speech-to-text pipeline
 
-# Root endpoint: serve HTML
+_KNOWN_AUDIO_EXTENSIONS = {".wav", ".webm", ".ogg", ".mp3", ".m4a", ".flac"}
+
+
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
+    """Render the SACA homepage."""
     return templates.TemplateResponse("index.html", {"request": request})
 
-@app.post("/upload-audio")
+
 @app.post("/upload-audio")
 async def upload_audio(
-    file: UploadFile = File(None),  # optional now
-    answers: str = Form(None)
+    file: UploadFile = File(None),
+    answers: str = Form(None),
 ):
+    """Handle uploaded audio or form answers."""
     filename = None
-    if file:
-        # Save audio if provided
-        filename = f"{uuid.uuid4()}.wav"
-        filepath = os.path.join(RESULTS_DIR, filename)
-        with open(filepath, "wb") as f:
-            f.write(await file.read())
-
-    # Prepare normalized text from answers
     norm_text = ""
+    raw_text = ""
     user_answers = []
 
+    # === 1. Handle audio upload and transcription ===
+    if file:
+        incoming_name = file.filename or ""
+        incoming_ext = os.path.splitext(incoming_name)[1].lower()
+        safe_ext = incoming_ext if incoming_ext in _KNOWN_AUDIO_EXTENSIONS else ".wav"
+        filename = f"{uuid.uuid4()}{safe_ext}"
+        filepath = RESULTS_DIR / filename
+
+        file_bytes = await file.read()
+        filepath.write_bytes(file_bytes)
+
+        try:
+            raw_text, norm_text = VOICE_PIPE.process(str(filepath))
+        except Exception as exc:  # pragma: no cover - surfacing runtime issues
+            return JSONResponse(
+                {"error": f"ASR/Normalization failed: {exc}"},
+                status_code=500,
+            )
+
+    # === 2. Handle typed answers ===
     if answers:
         try:
             data = json.loads(answers)
             user_answers = data.get("answers", [])
-            # Combine questions and answers for SACA predictor
-            norm_text = " ".join(user_answers).strip()
-        except Exception as e:
-            return JSONResponse({"error": f"Failed to parse answers: {e}"}, status_code=400)
-    else:
-        # If no answers, fallback text
-        norm_text = "No answers provided."
-        user_answers = []
+            text_from_form = " ".join(user_answers).strip()
+            if text_from_form:
+                _, text_norm = VOICE_PIPE.process_text(text_from_form)
+                raw_text = raw_text or text_from_form
+                norm_text = text_norm
+        except json.JSONDecodeError as exc:
+            return JSONResponse(
+                {"error": f"Failed to parse answers: {exc}"},
+                status_code=400,
+            )
+        except Exception as exc:  # pragma: no cover - unexpected processing failure
+            return JSONResponse(
+                {"error": f"Failed to normalize answers: {exc}"},
+                status_code=500,
+            )
 
-    # Run SACA prediction
+    if not norm_text:
+        return JSONResponse(
+            {"error": "No speech or text detected. Please try again."},
+            status_code=400,
+        )
+
+    # === 3. Predict with SACA model ===
     print("====================================")
-    print(f"🧠 NORMALIZED TEXT SENT TO MODEL:\n{norm_text}")
+    print("NORMALIZED TEXT SENT TO MODEL:")
+    print(norm_text)
     print("====================================")
 
     saca_result = predict_from_text(norm_text, MODELS)
-    severity_line = saca_result.split("\n")[2] if len(saca_result.split("\n")) >= 3 else ""
 
-    return JSONResponse({
-        "result": saca_result,
-        "nlp_text": norm_text,
-        "severity": severity_line,
-        "questions": questions,
-        "user_answers": user_answers,
-        "download": filename
-    })
+    parts = saca_result.split("\n")
+    severity_line = (
+        parts[2] if len(parts) >= 3 else (parts[-1] if parts else "")
+    )
 
+    return JSONResponse(
+        {
+            "result": saca_result,
+            "raw_text": raw_text,
+            "normalized_text": norm_text,
+            "severity": severity_line,
+            "questions": questions,
+            "user_answers": user_answers,
+            "download": filename,
+        }
+    )
 
 
 @app.get("/download/{file_name}")
 async def download_file(file_name: str):
-    filepath = os.path.join(RESULTS_DIR, file_name)
-    if os.path.exists(filepath):
+    """Download previously uploaded file."""
+    filepath = RESULTS_DIR / file_name
+    if filepath.exists():
         return FileResponse(filepath, filename=file_name)
     return JSONResponse({"error": "File not found"}, status_code=404)

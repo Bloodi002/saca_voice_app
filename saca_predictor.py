@@ -3,17 +3,38 @@
 # ============================================================
 
 import os
-import numpy as np
-import joblib
-import torch
 import re
+
+import joblib
+import numpy as np
+import torch
 from sentence_transformers import SentenceTransformer, util
+
+try:
+    import sklearn  # type: ignore
+    _SKLEARN_IMPORT_ERROR = None
+except (ModuleNotFoundError, ImportError) as exc:  # pragma: no cover - environment specific
+    sklearn = None  # type: ignore
+    _SKLEARN_IMPORT_ERROR = exc
 
 
 # ------------------------------------------------------------
 # 1️⃣ Load all models
 # ------------------------------------------------------------
 def load_models(base_dir="models"):
+    if sklearn is None:
+        missing = getattr(_SKLEARN_IMPORT_ERROR, "name", "scikit-learn")
+        if isinstance(_SKLEARN_IMPORT_ERROR, ImportError) and "_check_build" in str(_SKLEARN_IMPORT_ERROR):
+            details = (
+                "Reinstall scikit-learn wheel with `pip install --upgrade --force-reinstall scikit-learn`.\n"
+                "If you built from source, ensure C/C++ build tools are available."
+            )
+        else:
+            details = "Install scikit-learn with `pip install scikit-learn`."
+        raise RuntimeError(
+            f"Unable to import scikit-learn because `{missing}` is missing. {details}"
+        ) from _SKLEARN_IMPORT_ERROR
+
     models = {}
 
     # Core models

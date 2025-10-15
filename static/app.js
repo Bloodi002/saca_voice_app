@@ -18,10 +18,10 @@
   const analysisAdvice = qs('#analysisAdvice');
   const analysisTimestamp = qs('#analysisTimestamp');
   const refreshBtn = qs('#resetExperience');
-  const historyToggleCard = qs('#historyToggleCard');
-  const toggleHistoryBtn = qs('#toggleHistory');
-  const historyPanel = qs('#historyPanel');
-  const historyStatus = qs('#historyToggleStatus');
+  const historyCard = qs('#historyCard');
+  const homeCards = qs('#homeCards');
+  const historyContent = qs('#historyContent');
+  const historyLocked = qs('#historyLocked');
   const histCards = qs('#histCards');
   const histEmpty = qs('#histEmpty');
   const openAuth = qs('#openAuth');
@@ -30,11 +30,7 @@
   const loginPass = qs('#loginPass');
   const loginBtn = qs('#doLogin');
   const loginOk = qs('#loginOk');
-  const authModal = qs('#authModal');
-  const modalBackdrop = qs('#closeAuth');
-  const dismissAuth = qs('#dismissAuth');
-  const severityRow = qs('#severityRow');
-  const severityIcon = qs('#severityIcon');
+  const authEls = document.querySelectorAll('[data-requires-auth]');
 
   const DEFAULT_CONDITION = "No condition predicted yet.";
   const DEFAULT_SEVERITY = "Severity will appear once we have enough detail.";
@@ -45,8 +41,8 @@
   let auth = null;
   try{ auth = JSON.parse(localStorage.getItem(AUTH_KEY)||'null'); }
   catch(err){ auth = null; }
-  const langToggle = qs('#langToggle');
-  const langLabel = qs('#langLabel');
+  const langSelect = qs('#langSelect');
+  const themeSelect = qs('#themeSelect');
   const contrastToggle = qs('#contrastToggle');
   const easyToggle = qs('#easyToggle');
 
@@ -66,7 +62,6 @@
   let audioChunks = [];
   let micStream = null;
   let recordingState = 'idle';
-  let historyPanelOpen = false;
 
   const ICONS = {
     clock: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l2.5 1.5"/></svg>`,
@@ -81,10 +76,7 @@
     rest: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 14h16M5 7v11M19 7v11"/><path d="M9.5 11a1.5 1.5 0 1 0 0-3"/></svg>`,
     walk: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="5" r="1.5"/><path d="M9 21l1-4 3-3m3 7-1-5-2-2m1-3-2-1-2 1-1.5 2M16 13l2-2"/></svg>`,
     swirl: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 4a7 7 0 1 1 4 13c-3 0-4-3-2-4 3-2 1-6-2-6-4 0-6 5-3 8"/></svg>`,
-    question: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 7a3 3 0 1 1 6 0c0 2-3 3-3 5"/><path d="M12 17h.01"/></svg>`,
-    alert: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 2 21h20L12 3Z"/><path d="M12 9v5"/><path d="M12 17h.01"/></svg>`,
-    clipboard: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V2h6v2"/><path d="M9 10h6M9 14h6M9 18h4"/></svg>`,
-    compass: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m10 14 5-5-2 6-6 2 3-3Z"/></svg>`
+    question: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 7a3 3 0 1 1 6 0c0 2-3 3-3 5"/><path d="M12 17h.01"/></svg>`
   };
 
   function getChoiceIcon(option){
@@ -110,91 +102,9 @@
   }
 
   function savePrefs(){ localStorage.setItem(PREF_KEY, JSON.stringify(prefs)); }
+  function applyTheme(){ document.documentElement.setAttribute('data-theme', prefs.theme||'auto'); }
   function applyContrast(){ document.documentElement.setAttribute('data-contrast', prefs.contrast==='high'?'high':'normal'); }
   function applyEasy(){ document.body.classList.toggle('easy-read', !!prefs.easy); }
-  function setLanguageLabel(){
-    if(!langLabel) return;
-    const label = prefs.lang==='ae'
-      ? (t('ui.languageAe') || 'Aboriginal English')
-      : (t('ui.languageEn') || 'English');
-    langLabel.textContent = label;
-    langToggle?.classList.toggle('is-alt', prefs.lang==='ae');
-    if(langToggle){
-      langToggle.setAttribute('aria-pressed', prefs.lang==='ae' ? 'true' : 'false');
-      const next = prefs.lang==='ae'
-        ? (t('ui.switchToEnglish') || 'Switch to English')
-        : (t('ui.switchToAe') || 'Switch to Aboriginal English');
-      langToggle.setAttribute('title', next);
-      langToggle.setAttribute('aria-label', next);
-    }
-  }
-
-  function detectSeverityLevel(text){
-    const value = (text || '').toLowerCase();
-    if(!value) return 'unknown';
-    if(value.includes('severe') || value.includes('emergency') || value.includes('urgent')) return 'severe';
-    if(value.includes('moderate') || value.includes('medium') || value.includes('watch')) return 'moderate';
-    if(value.includes('mild') || value.includes('low') || value.includes('minor')) return 'mild';
-    return 'unknown';
-  }
-
-  function updateSeverityVisual(text){
-    if(!severityRow || !severityIcon) return;
-    const level = detectSeverityLevel(text);
-    severityRow.setAttribute('data-severity', level);
-    let iconMarkup = ICONS.gauge;
-    if(level === 'severe') iconMarkup = ICONS.alert;
-    else if(level === 'moderate') iconMarkup = ICONS.compass;
-    else if(level === 'mild') iconMarkup = ICONS.sun;
-    else if(level === 'unknown') iconMarkup = ICONS.question;
-    severityIcon.innerHTML = iconMarkup;
-  }
-
-  function historyToggleLabel(open){
-    return open
-      ? (t('history.toggleHide') || 'Hide')
-      : (t('history.toggleShow') || 'Show');
-  }
-
-  function updateHistoryToggleCopy(){
-    if(historyStatus){
-      historyStatus.textContent = historyToggleLabel(historyPanelOpen);
-    }
-  }
-
-  function setHistoryPanelState(open){
-    historyPanelOpen = !!open;
-    historyPanel?.classList.toggle('is-hidden', !historyPanelOpen);
-    toggleHistoryBtn?.setAttribute('aria-expanded', historyPanelOpen ? 'true' : 'false');
-    updateHistoryToggleCopy();
-    if(historyPanelOpen){
-      renderHistory();
-    }
-  }
-
-  function openAuthModal(){
-    if(!authModal) return;
-    authModal.classList.remove('is-hidden');
-    authModal.setAttribute('aria-hidden','false');
-    document.body.classList.add('modal-open');
-    if(loginOk) loginOk.style.display='none';
-    if(loginEmail){
-      if(isAuthed() && auth?.email){
-        loginEmail.value = auth.email;
-      } else if(!isAuthed()){
-        loginEmail.value = '';
-      }
-      loginEmail.focus();
-    }
-    if(loginPass) loginPass.value='';
-  }
-
-  function closeAuthModal(){
-    if(!authModal) return;
-    authModal.classList.add('is-hidden');
-    authModal.setAttribute('aria-hidden','true');
-    document.body.classList.remove('modal-open');
-  }
 
   function t(path){
     const parts = path.split('.'); let cur = STR?.[prefs.lang||'en']||STR?.en||{};
@@ -210,17 +120,17 @@
       const key = el.getAttribute('data-i18n-placeholder'); const val = t(key);
       if(val!=null) el.setAttribute('placeholder', val);
     });
-    setLanguageLabel();
-    updateHistoryToggleCopy();
   }
   function isAuthed(){ return !!(auth && auth.email); }
   function persistAuth(){ if(isAuthed()){ localStorage.setItem(AUTH_KEY, JSON.stringify(auth)); } else { localStorage.removeItem(AUTH_KEY); }}
   function setAuth(next){ auth = (next && next.email) ? { email: next.email } : null; persistAuth(); updateAuthUI(); }
+  function guardProtectedLink(evt){ if(isAuthed()) return; evt?.preventDefault(); alert(t('history.lockedPrompt') || 'Please log in to view your history.'); window.location.hash = '#auth'; }
   function initPrefsUI(){
-    setLanguageLabel();
+    if(langSelect) langSelect.value = prefs.lang||'en';
+    if(themeSelect) themeSelect.value = prefs.theme||'auto';
     if(contrastToggle) contrastToggle.checked = prefs.contrast==='high';
     if(easyToggle) easyToggle.checked = !!prefs.easy;
-    applyContrast(); applyEasy(); applyStrings();
+    applyTheme(); applyContrast(); applyEasy(); applyStrings();
   }
 
   function normalizeDisplay(text){
@@ -241,13 +151,15 @@
   }
   function renderHistory(){
     if(!histCards || !histEmpty) return;
-    const authed = isAuthed();
-    const entries = authed ? readHist().slice(0,4) : [];
+    if(!isAuthed()){
+      histCards.innerHTML='';
+      histEmpty.classList.add('is-hidden');
+      return;
+    }
+    const entries = readHist().slice(0,4);
     histCards.innerHTML='';
     if(!entries.length){
-      histEmpty.textContent = authed
-        ? (t('history.empty') || 'No entries yet. Your latest check-ins will appear here.')
-        : (t('history.loginPrompt') || 'Log in to view your recent history.');
+      histEmpty.textContent = t('history.empty') || 'Your latest check-ins will appear here.';
       histEmpty.classList.remove('is-hidden');
       return;
     }
@@ -298,7 +210,6 @@
     setAnalysisText(analysisCondition, DEFAULT_CONDITION, DEFAULT_CONDITION);
     setAnalysisText(analysisSeverity, DEFAULT_SEVERITY, DEFAULT_SEVERITY);
     setAnalysisText(analysisAdvice, DEFAULT_ADVICE, DEFAULT_ADVICE);
-    updateSeverityVisual(DEFAULT_SEVERITY);
     if(analysisTimestamp) analysisTimestamp.textContent = DEFAULT_TIMESTAMP;
     analysisCard?.classList.add('is-hidden');
     refreshBtn?.classList.add('is-hidden');
@@ -336,7 +247,7 @@
       questionText && (questionText.textContent = "Thanks! Your responses have been recorded.");
       if(answerInput) answerInput.style.display='none';
       if(nextBtn) nextBtn.style.display='none';
-      submitSACA();
+      submitSACA(null,{fromFlow:true});
       return;
     }
     const q = questions[index];
@@ -374,39 +285,6 @@
     if(!node) return;
     if(text){ node.textContent = text; node.classList.remove('muted'); }
     else { node.textContent = fallback; node.classList.add('muted'); }
-  }
-
-  function revealAnalysisCard(){
-    analysisCard?.classList.remove('is-hidden');
-    refreshBtn?.classList.remove('is-hidden');
-    micButton?.classList.add('is-hidden');
-    showGuidedBtn?.classList.add('is-hidden');
-    guidedBox?.classList.add('is-hidden');
-    guidedActions?.classList?.add('is-hidden');
-    heroIntro?.classList.add('is-hidden');
-  }
-
-  function displayOfflineAnalysis(answers){
-    const normalized = (answers||[]).map(ans=>normalizeDisplay(ans)).filter(Boolean);
-    const transcriptSummary = clipText(normalized.join(', '), 180);
-    const conditionDisplay = transcriptSummary
-      ? `${t('analysis.offlineCondition') || 'Summary from your notes:'} ${transcriptSummary}`
-      : DEFAULT_CONDITION;
-    const severityDisplay = t('analysis.offlineSeverity') || 'Severity unavailable while offline.';
-    const adviceDisplay = t('analysis.offlineAdvice') || 'We could not reach the server. Please try again shortly or contact a clinician if needed.';
-    setAnalysisText(analysisCondition, conditionDisplay, DEFAULT_CONDITION);
-    setAnalysisText(analysisSeverity, severityDisplay, DEFAULT_SEVERITY);
-    setAnalysisText(analysisAdvice, adviceDisplay, DEFAULT_ADVICE);
-    updateSeverityVisual(severityDisplay);
-    if(analysisTimestamp){
-      const now = new Date();
-      analysisTimestamp.textContent = `Updated ${now.toLocaleTimeString([], { hour:'numeric', minute:'2-digit' })}`;
-    }
-    revealAnalysisCard();
-    logHistoryEntry({ transcript: transcriptSummary, condition: conditionDisplay, severity: severityDisplay, advice: adviceDisplay });
-    currentAnswers = [];
-    guidedStarted = false;
-    setMicLabel('idle');
   }
   function parseAnalysis(raw){
     const result = { condition:null, conditionConfidence:null, severity:null, severityConfidence:null, advice:null };
@@ -493,6 +371,7 @@
 
   async function submitSACA(audioBlob=null, options={}){
     const allowEmpty = !!options.allowEmpty || !!audioBlob;
+    const fromFlow = !!options.fromFlow;
     const fromAudio = !!options.fromAudio;
     if(!allowEmpty && currentAnswers.length === 0){
       alert(t('home.needAnswers') || 'Please answer all questions before submitting.');
@@ -532,13 +411,18 @@
       setAnalysisText(analysisCondition, conditionDisplay, DEFAULT_CONDITION);
       setAnalysisText(analysisSeverity, severityDisplay, DEFAULT_SEVERITY);
       setAnalysisText(analysisAdvice, adviceDisplay, DEFAULT_ADVICE);
-      updateSeverityVisual(severityDisplay);
       if(analysisTimestamp){
         const now = new Date();
         analysisTimestamp.textContent = `Updated ${now.toLocaleTimeString([], { hour:'numeric', minute:'2-digit' })}`;
       }
 
-      revealAnalysisCard();
+      analysisCard?.classList.remove('is-hidden');
+      refreshBtn?.classList.remove('is-hidden');
+      micButton?.classList.add('is-hidden');
+      showGuidedBtn?.classList.add('is-hidden');
+      guidedBox?.classList.add('is-hidden');
+      guidedActions?.classList?.add('is-hidden');
+      heroIntro?.classList.add('is-hidden');
 
       logHistoryEntry({ transcript: transcriptText, condition: conditionDisplay, severity: severityDisplay, advice: adviceDisplay });
 
@@ -555,9 +439,9 @@
       return data;
     } catch(err){
       console.error(err);
-      if(!options.silent){ alert('Unable to reach the server right now. Showing the details we captured.'); }
-      displayOfflineAnalysis(answersForSend);
-      return null;
+      if(!options.silent){ alert('Upload failed'); }
+      setMicLabel('idle');
+      throw err;
     }
   }
 
@@ -581,41 +465,24 @@
     const authed = isAuthed();
     if(openAuth){
       openAuth.setAttribute('data-i18n', authed ? 'ui.account' : 'ui.login');
+      openAuth.setAttribute('href', '#auth');
     }
     logoutBtn?.classList.toggle('is-hidden', !authed);
-    historyToggleCard?.classList.toggle('is-hidden', !authed);
+    if(historyCard){
+      historyCard.setAttribute('href', authed ? '#history' : '#auth');
+      if(!authed) historyCard.setAttribute('aria-disabled','true'); else historyCard.removeAttribute('aria-disabled');
+    }
+    homeCards?.classList.toggle('is-hidden', !authed);
+    historyLocked?.classList.toggle('is-hidden', authed);
+    historyContent?.classList.toggle('is-hidden', !authed);
     if(!authed){
-      setHistoryPanelState(false);
       histCards?.replaceChildren();
       histEmpty?.classList.add('is-hidden');
-    } else if(historyPanelOpen){
+    } else {
       renderHistory();
     }
     applyStrings();
   }
-
-  openAuth?.addEventListener('click', ()=>{
-    if(loginOk) loginOk.style.display='none';
-    if(loginEmail && auth?.email) loginEmail.value = auth.email;
-    if(loginPass) loginPass.value='';
-    openAuthModal();
-  });
-  modalBackdrop?.addEventListener('click', closeAuthModal);
-  dismissAuth?.addEventListener('click', closeAuthModal);
-  authModal?.addEventListener('click', evt=>{ if(evt.target === authModal) closeAuthModal(); });
-  document.addEventListener('keydown', evt=>{
-    if(evt.key === 'Escape' && authModal && !authModal.classList.contains('is-hidden')){
-      closeAuthModal();
-    }
-  });
-
-  toggleHistoryBtn?.addEventListener('click', ()=>{
-    if(!isAuthed()){
-      openAuthModal();
-      return;
-    }
-    setHistoryPanelState(!historyPanelOpen);
-  });
 
   loginBtn?.addEventListener('click', ()=>{
     const email = (loginEmail?.value||'').trim();
@@ -623,24 +490,14 @@
     if(!email || !pass){ alert(t('auth.requireFields') || 'Enter email and password to continue.'); return; }
     setAuth({ email });
     if(loginPass) loginPass.value='';
-    if(loginOk){
-      loginOk.style.display='inline';
-      setTimeout(()=>{ loginOk.style.display='none'; closeAuthModal(); }, 1000);
-    } else {
-      closeAuthModal();
-    }
+    if(loginOk){ loginOk.style.display='inline'; setTimeout(()=>{ loginOk.style.display='none'; }, 2400); }
+    window.location.hash = '#home';
   });
-  logoutBtn?.addEventListener('click', ()=>{
-    setAuth(null);
-    resetExperience();
-    if(loginOk) loginOk.style.display='none';
-    closeAuthModal();
-  });
-  langToggle?.addEventListener('click', ()=>{
-    prefs.lang = prefs.lang==='ae' ? 'en' : 'ae';
-    savePrefs();
-    applyStrings();
-  });
+  logoutBtn?.addEventListener('click', ()=>{ setAuth(null); resetExperience(); if(loginOk) loginOk.style.display='none'; window.location.hash='#home'; });
+
+  authEls.forEach(el=>el.addEventListener('click', guardProtectedLink));
+  langSelect?.addEventListener('change', ()=>{ prefs.lang=langSelect.value; savePrefs(); applyStrings(); });
+  themeSelect?.addEventListener('change', ()=>{ prefs.theme=themeSelect.value; savePrefs(); applyTheme(); });
   contrastToggle?.addEventListener('change', ()=>{ prefs.contrast=contrastToggle.checked?'high':'normal'; savePrefs(); applyContrast(); });
   easyToggle?.addEventListener('change', ()=>{ prefs.easy=!!easyToggle.checked; savePrefs(); applyEasy(); });
 
