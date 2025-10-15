@@ -1,97 +1,206 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="auto" data-contrast="normal">
+<html lang="en" data-contrast="normal">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>SACA – Your Health Companion</title>
+  <title>SACA - Your Health Companion</title>
   <link rel="stylesheet" href="/static/styles.css">
 </head>
 <body>
-
 <header>
   <div class="logo"><a href="#home">SACA</a></div>
   <div class="actions">
-    <select id="langSelect" aria-label="Language">
-      <option value="en">English</option>
-      <option value="ae">Aboriginal English</option>
-      <option value="es">Español</option>
-    </select>
-    <select id="themeSelect" aria-label="Theme">
-      <option value="auto">Auto</option>
-      <option value="light">Light</option>
-      <option value="dark">Dark</option>
-    </select>
-    <label><input type="checkbox" id="contrastToggle"/> High contrast</label>
-    <label><input type="checkbox" id="easyToggle"/> Easy Read</label>
-    <a href="#auth" id="openAuth">Login</a>
+    <button type="button" id="langToggle" class="nav-toggle nav-toggle-btn" aria-label="Switch language">
+      <span class="toggle-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" focusable="false" role="presentation">
+          <path d="M4 4h16M4 10h8M4 16h6M12 14l4-4 4 4M16 10v8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </span>
+      <div class="toggle-copy">
+        <span class="toggle-title" data-i18n="ui.language">Language</span>
+        <span class="toggle-sub" id="langLabel">English</span>
+      </div>
+    </button>
+    <label class="nav-toggle">
+      <input type="checkbox" id="contrastToggle" aria-label="Toggle high contrast mode"/>
+      <span class="toggle-visual">
+        <span class="toggle-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" focusable="false" role="presentation">
+            <path d="M12 3a9 9 0 1 0 0 18V3Z" fill="currentColor" opacity="0.65"/>
+            <path d="M12 3a9 9 0 1 1 0 18" fill="none" stroke="currentColor" stroke-width="1.8"/>
+          </svg>
+        </span>
+        <span class="toggle-copy">
+          <span class="toggle-title" data-i18n="ui.highContrast">High contrast</span>
+          <span class="toggle-sub">Sharper colours</span>
+        </span>
+      </span>
+    </label>
+    <label class="nav-toggle">
+      <input type="checkbox" id="easyToggle" aria-label="Toggle easy-read mode"/>
+      <span class="toggle-visual">
+        <span class="toggle-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" focusable="false" role="presentation">
+            <path d="M5 5.5c0-.83.67-1.5 1.5-1.5h11c.83 0 1.5.67 1.5 1.5V18c0 .83-.67 1.5-1.5 1.5h-11A1.5 1.5 0 0 1 5 18V5.5Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M8 9h8M8 13h5M8 17h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+        </span>
+        <span class="toggle-copy">
+          <span class="toggle-title" data-i18n="ui.easyRead">Easy-Read</span>
+          <span class="toggle-sub">Bigger text</span>
+        </span>
+      </span>
+    </label>
+    <button type="button" id="openAuth" class="btn" data-i18n="ui.login">Login</button>
+    <button id="logoutBtn" type="button" class="btn-ghost is-hidden" data-i18n="ui.logout">Logout</button>
   </div>
 </header>
-
 <main>
-  <!-- Home Section -->
   <section id="home" class="page">
-    <h1>Your Health Companion</h1>
-    <h2>How are you feeling today?</h2>
-    <div id="questionContainer">
-      <p id="questionText"></p>
-      <input type="text" id="answerInput" placeholder="Type your answer"/>
-      <button id="nextQuestion">Next</button>
+    <div class="hero-intro">
+ 
+
+  <div class="hero-overlay">
+     <span class="hero-tag">HEALTH ASSISTANT FOR PALM ISLANDS COMMUNITY</span>
+    <h1 class="main-title" data-i18n="home.banner">Your Health Companion</h1>
+    <p>
+      SACA is your trusted health companion designed for the Palm Island community.
+      It helps you describe your symptoms easily, understand your condition,
+      and connect with the right care.
+    </p>
+  </div>
+
+  <h2 class="simple-heading" data-i18n="home.heading">How are you feeling today?</h2>
+</div>
+
+      <div class="cta">
+        <button id="micHome" type="button" class="btn btn-wide mic-btn" aria-live="polite">
+          <span class="mic-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" focusable="false" role="presentation">
+              <path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 1 0-6 0v6a3 3 0 0 0 3 3Zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.93V21h2v-2.07A7 7 0 0 0 19 12h-2Z" fill="currentColor"/>
+            </svg>
+          </span>
+          <span class="mic-text" data-i18n="home.mic">Tap here to speak</span>
+        </button>
+        <button id="showGuided" type="button" class="btn-outline btn-wide guide-btn">
+          <span class="guide-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" focusable="false" role="presentation">
+              <path d="M7 4a3 3 0 0 1 3-3h4a3 3 0 0 1 3 3h2.25A1.75 1.75 0 0 1 21 5.75v14.5A1.75 1.75 0 0 1 19.25 22H4.75A1.75 1.75 0 0 1 3 20.25V5.75C3 4.78 3.78 4 4.75 4H7Zm2-.75A1.25 1.25 0 0 0 7.75 4.5V6h8.5V4.5A1.25 1.25 0 0 0 15 3.25h-6Z" fill="currentColor"/>
+            </svg>
+          </span>
+          <span class="guide-text" data-i18n="home.typeBtn">Type/Choose Your Symptoms</span>
+        </button>
+      </div>
+      <div id="historyToggleCard" class="history-toggle-card is-hidden" data-requires-auth="true">
+        <button id="toggleHistory" type="button" class="history-toggle-btn" aria-expanded="false" aria-controls="historyPanel">
+          <span class="history-toggle-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" focusable="false" role="presentation">
+              <path d="M5 4h14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Zm2 4h10M7 12h6m-6 4h4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+          <div class="history-toggle-copy">
+            <span class="history-toggle-title" data-i18n="history.title">Your History</span>
+            <span class="history-toggle-sub" data-i18n="history.toggleHint">Review your latest conversations</span>
+          </div>
+          <span class="history-toggle-status" id="historyToggleStatus" aria-hidden="true">Show</span>
+        </button>
+        <div id="historyPanel" class="history-panel is-hidden">
+          <div id="histEmpty" class="empty-state" data-i18n="history.empty">No entries yet. Your latest check-ins will appear here.</div>
+          <div id="histCards" class="hist-grid"></div>
+        </div>
+      </div>
     </div>
-
-    <div id="audioControls">
-      <button id="recordBtn">🎤 Record</button>
-      <button id="stopBtn" disabled>⏹ Stop</button>
-      <button id="uploadBtn" disabled>💾 Upload</button>
+    <div id="guidedBox" class="guided-box is-hidden">
+      <div id="questionContainer" class="question-card">
+        <p id="questionText" class="title-16"></p>
+        <div class="question-actions">
+          <div class="pill-input">
+            <input type="text" id="answerInput" placeholder="Type your answer" aria-label="Answer" data-i18n-placeholder="home.type"/>
+          </div>
+          <button id="nextQuestion" type="button" class="btn">Next</button>
+        </div>
+      </div>
     </div>
-    <audio id="audioPreview" controls></audio>
-
-    <button id="micHome">🎤 Tap to Speak</button>
-    <button id="saveFromHome">💾 Save</button>
-
-    <div id="sacaResult" style="margin-top:20px; border:1px solid #ccc; padding:10px; display:none;">
-      <h3>SACA Analysis:</h3>
-      <pre id="sacaText" style="white-space:pre-wrap;"></pre>
+    <div id="sacaResult" class="analysis-card is-hidden" aria-live="polite">
+      <div class="analysis-head">
+        <div class="analysis-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" focusable="false" role="presentation">
+            <path d="M12 3a9 9 0 1 1 0 18 9 9 0 0 1 0-18Zm0 2a7 7 0 1 0 0 14 7 7 0 0 0 0-14Zm0 2.5a1.25 1.25 0 0 1 1.24 1.08l.01.17-.5 5a.75.75 0 0 1-1.5 0l-.5-5A1.25 1.25 0 0 1 12 7.5Zm0 7.75a1.25 1.25 0 1 1 0 2.5 1.25 1.25 0 0 1 0-2.5Z" fill="currentColor"/>
+          </svg>
+        </div>
+        <div>
+          <h3>SACA analysis</h3>
+          <p class="analysis-meta" id="analysisTimestamp">Awaiting input...</p>
+        </div>
+      </div>
+      <div class="analysis-body">
+        <section class="analysis-item" id="conditionRow">
+          <span class="analysis-item-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" focusable="false" role="presentation">
+              <rect x="5" y="4" width="14" height="17" rx="2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M9 4V2h6v2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M9 10h6M9 14h6M9 18h4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+          <div class="analysis-item-copy">
+            <h4>Predicted condition</h4>
+            <p id="analysisCondition" class="analysis-copy muted">No condition predicted yet.</p>
+          </div>
+        </section>
+        <section class="analysis-item" id="severityRow" data-severity="unknown">
+          <span class="analysis-item-icon" id="severityIcon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" focusable="false" role="presentation">
+              <path d="M5.5 19a8.5 8.5 0 1 1 13 0Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M12 12l3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M7 12h.01M12 7v.01M17 12h.01M12 17h.01" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+          <div class="analysis-item-copy">
+            <h4>Severity</h4>
+            <p id="analysisSeverity" class="analysis-copy muted">Severity will appear once we have enough detail.</p>
+          </div>
+        </section>
+        <section class="analysis-item" id="adviceRow">
+          <span class="analysis-item-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" focusable="false" role="presentation">
+              <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="m10 14 5-5-2 6-6 2 3-3Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+          <div class="analysis-item-copy">
+            <h4>Next steps</h4>
+            <p id="analysisAdvice" class="analysis-copy muted">We'll share guidance once an assessment is complete.</p>
+          </div>
+        </section>
+      </div>
+      <div class="analysis-actions">
+        <button id="resetExperience" type="button" class="btn-ghost refresh-btn is-hidden">Start another check-in</button>
+      </div>
     </div>
-  </section>
-
-  <!-- History Section -->
-  <section id="history" class="page hidden">
-    <h2>Your History</h2>
-    <table id="histTable">
-      <thead>
-        <tr>
-          <th>Date</th>
-          <th>Raw Input</th>
-          <th>Processed</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-    <button id="clearHistory">Clear All</button>
-    <button id="seedHistory">Add Sample</button>
-    <a href="#home">Back to Home</a>
-  </section>
-
-  <!-- Chat Section -->
-  <section id="chat" class="page hidden">
-    <h2>Chat with SACA</h2>
-    <div id="chatBody"></div>
-    <input id="chatInput" placeholder="Type your message"/>
-    <button id="chatSend">Send</button>
-    <a href="#home">Back</a>
-  </section>
-
-  <!-- Auth Section -->
-  <section id="auth" class="page hidden">
-    <h2>Login</h2>
-    <input type="email" id="loginEmail" placeholder="Email"/>
-    <input type="password" id="loginPass" placeholder="Password"/>
-    <button id="doLogin">Login</button>
-    <span id="loginOk" style="display:none;">Logged in!</span>
-    <a href="#home">Back</a>
   </section>
 </main>
-
+<div id="authModal" class="modal is-hidden" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+  <div class="modal-backdrop" id="closeAuth"></div>
+  <div class="modal-shell">
+    <button type="button" class="modal-close" id="dismissAuth" aria-label="Close login">
+      <svg viewBox="0 0 24 24" focusable="false" role="presentation">
+        <path d="m8 8 8 8m0-8-8 8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </button>
+    <div class="modal-body">
+      <h2 id="authTitle" data-i18n="auth.title">Welcome</h2>
+      <p class="sub" data-i18n="auth.sub">Login or create an account to continue</p>
+      <div class="pill-input">
+        <input type="email" id="loginEmail" placeholder="Email" data-i18n-placeholder="auth.emailL"/>
+      </div>
+      <div class="pill-input">
+        <input type="password" id="loginPass" placeholder="Password" data-i18n-placeholder="auth.passL"/>
+      </div>
+      <button id="doLogin" type="button" class="btn" data-i18n="auth.login">Login</button>
+      <span id="loginOk" class="sub-13" style="display:none;" data-i18n="auth.ok">Logged in</span>
+    </div>
+  </div>
+</div>
 <script src="/static/strings.js"></script>
 <script src="/static/app.js"></script>
 </body>
