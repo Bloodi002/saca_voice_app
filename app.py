@@ -39,10 +39,12 @@ async def home(request: Request):
 async def upload_audio(
     file: UploadFile = File(None),
     answers: str = Form(None),
+    mode: str = Form("predict"),
+    normalized_audio: str = Form(""),
 ):
     """Handle uploaded audio or form answers."""
     filename = None
-    norm_text = ""
+    norm_text = normalized_audio.strip()
     raw_text = ""
     user_answers = []
 
@@ -58,7 +60,19 @@ async def upload_audio(
         filepath.write_bytes(file_bytes)
 
         try:
-            raw_text, norm_text = VOICE_PIPE.process(str(filepath))
+            raw_from_audio, norm_from_audio = VOICE_PIPE.process(str(filepath))
+            raw_text = raw_from_audio
+            if mode == "transcribe":
+                return JSONResponse(
+                    {
+                        "raw_text": raw_from_audio,
+                        "normalized_text": norm_from_audio,
+                        "transcription": raw_from_audio,
+                    }
+                )
+            norm_text = " ".join(
+                part for part in [norm_text, norm_from_audio] if part
+            ).strip()
         except Exception as exc:  # pragma: no cover - surfacing runtime issues
             return JSONResponse(
                 {"error": f"ASR/Normalization failed: {exc}"},
@@ -73,8 +87,12 @@ async def upload_audio(
             text_from_form = " ".join(user_answers).strip()
             if text_from_form:
                 _, text_norm = VOICE_PIPE.process_text(text_from_form)
-                raw_text = raw_text or text_from_form
-                norm_text = text_norm
+                raw_text = " ".join(
+                    part for part in [raw_text, text_from_form] if part
+                ).strip()
+                norm_text = " ".join(
+                    part for part in [norm_text, text_norm] if part
+                ).strip()
         except json.JSONDecodeError as exc:
             return JSONResponse(
                 {"error": f"Failed to parse answers: {exc}"},
@@ -85,6 +103,13 @@ async def upload_audio(
                 {"error": f"Failed to normalize answers: {exc}"},
                 status_code=500,
             )
+
+    if mode == "transcribe":
+        # We should never reach here because we return earlier, but safeguard.
+        return JSONResponse(
+            {"error": "No speech detected during transcription."},
+            status_code=400,
+        )
 
     if not norm_text:
         return JSONResponse(

@@ -70,7 +70,7 @@
     </p>
     <div class="hero-actions">
       <button type="button" id="getStartedBtn" class="btn">Get Started</button>
-      <button type="button" id="howToBtn" class="btn-ghost how-to-btn">How to Use</button>
+      <button type="button" id="howToBtn" class="how-to-btn">How to Use</button>
     </div>
   </div>
 
@@ -114,18 +114,47 @@
         </div>
       </div>
     </div>
-    <div id="guidedBox" class="guided-box is-hidden">
-      <div id="questionContainer" class="question-card">
-        <p id="questionText" class="title-16"></p>
-        <div class="question-actions">
-          <div class="pill-input">
-            <input type="text" id="answerInput" placeholder="Type your answer" aria-label="Answer" data-i18n-placeholder="home.type"/>
+    <div id="entryChoice" class="entry-choice is-hidden" role="form" aria-labelledby="entryQuestion">
+      <div class="question-card question-card--active">
+        <span id="entryProgress" class="question-chip">Question 1 of 4</span>
+        <h2 id="entryQuestion" class="question-title">How are you feeling today?</h2>
+        <p class="question-sub">Speak it out loud or write a short note so we can help.</p>
+        <div class="question-actions question-actions--choice">
+          <button id="entrySpeak" type="button" class="question-btn question-btn--primary">
+            <span class="question-btn-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" focusable="false" role="presentation">
+                <path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 1 0-6 0v6a3 3 0 0 0 3 3Zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.93V21h2v-2.07A7 7 0 0 0 19 12h-2Z" fill="currentColor"/>
+              </svg>
+            </span>
+            <span class="question-btn-label">Tap to speak</span>
+          </button>
+          <button id="entryType" type="button" class="question-btn question-btn--secondary">Write your symptoms</button>
+        </div>
+        <div id="entryTextWrap" class="entry-text-wrap is-hidden">
+          <textarea id="entryText" class="question-textarea" rows="3" placeholder="Type a short note about how you're feeling"></textarea>
+          <div class="entry-text-actions">
+            <button id="entryTextSubmit" type="button" class="question-btn question-btn--primary">Continue</button>
+            <button id="entryTextCancel" type="button" class="question-btn question-btn--ghost">Cancel</button>
           </div>
-          <button id="nextQuestion" type="button" class="btn">Next</button>
         </div>
       </div>
     </div>
-    <div id="sacaResult" class="analysis-card is-hidden" aria-live="polite">
+    <div id="guidedBox" class="guided-box is-hidden">
+      <div id="questionContainer" class="question-card">
+        <span class="question-chip" id="questionProgress">Question 1 of 4</span>
+        <h2 class="question-title" id="questionHeading"></h2>
+        <div class="question-body" id="questionBody">
+          <p id="questionText" class="question-sub"></p>
+          <div class="question-actions">
+            <div class="pill-input">
+              <input type="text" id="answerInput" placeholder="Type your answer" aria-label="Answer" data-i18n-placeholder="home.type"/>
+            </div>
+            <button id="nextQuestion" type="button" class="question-btn question-btn--primary">Next</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="sacaResult" class="analysis-card is-hidden severity-unknown" aria-live="polite">
       <div class="analysis-head">
         <div class="analysis-icon" aria-hidden="true">
           <svg viewBox="0 0 24 24" focusable="false" role="presentation">
@@ -134,7 +163,7 @@
         </div>
         <div>
           <h3>SACA analysis</h3>
-          <p class="analysis-meta" id="analysisTimestamp">Awaiting input...</p>
+          <p class="analysis-meta" id="analysisTimestamp">Waiting for your check-in.</p>
         </div>
       </div>
       <div class="analysis-body">
@@ -147,8 +176,8 @@
             </svg>
           </span>
           <div class="analysis-item-copy">
-            <h4>Predicted condition</h4>
-            <p id="analysisCondition" class="analysis-copy muted">No condition predicted yet.</p>
+            <h4>Likely condition</h4>
+            <p id="analysisCondition" class="analysis-copy muted">We'll share the likely condition once we review your details.</p>
           </div>
         </section>
         <section class="analysis-item" id="severityRow" data-severity="unknown">
@@ -160,8 +189,8 @@
             </svg>
           </span>
           <div class="analysis-item-copy">
-            <h4>Severity</h4>
-            <p id="analysisSeverity" class="analysis-copy muted">Severity will appear once we have enough detail.</p>
+            <h4>What we're seeing</h4>
+            <p id="analysisSeverity" class="analysis-copy muted">We're still gauging how serious things are.</p>
           </div>
         </section>
         <section class="analysis-item" id="adviceRow">
@@ -172,8 +201,8 @@
             </svg>
           </span>
           <div class="analysis-item-copy">
-            <h4>Next steps</h4>
-            <p id="analysisAdvice" class="analysis-copy muted">We'll share guidance once an assessment is complete.</p>
+            <h4>Suggested next steps</h4>
+            <p id="analysisAdvice" class="analysis-copy muted">Next steps will appear here as soon as we have a recommendation.</p>
           </div>
         </section>
       </div>
@@ -202,6 +231,26 @@
       </div>
       <button id="doLogin" type="button" class="btn" data-i18n="auth.login">Login</button>
       <span id="loginOk" class="sub-13" style="display:none;" data-i18n="auth.ok">Logged in</span>
+    </div>
+  </div>
+</div>
+<div id="howToModal" class="modal is-hidden" role="dialog" aria-modal="true" aria-labelledby="howToTitle">
+  <div class="modal-backdrop" id="closeHowTo"></div>
+  <div class="modal-shell how-to-shell">
+    <button type="button" class="modal-close" id="dismissHowTo" aria-label="Close how to guide">
+      <svg viewBox="0 0 24 24" focusable="false" role="presentation">
+        <path d="m8 8 8 8m0-8-8 8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </button>
+    <div class="modal-body">
+      <h2 id="howToTitle">How to use SACA</h2>
+      <p class="how-to-lead">In just a few taps we'll help you figure out the next best step.</p>
+      <ol class="how-to-steps">
+        <li><strong>Share how you feel.</strong> Tap <em>Tap to speak</em> or <em>Write your symptoms</em> to tell us what’s going on.</li>
+        <li><strong>Answer quick follow-ups.</strong> A couple of short questions help us understand the bigger picture.</li>
+        <li><strong>Review personalised advice.</strong> We’ll suggest what to do next and highlight anything urgent.</li>
+      </ol>
+      <p class="how-to-footnote">Need to start over? Use “Start another check-in” any time.</p>
     </div>
   </div>
 </div>
