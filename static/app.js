@@ -44,9 +44,17 @@
   const logoutBtn = qs('#logoutBtn');
   const loginEmail = qs('#loginEmail');
   const loginPass = qs('#loginPass');
-  const loginBtn = qs('#doLogin');
-  const loginOk = qs('#loginOk');
   const authEls = document.querySelectorAll('[data-requires-auth]');
+  const authModal = qs('#authModal');
+  const authBackdrop = qs('#closeAuth');
+  const authDismiss = qs('#dismissAuth');
+  const authTabs = Array.from(document.querySelectorAll('.auth-tab'));
+  const loginForm = qs('#loginForm');
+  const signupForm = qs('#signupForm');
+  const signupEmail = qs('#signupEmail');
+  const signupPass = qs('#signupPass');
+  const signupConfirm = qs('#signupConfirm');
+  const authMessage = qs('#authMessage');
 
   const DEFAULT_CONDITION = "We'll share the likely condition once we review your details.";
   const DEFAULT_SEVERITY = "We're still gauging how serious things are.";
@@ -58,6 +66,8 @@
     listening: { key:'home.micListening', fallback:'Listening...' },
     submitting: { key:'home.micSubmitting', fallback:'Processing...' }
   };
+  const USERS_KEY = 'sacaUsers';
+  const MIN_PASSWORD_LENGTH = 6;
 
   const prefs = JSON.parse(localStorage.getItem(PREF_KEY)||'{}');
   let auth = null;
@@ -150,7 +160,12 @@
   function isAuthed(){ return !!(auth && auth.email); }
   function persistAuth(){ if(isAuthed()){ localStorage.setItem(AUTH_KEY, JSON.stringify(auth)); } else { localStorage.removeItem(AUTH_KEY); }}
   function setAuth(next){ auth = (next && next.email) ? { email: next.email } : null; persistAuth(); updateAuthUI(); }
-  function guardProtectedLink(evt){ if(isAuthed()) return; evt?.preventDefault(); alert(t('history.lockedPrompt') || 'Please log in to view your history.'); window.location.hash = '#auth'; }
+  function guardProtectedLink(evt){
+    if(isAuthed()) return;
+    evt?.preventDefault();
+    showAuthModal('login');
+    showAuthMessage('Please log in to view your history.', 'error');
+  }
   function initPrefsUI(){
     if(langSelect) langSelect.value = prefs.lang||'en';
     if(themeSelect) themeSelect.value = prefs.theme||'auto';
@@ -180,6 +195,67 @@
       .join(' ')
       .replace(/\b(I|Ii|Iii|Iv|V|Vi|Vii|Viii|Ix|X)\b/g, match=>match.toUpperCase());
   }
+  function readUsers(){
+    try{ return JSON.parse(localStorage.getItem(USERS_KEY)||'{}'); }
+    catch(err){ return {}; }
+  }
+  function saveUsers(users){
+    localStorage.setItem(USERS_KEY, JSON.stringify(users));
+  }
+  function showAuthMessage(text, type='info'){
+    if(!authMessage) return;
+    authMessage.textContent = text;
+    authMessage.classList.remove('is-hidden','is-error','is-success');
+    if(type==='error') authMessage.classList.add('is-error');
+    else if(type==='success') authMessage.classList.add('is-success');
+  }
+  function clearAuthMessage(){
+    if(!authMessage) return;
+    authMessage.textContent = '';
+    authMessage.classList.add('is-hidden');
+    authMessage.classList.remove('is-error','is-success');
+  }
+  function switchAuthMode(mode){
+    authTabs.forEach(tab=>{
+      const isActive = tab.dataset.mode === mode;
+      tab.classList.toggle('is-active', isActive);
+      tab.setAttribute('aria-selected', isActive ? 'true' : 'false');
+    });
+    loginForm?.classList.toggle('is-hidden', mode!=='login');
+    signupForm?.classList.toggle('is-hidden', mode!=='signup');
+    clearAuthMessage();
+    setTimeout(()=>{
+      if(mode==='login'){ loginEmail?.focus(); }
+      else { signupEmail?.focus(); }
+    }, 50);
+  }
+  function resetAuthForms(){
+    loginForm?.reset();
+    signupForm?.reset();
+    if(loginEmail && auth?.email) loginEmail.value = auth.email;
+  }
+  function showAuthModal(mode='login'){
+    if(!authModal) return;
+    resetAuthForms();
+    switchAuthMode(mode);
+    if(isAuthed()){
+      showAuthMessage(`Logged in as ${auth.email}`, 'success');
+    } else {
+      clearAuthMessage();
+    }
+    authModal.classList.remove('is-hidden');
+    document.body.classList.add('modal-open');
+    if(mode==='login' && !isAuthed()){ loginEmail?.focus(); }
+    if(mode==='signup'){ signupEmail?.focus(); }
+  }
+  function hideAuthModal(){
+    if(!authModal) return;
+    authModal.classList.add('is-hidden');
+    document.body.classList.remove('modal-open');
+    clearAuthMessage();
+    resetAuthForms();
+    switchAuthMode('login');
+  }
   function updateProgressDisplay(index){
     const total = Math.max(1, BASE_QUESTION_COUNT - questionOffset);
     let label;
@@ -206,6 +282,56 @@
     entryTextWrap?.classList.add('is-hidden');
     if(entryText) entryText.value='';
     updateProgressDisplay(currentQuestion);
+  }
+  function handleLogin(evt){
+    evt?.preventDefault();
+    const email = (loginEmail?.value||'').trim().toLowerCase();
+    const pass = (loginPass?.value||'').trim();
+    if(!email || !pass){
+      showAuthMessage('Please enter your email and password.', 'error');
+      return;
+    }
+    const users = readUsers();
+    const record = users[email];
+    if(!record){
+      showAuthMessage('No account found with that email. Try signing up.', 'error');
+      return;
+    }
+    if(record.password !== pass){
+      showAuthMessage('Incorrect password. Please try again.', 'error');
+      return;
+    }
+    setAuth({ email });
+    hideAuthModal();
+    renderHistory();
+  }
+  function handleSignup(evt){
+    evt?.preventDefault();
+    const email = (signupEmail?.value||'').trim().toLowerCase();
+    const pass = (signupPass?.value||'').trim();
+    const confirm = (signupConfirm?.value||'').trim();
+    if(!email || !pass || !confirm){
+      showAuthMessage('Please complete all fields.', 'error');
+      return;
+    }
+    if(pass.length < MIN_PASSWORD_LENGTH){
+      showAuthMessage(`Password must be at least ${MIN_PASSWORD_LENGTH} characters.`, 'error');
+      return;
+    }
+    if(pass !== confirm){
+      showAuthMessage('Passwords do not match.', 'error');
+      return;
+    }
+    const users = readUsers();
+    if(users[email]){
+      showAuthMessage('That email is already registered. Try logging in.', 'error');
+      return;
+    }
+    users[email] = { password: pass };
+    saveUsers(users);
+    setAuth({ email });
+    hideAuthModal();
+    renderHistory();
   }
   function openHowToModal(){
     if(!howToModal) return;
@@ -250,7 +376,8 @@
     if(!histCards || !histEmpty) return;
     if(!isAuthed()){
       histCards.innerHTML='';
-      histEmpty.classList.add('is-hidden');
+      histEmpty.textContent = 'Log in to see your recent check-ins.';
+      histEmpty.classList.remove('is-hidden');
       return;
     }
     const entries = readHist().slice(0,4);
@@ -287,8 +414,21 @@
       histCards.appendChild(card);
     });
   }
-  function readHist(){ return JSON.parse(localStorage.getItem(LS_KEY)||'[]'); }
-  function writeHist(entries){ localStorage.setItem(LS_KEY, JSON.stringify(entries)); }
+  function readHistMap(){
+    try{ return JSON.parse(localStorage.getItem(LS_KEY)||'{}'); }
+    catch(err){ return {}; }
+  }
+  function readHist(){
+    if(!isAuthed()) return [];
+    const map = readHistMap();
+    return map[auth.email] || [];
+  }
+  function writeHist(entries){
+    if(!isAuthed()) return;
+    const map = readHistMap();
+    map[auth.email] = entries;
+    localStorage.setItem(LS_KEY, JSON.stringify(map));
+  }
   function logHistoryEntry(data){
     if(!isAuthed()) return;
     const entries = readHist();
@@ -533,6 +673,9 @@
     if(audioBlob) formData.append('file', audioBlob, 'user_audio.wav');
     formData.append('answers', JSON.stringify({ answers: answersForSend }));
     formData.append('mode', mode);
+    if(mode === 'predict' && pendingNormalizedText){
+      formData.append('normalized_audio', pendingNormalizedText);
+    }
 
     try {
       const res = await fetch('/upload-audio', { method:'POST', body: formData });
@@ -660,12 +803,13 @@ if (adviceDisplay !== DEFAULT_ADVICE) {
   function updateAuthUI(){
     const authed = isAuthed();
     if(openAuth){
-      openAuth.setAttribute('data-i18n', authed ? 'ui.account' : 'ui.login');
-      openAuth.setAttribute('href', '#auth');
+      openAuth.removeAttribute('data-i18n');
+      openAuth.textContent = authed ? 'Account' : 'Login';
+      openAuth.setAttribute('aria-label', authed ? 'View account options' : 'Login to SACA');
     }
     logoutBtn?.classList.toggle('is-hidden', !authed);
     if(historyCard){
-      historyCard.setAttribute('href', authed ? '#history' : '#auth');
+      historyCard.setAttribute('href', authed ? '#history' : '#');
       if(!authed) historyCard.setAttribute('aria-disabled','true'); else historyCard.removeAttribute('aria-disabled');
     }
     homeCards?.classList.toggle('is-hidden', !authed);
@@ -680,16 +824,18 @@ if (adviceDisplay !== DEFAULT_ADVICE) {
     applyStrings();
   }
 
-  loginBtn?.addEventListener('click', ()=>{
-    const email = (loginEmail?.value||'').trim();
-    const pass = (loginPass?.value||'').trim();
-    if(!email || !pass){ alert(t('auth.requireFields') || 'Enter email and password to continue.'); return; }
-    setAuth({ email });
-    if(loginPass) loginPass.value='';
-    if(loginOk){ loginOk.style.display='inline'; setTimeout(()=>{ loginOk.style.display='none'; }, 2400); }
+  loginForm?.addEventListener('submit', handleLogin);
+  signupForm?.addEventListener('submit', handleSignup);
+  authTabs.forEach(tab=>tab.addEventListener('click', ()=>switchAuthMode(tab.dataset.mode||'login')));
+  openAuth?.addEventListener('click', ()=>showAuthModal(isAuthed() ? 'login' : 'login'));
+  authBackdrop?.addEventListener('click', hideAuthModal);
+  authDismiss?.addEventListener('click', hideAuthModal);
+  logoutBtn?.addEventListener('click', ()=>{
+    hideAuthModal();
+    setAuth(null);
+    resetExperience();
     window.location.hash = '#home';
   });
-  logoutBtn?.addEventListener('click', ()=>{ setAuth(null); resetExperience(); if(loginOk) loginOk.style.display='none'; window.location.hash='#home'; });
 
   authEls.forEach(el=>el.addEventListener('click', guardProtectedLink));
   langSelect?.addEventListener('change', ()=>{ prefs.lang=langSelect.value; savePrefs(); applyStrings(); });
@@ -719,8 +865,9 @@ if (adviceDisplay !== DEFAULT_ADVICE) {
   howToClose?.addEventListener('click', closeHowToModal);
   howToBackdrop?.addEventListener('click', closeHowToModal);
   document.addEventListener('keydown', e=>{
-    if(e.key === 'Escape' && !howToModal?.classList.contains('is-hidden')){
-      closeHowToModal();
+    if(e.key === 'Escape'){
+      if(!howToModal?.classList.contains('is-hidden')) closeHowToModal();
+      if(!authModal?.classList.contains('is-hidden')) hideAuthModal();
     }
   });
   entryTypeBtn?.addEventListener('click', ()=>{

@@ -255,6 +255,92 @@ h2{font-size:28px;margin:8px 0 4px}
 .modal-close:hover{background:rgba(var(--brand-rgb),.22);transform:scale(1.03)}
 .modal-body{display:flex;flex-direction:column;gap:16px}
 body.modal-open{overflow:hidden}
+.auth-shell{
+  max-width:480px;
+}
+.auth-body{
+  gap:24px;
+}
+.auth-tabs{
+  display:flex;
+  gap:10px;
+  background:rgba(var(--brand-rgb),.08);
+  border-radius:18px;
+  padding:6px;
+}
+.auth-tab{
+  flex:1 1 0;
+  border:0;
+  background:transparent;
+  border-radius:14px;
+  font-weight:700;
+  font-size:15px;
+  padding:10px 14px;
+  cursor:pointer;
+  color:var(--muted);
+  transition:.2s ease;
+}
+.auth-tab.is-active{
+  background:#fff;
+  color:var(--brand);
+  box-shadow:0 10px 22px rgba(var(--brand-rgb),.2);
+}
+.auth-tab:not(.is-active):hover{
+  color:var(--brand);
+}
+.auth-message{
+  display:none;
+  font-size:14px;
+  padding:10px 14px;
+  border-radius:12px;
+  background:rgba(var(--brand-rgb),.08);
+  color:var(--brand);
+}
+.auth-message.is-error{
+  background:rgba(var(--bad),.12);
+  color:var(--bad);
+}
+.auth-message.is-success{
+  background:rgba(var(--accent-rgb),.12);
+  color:var(--accent);
+}
+.auth-message:not(.is-hidden){display:block}
+.auth-form{
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+}
+.auth-form.is-hidden{display:none}
+.auth-form h2{margin:0;font-size:24px;font-weight:800;color:var(--ink);text-align:center}
+.auth-sub{
+  margin:-6px 0 8px;
+  text-align:center;
+  color:var(--muted);
+}
+.auth-label{
+  font-size:13px;
+  font-weight:700;
+  text-align:left;
+  color:var(--muted);
+}
+.auth-form input{
+  width:100%;
+  border-radius:14px;
+  border:1px solid rgba(var(--brand-rgb),.18);
+  padding:12px 14px;
+  font-size:15px;
+  transition:border .2s ease, box-shadow .2s ease;
+}
+.auth-form input:focus{
+  outline:none;
+  border-color:rgba(var(--brand-rgb),.45);
+  box-shadow:0 0 0 3px rgba(var(--brand-rgb),.18);
+}
+.auth-submit{
+  width:100%;
+  justify-content:center;
+  margin-top:6px;
+}
 
 .history-toggle-card{width:min(var(--content),92%);margin:16px auto 0;border:1px solid rgba(var(--brand-rgb),.16);border-radius:20px;background:rgba(255,255,255,.92);box-shadow:var(--shadow);overflow:hidden;transition:box-shadow .2s ease,transform .2s ease}
 .history-toggle-card:not(.is-hidden):hover{transform:translateY(-2px);box-shadow:0 20px 40px rgba(35,31,32,.14)}

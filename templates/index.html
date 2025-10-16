@@ -214,23 +214,38 @@
 </main>
 <div id="authModal" class="modal is-hidden" role="dialog" aria-modal="true" aria-labelledby="authTitle">
   <div class="modal-backdrop" id="closeAuth"></div>
-  <div class="modal-shell">
-    <button type="button" class="modal-close" id="dismissAuth" aria-label="Close login">
+  <div class="modal-shell auth-shell">
+    <button type="button" class="modal-close" id="dismissAuth" aria-label="Close account modal">
       <svg viewBox="0 0 24 24" focusable="false" role="presentation">
         <path d="m8 8 8 8m0-8-8 8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
       </svg>
     </button>
-    <div class="modal-body">
-      <h2 id="authTitle" data-i18n="auth.title">Welcome</h2>
-      <p class="sub" data-i18n="auth.sub">Login or create an account to continue</p>
-      <div class="pill-input">
-        <input type="email" id="loginEmail" placeholder="Email" data-i18n-placeholder="auth.emailL"/>
+    <div class="modal-body auth-body">
+      <div class="auth-tabs" role="tablist">
+        <button type="button" class="auth-tab is-active" data-mode="login" role="tab" aria-selected="true">Login</button>
+        <button type="button" class="auth-tab" data-mode="signup" role="tab" aria-selected="false">Sign up</button>
       </div>
-      <div class="pill-input">
-        <input type="password" id="loginPass" placeholder="Password" data-i18n-placeholder="auth.passL"/>
-      </div>
-      <button id="doLogin" type="button" class="btn" data-i18n="auth.login">Login</button>
-      <span id="loginOk" class="sub-13" style="display:none;" data-i18n="auth.ok">Logged in</span>
+      <div id="authMessage" class="auth-message is-hidden" role="alert"></div>
+      <form id="loginForm" class="auth-form" novalidate>
+        <h2 id="authTitle">Welcome back</h2>
+        <p class="auth-sub">Enter your details to continue.</p>
+        <label class="auth-label" for="loginEmail">Email</label>
+        <input type="email" id="loginEmail" autocomplete="email" required placeholder="name@example.com">
+        <label class="auth-label" for="loginPass">Password</label>
+        <input type="password" id="loginPass" autocomplete="current-password" required placeholder="Password">
+        <button id="doLogin" type="submit" class="btn auth-submit">Login</button>
+      </form>
+      <form id="signupForm" class="auth-form is-hidden" novalidate>
+        <h2>Join SACA</h2>
+        <p class="auth-sub">Create an account to save your check-ins.</p>
+        <label class="auth-label" for="signupEmail">Email</label>
+        <input type="email" id="signupEmail" autocomplete="email" required placeholder="name@example.com">
+        <label class="auth-label" for="signupPass">Password</label>
+        <input type="password" id="signupPass" autocomplete="new-password" required placeholder="Password (min 6 characters)">
+        <label class="auth-label" for="signupConfirm">Confirm password</label>
+        <input type="password" id="signupConfirm" autocomplete="new-password" required placeholder="Repeat password">
+        <button id="doSignup" type="submit" class="btn auth-submit">Sign up</button>
+      </form>
     </div>
   </div>
 </div>
