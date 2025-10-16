@@ -1,103 +1,127 @@
+from pathlib import Path
+import json
+import os
+import uuid
+
 from fastapi import FastAPI, UploadFile, File, Form, Request
-from fastapi.responses import JSONResponse, FileResponse, HTMLResponse
+from fastapi.responses import FileResponse, HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-import os, uuid, json
 
 from pipeline.pipeline import VoiceToTextPipeline
 from saca_predictor import load_models, predict_from_text, questions
 
 app = FastAPI(title="SACA Voice App")
 
-RESULTS_DIR = "results"
-os.makedirs(RESULTS_DIR, exist_ok=True)
+RESULTS_DIR = Path("results")
+RESULTS_DIR.mkdir(exist_ok=True)
 
-# Serve static files
+# Serve static files (JS/CSS)
 app.mount("/static", StaticFiles(directory="static"), name="static")
+
+# Templates folder
 templates = Jinja2Templates(directory="templates")
 
-# Load components
+# Load AI components
 MODELS = load_models(base_dir="models")
-VOICE_PIPE = VoiceToTextPipeline()
+VOICE_PIPE = VoiceToTextPipeline()  # Initialize speech-to-text pipeline
 
-
-# === Helper ===
-def normalize_free_text(text: str) -> str:
-    """Normalize only free-text portions."""
-    _, normalized = VOICE_PIPE.process_text(text)
-    return normalized.strip().capitalize()
+_KNOWN_AUDIO_EXTENSIONS = {".wav", ".webm", ".ogg", ".mp3", ".m4a", ".flac"}
 
 
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
-    """Render homepage."""
+    """Render the SACA homepage."""
     return templates.TemplateResponse("index.html", {"request": request})
 
 
-# 🎤 STEP 1: Upload and transcribe audio only
 @app.post("/upload-audio")
-async def upload_audio(file: UploadFile = File(...)):
-    """Transcribe voice to text and return normalized free text."""
-    filename = f"{uuid.uuid4()}.wav"
-    filepath = os.path.join(RESULTS_DIR, filename)
-    with open(filepath, "wb") as f:
-        f.write(await file.read())
+async def upload_audio(
+    file: UploadFile = File(None),
+    answers: str = Form(None),
+):
+    """Handle uploaded audio or form answers."""
+    filename = None
+    norm_text = ""
+    raw_text = ""
+    user_answers = []
 
-    try:
-        raw_text, free_text = VOICE_PIPE.process(filepath)
-        norm_text = normalize_free_text(free_text)
-        print(f"🎧 Transcribed: {raw_text}")
-        print(f"🧠 Normalized: {norm_text}")
+    # === 1. Handle audio upload and transcription ===
+    if file:
+        incoming_name = file.filename or ""
+        incoming_ext = os.path.splitext(incoming_name)[1].lower()
+        safe_ext = incoming_ext if incoming_ext in _KNOWN_AUDIO_EXTENSIONS else ".wav"
+        filename = f"{uuid.uuid4()}{safe_ext}"
+        filepath = RESULTS_DIR / filename
 
-        # Return normalized text to prefill UI
-        return JSONResponse({
-            "raw_text": raw_text,
-            "normalized_text": norm_text,
-            "questions": questions
-        })
+        file_bytes = await file.read()
+        filepath.write_bytes(file_bytes)
 
-    except Exception as e:
-        return JSONResponse({"error": f"Audio processing failed: {e}"}, status_code=500)
+        try:
+            raw_text, norm_text = VOICE_PIPE.process(str(filepath))
+        except Exception as exc:  # pragma: no cover - surfacing runtime issues
+            return JSONResponse(
+                {"error": f"ASR/Normalization failed: {exc}"},
+                status_code=500,
+            )
 
+    # === 2. Handle typed answers ===
+    if answers:
+        try:
+            data = json.loads(answers)
+            user_answers = data.get("answers", [])
+            text_from_form = " ".join(user_answers).strip()
+            if text_from_form:
+                _, text_norm = VOICE_PIPE.process_text(text_from_form)
+                raw_text = raw_text or text_from_form
+                norm_text = text_norm
+        except json.JSONDecodeError as exc:
+            return JSONResponse(
+                {"error": f"Failed to parse answers: {exc}"},
+                status_code=400,
+            )
+        except Exception as exc:  # pragma: no cover - unexpected processing failure
+            return JSONResponse(
+                {"error": f"Failed to normalize answers: {exc}"},
+                status_code=500,
+            )
 
-# 🧩 STEP 2: Handle full structured submission
-@app.post("/submit-answers")
-async def submit_answers(answers: str = Form(...)):
-    """Handle the structured answers after audio or text input."""
-    try:
-        data = json.loads(answers)
-        user_answers = data.get("answers", [])
-
-        free_text = user_answers[0] if len(user_answers) > 0 else ""
-        duration = user_answers[1] if len(user_answers) > 1 else "N/A"
-        severity = user_answers[2] if len(user_answers) > 2 else "N/A"
-        other_symptoms = user_answers[3] if len(user_answers) > 3 else "N/A"
-        change = user_answers[4] if len(user_answers) > 4 else "N/A"
-
-        norm_text = normalize_free_text(free_text)
-
-        formatted_text = (
-            f"{norm_text}\n"
-            f"Duration: {duration}\n"
-            f"Severity: {severity}\n"
-            f"Other symptoms: {other_symptoms}\n"
-            f"Change: {change}"
+    if not norm_text:
+        return JSONResponse(
+            {"error": "No speech or text detected. Please try again."},
+            status_code=400,
         )
 
-        print("====================================")
-        print(f"🧩 FINAL FORMATTED TEXT SENT TO MODEL:\n{formatted_text}")
-        print("====================================")
+    # === 3. Predict with SACA model ===
+    print("====================================")
+    print("NORMALIZED TEXT SENT TO MODEL:")
+    print(norm_text)
+    print("====================================")
 
-        saca_result = predict_from_text(formatted_text, MODELS)
-        parts = saca_result.split("\n")
-        severity_line = parts[2] if len(parts) >= 3 else parts[-1] if parts else ""
+    saca_result = predict_from_text(norm_text, MODELS)
 
-        return JSONResponse({
+    parts = saca_result.split("\n")
+    severity_line = (
+        parts[2] if len(parts) >= 3 else (parts[-1] if parts else "")
+    )
+
+    return JSONResponse(
+        {
             "result": saca_result,
+            "raw_text": raw_text,
             "normalized_text": norm_text,
             "severity": severity_line,
-            "questions": questions
-        })
+            "questions": questions,
+            "user_answers": user_answers,
+            "download": filename,
+        }
+    )
 
-    except Exception as e:
-        return JSONResponse({"error": f"Failed to process answers: {e}"}, status_code=500)
+
+@app.get("/download/{file_name}")
+async def download_file(file_name: str):
+    """Download previously uploaded file."""
+    filepath = RESULTS_DIR / file_name
+    if filepath.exists():
+        return FileResponse(filepath, filename=file_name)
+    return JSONResponse({"error": "File not found"}, status_code=404)

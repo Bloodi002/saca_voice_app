@@ -1,5 +1,5 @@
-# ============================================================
-# 🧠 SACA Predictor (Hybrid Confidence-Boosted Final Version)
+﻿# ============================================================
+# ≡ƒºá SACA Predictor (Hybrid Confidence-Boosted Final Version)
 # ============================================================
 
 import os
@@ -19,7 +19,7 @@ except (ModuleNotFoundError, ImportError) as exc:  # pragma: no cover - environm
 
 
 # ------------------------------------------------------------
-# 1️⃣ Load all models
+# 1∩╕ÅΓâú Load all models
 # ------------------------------------------------------------
 def load_models(base_dir="models"):
     if sklearn is None:
@@ -60,7 +60,7 @@ def load_models(base_dir="models"):
 
 
 # ------------------------------------------------------------
-# 2️⃣ Text Preprocessing
+# 2∩╕ÅΓâú Text Preprocessing
 # ------------------------------------------------------------
 def clean_text(t):
     t = str(t).lower()
@@ -78,7 +78,7 @@ def clean_text(t):
 
 
 # ------------------------------------------------------------
-# 3️⃣ Predict Disease (Hybrid Logistic + XGB + Semantic)
+# 3∩╕ÅΓâú Predict Disease (Hybrid Logistic + XGB + Semantic)
 # ------------------------------------------------------------
 def predict_disease(user_text, models, blend_weights=(0.7, 0.2, 0.1)):
     tfidf = models["tfidf"]
@@ -111,11 +111,11 @@ def predict_disease(user_text, models, blend_weights=(0.7, 0.2, 0.1)):
     top3_idx = blended.argsort()[-3:][::-1]
     top3 = [(le.inverse_transform([i])[0], float(blended[i])) for i in top3_idx]
 
-    return f"💊 Predicted disease: {label}", confidence, top3
+    return f"≡ƒÆè Predicted disease: {label}", confidence, top3
 
 
 # ------------------------------------------------------------
-# 4️⃣ Predict severity (unchanged)
+# 4∩╕ÅΓâú Predict severity (unchanged)
 # ------------------------------------------------------------
 def predict_severity(user_text, models):
     vec = models["severity_vectorizer"]
@@ -123,7 +123,7 @@ def predict_severity(user_text, models):
     features = vec.transform([user_text])
     probs = model.predict_proba(features)[0]
 
-    levels = ["🟢 Mild", "🟠 Moderate", "🔴 Severe"]
+    levels = ["≡ƒƒó Mild", "≡ƒƒá Moderate", "≡ƒö┤ Severe"]
     base_idx = np.argmax(probs)
     base_conf = np.max(probs)
     base_level = levels[base_idx]
@@ -131,7 +131,7 @@ def predict_severity(user_text, models):
 
     severe_words = [
         "severe", "unable", "extreme", "intense", "sharp", "crushing",
-        "bleeding", "faint", "unbearable", "can’t breathe", "difficulty breathing"
+        "bleeding", "faint", "unbearable", "canΓÇÖt breathe", "difficulty breathing"
     ]
     moderate_words = [
         "moderate", "persistent", "ongoing", "strong", "increasing", "worsening",
@@ -144,23 +144,23 @@ def predict_severity(user_text, models):
 
     boost = 0.0
     if any(w in text for w in severe_words):
-        base_level = "🔴 Severe"; boost += 0.25
+        base_level = "≡ƒö┤ Severe"; boost += 0.25
     elif any(w in text for w in moderate_words):
-        base_level = "🟠 Moderate"; boost += 0.15
+        base_level = "≡ƒƒá Moderate"; boost += 0.15
     elif any(w in text for w in mild_words):
-        base_level = "🟢 Mild"; boost -= 0.05
+        base_level = "≡ƒƒó Mild"; boost -= 0.05
 
     if text.count(" and ") + text.count(",") >= 2:
-        if base_level == "🟢 Mild":
-            base_level = "🟠 Moderate"
+        if base_level == "≡ƒƒó Mild":
+            base_level = "≡ƒƒá Moderate"
         boost += 0.1
 
     recal_conf = min(1.0, base_conf + boost)
-    return f"🔥 Severity level: {base_level} (confidence: {recal_conf:.2f})", recal_conf
+    return f"≡ƒöÑ Severity level: {base_level} (confidence: {recal_conf:.2f})", recal_conf
 
 
 # ------------------------------------------------------------
-# 5️⃣ Unified Pipeline (Guard removed for Hybrid model)
+# 5∩╕ÅΓâú Unified Pipeline (Guard removed for Hybrid model)
 # ------------------------------------------------------------
 def predict_from_text(norm_text, models):
     disease_out, disease_conf, top3 = predict_disease(norm_text, models)
@@ -168,11 +168,11 @@ def predict_from_text(norm_text, models):
 
     # Compose advice
     if "Mild" in severity_out:
-        advice = "🩺 Monitor symptoms and rest. Stay hydrated."
+        advice = "≡ƒ⌐║ Monitor symptoms and rest. Stay hydrated."
     elif "Moderate" in severity_out:
-        advice = "⚠ Consider consulting a healthcare professional within 24 hours."
+        advice = "ΓÜá Consider consulting a healthcare professional within 24 hours."
     else:
-        advice = "🚨 Seek immediate medical attention."
+        advice = "≡ƒÜ¿ Seek immediate medical attention."
 
     # Format readable output
     top3_display = "\n".join([f"   - {lbl:<30} ({conf:.2f})" for lbl, conf in top3])
@@ -180,27 +180,25 @@ def predict_from_text(norm_text, models):
         f"{disease_out} (confidence: {disease_conf:.2f})\n"
         f"{severity_out} (confidence: {severity_conf:.2f})\n"
         f"Advice: {advice}\n\n"
-        f"🔍 Top 3 Predictions:\n{top3_display}"
+        f"≡ƒöì Top 3 Predictions:\n{top3_display}"
     )
 
 
 # ------------------------------------------------------------
-# 6️⃣ Questions for UI flow (unchanged)
+# 6∩╕ÅΓâú Questions for UI flow (unchanged)
 # ------------------------------------------------------------
 questions = [
-    {"text": "1️⃣ How are you feeling today?", "type": "text"},
-    {"text": "2️⃣ How long have you been feeling this?", "type": "choice",
-     "options": ["A few hours", "A day", "2–3 days", "A week or more"]},
+    {"text": "1∩╕ÅΓâú How are you feeling today?", "type": "text"},
+    {"text": "2∩╕ÅΓâú How long have you been feeling this?", "type": "choice",
+     "options": ["A few hours", "A day", "2ΓÇô3 days", "A week or more"]},
     {"text": "How bad is the issue?", "type": "choice", "options": ["Light", "Medium", "Severe"]},
-    {"text": "3️⃣ Have you noticed any other symptoms?", "type": "choice",
-     "options": ["Fever", "Nausea or vomiting", "Cough or breathing difficulty", "Diarrhea", "Chest pain or tightness", "Dizziness or fatigue", "None of these"]},
-    {"text": "4️⃣ Does it get better or worse after any of these?", "type": "choice",
-     "options": ["After eating", "When resting", "When moving or standing", "Changes randomly", "Not sure"]}
+    {"text": "3∩╕ÅΓâú Have you noticed any other symptoms?", "type": "choice",
+     "options": ["Fever", "Nausea or vomiting", "Cough or breathing difficulty", "Diarrhea", "Chest pain or tightness", "Dizziness or fatigue", "None of these"]}
 ]
 
 
 # ------------------------------------------------------------
-# 7️⃣ Version & Diagnostics
+# 7∩╕ÅΓâú Version & Diagnostics
 # ------------------------------------------------------------
 import sklearn
 print("scikit-learn version:", sklearn.__version__)
@@ -213,4 +211,5 @@ print("TF-IDF vocab size:", len(tfidf.vocabulary_))
 if __name__ == "__main__":
     MODELS = load_models()
     sample = "I have been having headaches and vomiting since morning."
-    print("\n🧪 Test Run\n", predict_from_text(sample, MODELS))
+    print("\n≡ƒº¬ Test Run\n", predict_from_text(sample, MODELS))
+

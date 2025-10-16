@@ -57,44 +57,44 @@
 </header>
 <main>
   <section id="home" class="page">
-    <div class="hero-intro">
-      <div class="hero-overlay">
-        <span class="hero-tag">HEALTH ASSISTANT FOR PALM ISLANDS COMMUNITY</span>
-        <h1 class="main-title" data-i18n="home.banner">Your Health Companion</h1>
-        <p>
-          SACA is your trusted health companion designed for the Palm Island community.
-          It helps you describe your symptoms, understand your condition,
-          and connect with the right care.
-        </p>
-        <div class="hero-actions">
-          <button type="button" id="howToBtn" class="btn-ghost how-to-btn">How to Use</button>
-        </div>
-      </div>
-      <section class="checkin-card" aria-labelledby="checkinTitle">
-        <header class="checkin-copy">
-          <h2 id="checkinTitle" class="checkin-title" data-i18n="home.heading">How are you feeling today?</h2>
-          <p class="checkin-sub">Start a check-in by letting SACA know how you feel.</p>
-        </header>
-        <div class="checkin-actions">
-          <button id="micHome" type="button" class="btn btn-wide mic-btn" aria-live="polite">
-            <span class="mic-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" focusable="false" role="presentation">
-                <path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 1 0-6 0v6a3 3 0 0 0 3 3Zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.93V21h2v-2.07A7 7 0 0 0 19 12h-2Z" fill="currentColor"/>
-              </svg>
-            </span>
-            <span class="mic-text" data-i18n="home.mic">Tap here to speak</span>
-          </button>
-          <button id="showGuided" type="button" class="btn-outline btn-wide guide-btn">
-            <span class="guide-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" focusable="false" role="presentation">
-                <path d="M7 4a3 3 0 0 1 3-3h4a3 3 0 0 1 3 3h2.25A1.75 1.75 0 0 1 21 5.75v14.5A1.75 1.75 0 0 1 19.25 22H4.75A1.75 1.75 0 0 1 3 20.25V5.75C3 4.78 3.78 4 4.75 4H7Zm2-.75A1.25 1.25 0 0 0 7.75 4.5V6h8.5V4.5A1.25 1.25 0 0 0 15 3.25h-6Z" fill="currentColor"/>
-              </svg>
-            </span>
-            <span class="guide-text" data-i18n="home.typeBtn">Type/Choose Your Symptoms</span>
-          </button>
-        </div>
-      </section>
+    <div id="heroIntro" class="hero-intro">
+ 
+
+  <div class="hero-overlay">
+     <span class="hero-tag">HEALTH ASSISTANT FOR PALM ISLANDS COMMUNITY</span>
+    <h1 class="main-title" data-i18n="home.banner">Your Health Companion</h1>
+    <p>
+      SACA is your trusted health companion designed for the Palm Island community.
+      It helps you describe your symptoms easily, understand your condition,
+      and connect with the right care.
+    </p>
+    <div class="hero-actions">
+      <button type="button" id="getStartedBtn" class="btn">Get Started</button>
+      <button type="button" id="howToBtn" class="btn-ghost how-to-btn">How to Use</button>
     </div>
+  </div>
+
+  <h2 id="preCheckHeading" class="simple-heading is-hidden" data-i18n="home.heading">How are you feeling today?</h2>
+</div>
+
+      <div id="preCheckCta" class="cta is-hidden">
+        <button id="micHome" type="button" class="btn btn-wide mic-btn" aria-live="polite">
+          <span class="mic-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" focusable="false" role="presentation">
+              <path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 1 0-6 0v6a3 3 0 0 0 3 3Zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.93V21h2v-2.07A7 7 0 0 0 19 12h-2Z" fill="currentColor"/>
+            </svg>
+          </span>
+          <span class="mic-text" data-i18n="home.mic">Tap here to speak</span>
+        </button>
+        <button id="showGuided" type="button" class="btn-outline btn-wide guide-btn">
+          <span class="guide-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" focusable="false" role="presentation">
+              <path d="M7 4a3 3 0 0 1 3-3h4a3 3 0 0 1 3 3h2.25A1.75 1.75 0 0 1 21 5.75v14.5A1.75 1.75 0 0 1 19.25 22H4.75A1.75 1.75 0 0 1 3 20.25V5.75C3 4.78 3.78 4 4.75 4H7Zm2-.75A1.25 1.25 0 0 0 7.75 4.5V6h8.5V4.5A1.25 1.25 0 0 0 15 3.25h-6Z" fill="currentColor"/>
+            </svg>
+          </span>
+          <span class="guide-text" data-i18n="home.typeBtn">Type/Choose Your Symptoms</span>
+        </button>
+      </div>
       <div id="historyToggleCard" class="history-toggle-card is-hidden" data-requires-auth="true">
         <button id="toggleHistory" type="button" class="history-toggle-btn" aria-expanded="false" aria-controls="historyPanel">
           <span class="history-toggle-icon" aria-hidden="true">
@@ -106,6 +106,7 @@
             <span class="history-toggle-title" data-i18n="history.title">Your History</span>
             <span class="history-toggle-sub" data-i18n="history.toggleHint">Review your latest conversations</span>
           </div>
+          <span class="history-toggle-status" id="historyToggleStatus" aria-hidden="true">Show</span>
         </button>
         <div id="historyPanel" class="history-panel is-hidden">
           <div id="histEmpty" class="empty-state" data-i18n="history.empty">No entries yet. Your latest check-ins will appear here.</div>
@@ -115,12 +116,6 @@
     </div>
     <div id="guidedBox" class="guided-box is-hidden">
       <div id="questionContainer" class="question-card">
-        <div class="question-progress-wrap">
-          <div class="question-progress" aria-hidden="true">
-            <div class="question-progress-bar" id="questionProgressBar"></div>
-          </div>
-          <p id="questionProgress" class="sub-13 progress-label">Question 1 of 4</p>
-        </div>
         <p id="questionText" class="title-16"></p>
         <div class="question-actions">
           <div class="pill-input">
@@ -143,20 +138,44 @@
         </div>
       </div>
       <div class="analysis-body">
-        <div class="analysis-summary">
-          <div class="analysis-summary-block">
-            <span class="analysis-label">Predicted condition</span>
-            <p id="analysisCondition" class="analysis-value muted">No condition predicted yet.</p>
+        <section class="analysis-item" id="conditionRow">
+          <span class="analysis-item-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" focusable="false" role="presentation">
+              <rect x="5" y="4" width="14" height="17" rx="2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M9 4V2h6v2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M9 10h6M9 14h6M9 18h4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+          <div class="analysis-item-copy">
+            <h4>Predicted condition</h4>
+            <p id="analysisCondition" class="analysis-copy muted">No condition predicted yet.</p>
           </div>
-          <div class="analysis-summary-block" id="severityRow" data-severity="unknown">
-            <span class="analysis-label">Severity</span>
-            <p id="analysisSeverity" class="analysis-value muted">Severity will appear once we have enough detail.</p>
+        </section>
+        <section class="analysis-item" id="severityRow" data-severity="unknown">
+          <span class="analysis-item-icon" id="severityIcon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" focusable="false" role="presentation">
+              <path d="M5.5 19a8.5 8.5 0 1 1 13 0Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M12 12l3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M7 12h.01M12 7v.01M17 12h.01M12 17h.01" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+          <div class="analysis-item-copy">
+            <h4>Severity</h4>
+            <p id="analysisSeverity" class="analysis-copy muted">Severity will appear once we have enough detail.</p>
           </div>
-        </div>
-        <div class="analysis-advice">
-          <span class="analysis-label">Next steps</span>
-          <p id="analysisAdvice" class="analysis-value muted">We'll share guidance once an assessment is complete.</p>
-        </div>
+        </section>
+        <section class="analysis-item" id="adviceRow">
+          <span class="analysis-item-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" focusable="false" role="presentation">
+              <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="m10 14 5-5-2 6-6 2 3-3Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+          <div class="analysis-item-copy">
+            <h4>Next steps</h4>
+            <p id="analysisAdvice" class="analysis-copy muted">We'll share guidance once an assessment is complete.</p>
+          </div>
+        </section>
       </div>
       <div class="analysis-actions">
         <button id="resetExperience" type="button" class="btn-ghost refresh-btn is-hidden">Start another check-in</button>
@@ -164,52 +183,6 @@
     </div>
   </section>
 </main>
-<div id="howToModal" class="modal is-hidden" role="dialog" aria-modal="true" aria-labelledby="howToTitle" aria-describedby="howToLead">
-  <div class="modal-backdrop" id="howToBackdrop"></div>
-  <div class="modal-shell howto-shell">
-    <button type="button" class="modal-close" id="howToDismiss" aria-label="Close how to use guide">
-      <svg viewBox="0 0 24 24" focusable="false" role="presentation">
-        <path d="m8 8 8 8m0-8-8 8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-      </svg>
-    </button>
-    <div class="modal-body howto-body">
-      <span class="howto-badge">Quick Guide</span>
-      <h2 id="howToTitle">How to use SACA</h2>
-      <p id="howToLead" class="howto-lead">Follow these simple steps to get the most out of your health companion.</p>
-      <ol class="howto-steps">
-        <li>
-          <span class="step-bubble">1</span>
-          <div>
-            <h3>Share how you feel</h3>
-            <p>Tap the microphone or choose to type and describe your symptoms in your own words.</p>
-          </div>
-        </li>
-        <li>
-          <span class="step-bubble">2</span>
-          <div>
-            <h3>Answer quick prompts</h3>
-            <p>We may ask a few guided questions so SACA understands your situation clearly.</p>
-          </div>
-        </li>
-        <li>
-          <span class="step-bubble">3</span>
-          <div>
-            <h3>Review your summary</h3>
-            <p>See the predicted condition, severity level, and advice tailored for the Palm Islands community.</p>
-          </div>
-        </li>
-        <li>
-          <span class="step-bubble">4</span>
-          <div>
-            <h3>Save your history</h3>
-            <p>Log in to keep track of past check-ins and revisit guidance whenever you need it.</p>
-          </div>
-        </li>
-      </ol>
-      <button type="button" class="btn howto-primary" id="howToGotIt">Got it, let's begin</button>
-    </div>
-  </div>
-</div>
 <div id="authModal" class="modal is-hidden" role="dialog" aria-modal="true" aria-labelledby="authTitle">
   <div class="modal-backdrop" id="closeAuth"></div>
   <div class="modal-shell">

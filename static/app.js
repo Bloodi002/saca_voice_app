@@ -7,6 +7,7 @@
   const micButton = qs('#micHome');
   const micText = micButton?.querySelector('.mic-text');
   const showGuidedBtn = qs('#showGuided');
+  const getStartedBtn = qs('#getStartedBtn');
   const guidedBox = qs('#guidedBox');
   const guidedActions = qs('#guidedActions');
   const questionText = qs('#questionText');
@@ -62,8 +63,6 @@
   let audioChunks = [];
   let micStream = null;
   let recordingState = 'idle';
-  let lastNormalizedText = ""; // store normalized transcript from audio
-
 
   const ICONS = {
     clock: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l2.5 1.5"/></svg>`,
@@ -225,6 +224,7 @@
     if(nextBtn) nextBtn.style.display='inline-block';
   }
   function openGuidedFlow(options={}){
+    heroIntro?.classList.add('is-hidden');
     guidedBox?.classList.remove('is-hidden');
     guidedActions?.classList.remove('is-hidden');
     if(!guidedStarted) guidedStarted = true;
@@ -381,56 +381,29 @@
     }
 
     const answersForSend = currentAnswers.length ? [...currentAnswers] : [];
-    // If we already have a normalized transcript, make sure it's the first answer
-if (lastNormalizedText) {
-  if (!currentAnswers.length) {
-    currentAnswers.push(lastNormalizedText);
-  } else {
-    currentAnswers[0] = lastNormalizedText;
-  }
-}
-
     const formData = new FormData();
-    if(audioBlob){
-      formData.append('file', audioBlob, 'user_audio.wav');
-    }
+    if(audioBlob) formData.append('file', audioBlob, 'user_audio.wav');
     formData.append('answers', JSON.stringify({ answers: answersForSend }));
 
-    const endpoint = audioBlob ? '/upload-audio' : '/submit-answers';
-
     try {
-      const res = await fetch(endpoint, { method:'POST', body: formData });
+      const res = await fetch('/upload-audio', { method:'POST', body: formData });
       if(!res.ok) throw new Error('Upload failed');
       const data = await res.json();
 
-      const transcriptText = normalizeDisplay(
-  data.normalized_text || data.raw_text || data.transcription || answersForSend[0]
-);
-lastNormalizedText = transcriptText; // save normalized transcript for later use
+      const transcriptText = normalizeDisplay(data.transcription || data.transcript || data.nlp_text || answersForSend[0]);
 
-
-     if (fromAudio) {
-  resetAnalysisView();
-  guidedStarted = true;
-
-  // 🧠 Prefill the normalized transcript as the first (text) answer
-  currentAnswers = [transcriptText];
-
-  // 🎯 Jump straight to the 2nd question (index 1 = duration)
-  currentQuestion = 1;
-
-  // 💬 Hide the typing field and display next MCQ
-  answerInput.style.display = 'none';
-  nextBtn.style.display = 'none';
-
-  guidedBox?.classList.remove('is-hidden');
-  guidedActions?.classList.remove('is-hidden');
-  showQuestion(currentQuestion);
-
-  setMicLabel('idle');
-  return data;
-}
-
+      if(fromAudio){
+        resetAnalysisView();
+        currentAnswers = [];
+        guidedStarted = false;
+        if(transcriptText){
+          openGuidedFlow({ prefill: transcriptText, autoFocus:false });
+        } else {
+          openGuidedFlow({ autoFocus:true });
+        }
+        setMicLabel('idle');
+        return data;
+      }
 
       const parsed = parseAnalysis(data.result || '');
       const conditionDisplay = normalizeDisplay(formatWithConfidence(parsed.condition, parsed.conditionConfidence)) || DEFAULT_CONDITION;
@@ -537,6 +510,7 @@ lastNormalizedText = transcriptText; // save normalized transcript for later use
   });
   answerInput?.addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); nextBtn?.click(); } });
   showGuidedBtn?.addEventListener('click', ()=>openGuidedFlow({ autoFocus:true }));
+  getStartedBtn?.addEventListener('click', ()=>openGuidedFlow({ autoFocus:true }));
   refreshBtn?.addEventListener('click', resetExperience);
 
   micButton?.addEventListener('click', ()=>{
