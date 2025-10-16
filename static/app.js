@@ -40,6 +40,10 @@
   const historyLocked = qs('#historyLocked');
   const histCards = qs('#histCards');
   const histEmpty = qs('#histEmpty');
+  const historyTrigger = qs('#historyTrigger');
+  const historyModal = qs('#historyModal');
+  const historyBackdrop = qs('#closeHistory');
+  const historyDismiss = qs('#dismissHistory');
   const openAuth = qs('#openAuth');
   const logoutBtn = qs('#logoutBtn');
   const loginEmail = qs('#loginEmail');
@@ -98,6 +102,7 @@
   let entryFlowMode = null;
   let questionOffset = 0;
   let pendingNormalizedText = "";
+  let sessionHistory = [];
 
   const ICONS = {
     clock: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l2.5 1.5"/></svg>`,
@@ -159,7 +164,18 @@
   }
   function isAuthed(){ return !!(auth && auth.email); }
   function persistAuth(){ if(isAuthed()){ localStorage.setItem(AUTH_KEY, JSON.stringify(auth)); } else { localStorage.removeItem(AUTH_KEY); }}
-  function setAuth(next){ auth = (next && next.email) ? { email: next.email } : null; persistAuth(); updateAuthUI(); }
+  function setAuth(next){
+    auth = (next && next.email) ? { email: next.email.toLowerCase() } : null;
+    persistAuth();
+    if(isAuthed()){
+      if(sessionHistory.length){
+        const merged = [...sessionHistory, ...readHist()].slice(0,4);
+        writeHist(merged);
+        sessionHistory = [];
+      }
+    }
+    updateAuthUI();
+  }
   function guardProtectedLink(evt){
     if(isAuthed()) return;
     evt?.preventDefault();
@@ -374,49 +390,52 @@
   }
   function renderHistory(){
     if(!histCards || !histEmpty) return;
+    histCards.innerHTML = '';
     if(!isAuthed()){
-      histCards.innerHTML='';
       histEmpty.textContent = 'Log in to see your recent check-ins.';
       histEmpty.classList.remove('is-hidden');
       return;
     }
     const entries = readHist().slice(0,4);
-    histCards.innerHTML='';
     if(!entries.length){
-      histEmpty.textContent = t('history.empty') || 'Your latest check-ins will appear here.';
+      histEmpty.textContent = 'No saved check-ins yet. Your next check-in will appear here.';
       histEmpty.classList.remove('is-hidden');
       return;
     }
     histEmpty.classList.add('is-hidden');
     entries.forEach(entry=>{
-      const card = document.createElement('article'); card.className='hist-card';
+      const card = document.createElement('article');
       const date = new Date(entry.ts||Date.now());
-      const timeEl = document.createElement('time');
-      timeEl.dateTime = date.toISOString();
-      timeEl.textContent = date.toLocaleString();
-
-      const preview = document.createElement('p');
-      preview.className='hist-preview';
-      preview.textContent = clipText(normalizeDisplay(entry.transcript)||t('history.noText')||'No transcript captured.');
-
-      const meta = document.createElement('div'); meta.className='hist-meta';
-      const severityLabel = normalizeDisplay(entry.severity) || t('history.severity.none') || 'Not rated';
-      const severityBadge = document.createElement('span'); severityBadge.className = severityBadgeFromText(severityLabel); severityBadge.textContent = severityLabel.split('(')[0].trim() || severityLabel;
-      const conditionLabel = normalizeDisplay(entry.condition) || t('history.unknownCondition') || 'General check-in';
-      const conditionTag = document.createElement('span'); conditionTag.className='condition-tag'; conditionTag.textContent = conditionLabel;
-      meta.append(severityBadge, conditionTag);
-
-      card.append(timeEl, preview, meta);
-
+      const severityLabel = normalizeDisplay(entry.severity) || 'Not rated';
+      const severityLevel = severityLevelFromText(severityLabel);
+      const severityChipText = severityLevel === 'unknown' ? 'Reviewing' : toTitleCase(severityLevel);
+      const severityDescription = severityLabel ? severityLabel.split('(')[0].trim() : 'Not rated';
+      const conditionLabel = normalizeDisplay(entry.condition) || 'General check-in';
+      const preview = clipText(normalizeDisplay(entry.transcript)|| 'No transcript captured.');
       const adviceText = normalizeDisplay(entry.advice);
-      if(adviceText){ const adviceEl = document.createElement('p'); adviceEl.className='hist-advice'; adviceEl.textContent = adviceText; card.appendChild(adviceEl); }
-
+      const formattedTime = date.toLocaleString([], { dateStyle:'medium', timeStyle:'short' });
+      card.className = `history-card history-card--${severityLevel}`;
+      card.innerHTML = `
+        <header class="history-card-head">
+          <span class=\"history-chip history-chip--${severityLevel}\">${severityChipText}</span>
+          <time class=\"history-time\" datetime=\"${date.toISOString()}\">${formattedTime}</time>
+        </header>
+        <h3 class=\"history-condition\">${conditionLabel}</h3>
+        <p class=\"history-severity\">${severityDescription}</p>
+        <p class=\"history-snippet\">${preview}</p>
+        ${adviceText ? `<div class=\"history-advice\"><span>Next steps</span><p>${adviceText}</p></div>` : ''}
+      `;
       histCards.appendChild(card);
     });
   }
   function readHistMap(){
-    try{ return JSON.parse(localStorage.getItem(LS_KEY)||'{}'); }
-    catch(err){ return {}; }
+    try{
+      const parsed = JSON.parse(localStorage.getItem(LS_KEY)||'{}');
+      if(!parsed || Array.isArray(parsed) || typeof parsed !== 'object') return {};
+      return parsed;
+    } catch(err){
+      return {};
+    }
   }
   function readHist(){
     if(!isAuthed()) return [];
@@ -426,12 +445,26 @@
   function writeHist(entries){
     if(!isAuthed()) return;
     const map = readHistMap();
-    map[auth.email] = entries;
+    map[auth.email] = entries.slice(0,4);
     localStorage.setItem(LS_KEY, JSON.stringify(map));
   }
+  function showHistoryModal(){
+    if(!isAuthed()){
+      showAuthModal('login');
+      showAuthMessage('Please log in to view your history.', 'error');
+      return;
+    }
+    renderHistory();
+    historyModal?.classList.remove('is-hidden');
+    document.body.classList.add('modal-open');
+  }
+  function hideHistoryModal(){
+    historyModal?.classList.add('is-hidden');
+    if(!document.querySelector('.modal:not(.is-hidden)')){
+      document.body.classList.remove('modal-open');
+    }
+  }
   function logHistoryEntry(data){
-    if(!isAuthed()) return;
-    const entries = readHist();
     const record = {
       ts: Date.now(),
       transcript: normalizeDisplay(data?.transcript)||null,
@@ -439,8 +472,14 @@
       severity: normalizeDisplay(data?.severity)||null,
       advice: normalizeDisplay(data?.advice)||null
     };
-    writeHist([record, ...entries].slice(0,4));
-    renderHistory();
+    if(isAuthed()){
+      const entries = readHist();
+      writeHist([record, ...entries].slice(0,4));
+      renderHistory();
+      sessionHistory = [];
+    } else {
+      sessionHistory = [record, ...sessionHistory].slice(0,4);
+    }
   }
 
   function resetAnalysisView(){
@@ -781,6 +820,7 @@ if (adviceDisplay !== DEFAULT_ADVICE) {
     currentAnswers = [];
     currentQuestion = 0;
     guidedStarted = false;
+    hideHistoryModal();
     pendingNormalizedText = "";
     heroIntro?.classList.remove('is-hidden');
     micButton?.classList.remove('is-hidden','is-listening');
@@ -812,15 +852,15 @@ if (adviceDisplay !== DEFAULT_ADVICE) {
       historyCard.setAttribute('href', authed ? '#history' : '#');
       if(!authed) historyCard.setAttribute('aria-disabled','true'); else historyCard.removeAttribute('aria-disabled');
     }
+    if(historyTrigger){
+      historyTrigger.classList.toggle('is-hidden', !authed);
+      historyTrigger.disabled = !authed;
+    }
     homeCards?.classList.toggle('is-hidden', !authed);
     historyLocked?.classList.toggle('is-hidden', authed);
     historyContent?.classList.toggle('is-hidden', !authed);
-    if(!authed){
-      histCards?.replaceChildren();
-      histEmpty?.classList.add('is-hidden');
-    } else {
-      renderHistory();
-    }
+    renderHistory();
+    if(!authed){ hideHistoryModal(); }
     applyStrings();
   }
 
@@ -836,6 +876,10 @@ if (adviceDisplay !== DEFAULT_ADVICE) {
     resetExperience();
     window.location.hash = '#home';
   });
+
+  historyTrigger?.addEventListener('click', showHistoryModal);
+  historyBackdrop?.addEventListener('click', hideHistoryModal);
+  historyDismiss?.addEventListener('click', hideHistoryModal);
 
   authEls.forEach(el=>el.addEventListener('click', guardProtectedLink));
   langSelect?.addEventListener('change', ()=>{ prefs.lang=langSelect.value; savePrefs(); applyStrings(); });
