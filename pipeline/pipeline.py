@@ -12,10 +12,16 @@ class VoiceToTextPipeline:
     def process(self, audio_path):
         """Process an audio file into raw and normalized text."""
         raw = self.asr.transcribe(audio_path)
-        norm = self.normalizer.normalize(raw)
+        try:
+            norm = self.normalizer.normalize(raw)
+        except Exception:
+            norm = raw
         return raw, norm
 
     def process_text(self, text):
         """Normalize given text only."""
-        norm = self.normalizer.normalize(text)
+        try:
+            norm = self.normalizer.normalize(text)
+        except Exception:
+            norm = text
         return text, norm

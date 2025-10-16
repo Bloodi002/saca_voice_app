@@ -8,9 +8,16 @@
   const micText = micButton?.querySelector('.mic-text');
   const showGuidedBtn = qs('#showGuided');
   const getStartedBtn = qs('#getStartedBtn');
+  const howToBtn = qs('#howToBtn');
+  const howToModal = qs('#howToModal');
+  const howToClose = qs('#dismissHowTo');
+  const howToBackdrop = qs('#closeHowTo');
   const guidedBox = qs('#guidedBox');
   const guidedActions = qs('#guidedActions');
   const questionText = qs('#questionText');
+  const questionHeading = qs('#questionHeading');
+  const questionProgress = qs('#questionProgress');
+  const entryProgress = qs('#entryProgress');
   const answerInput  = qs('#answerInput');
   const nextBtn      = qs('#nextQuestion');
   const analysisCard = qs('#sacaResult');
@@ -18,6 +25,14 @@
   const analysisSeverity = qs('#analysisSeverity');
   const analysisAdvice = qs('#analysisAdvice');
   const analysisTimestamp = qs('#analysisTimestamp');
+  const severityRow = qs('#severityRow');
+  const entryChoice = qs('#entryChoice');
+  const entrySpeakBtn = qs('#entrySpeak');
+  const entryTypeBtn = qs('#entryType');
+  const entryTextWrap = qs('#entryTextWrap');
+  const entryText = qs('#entryText');
+  const entryTextSubmit = qs('#entryTextSubmit');
+  const entryTextCancel = qs('#entryTextCancel');
   const refreshBtn = qs('#resetExperience');
   const historyCard = qs('#historyCard');
   const homeCards = qs('#homeCards');
@@ -33,10 +48,16 @@
   const loginOk = qs('#loginOk');
   const authEls = document.querySelectorAll('[data-requires-auth]');
 
-  const DEFAULT_CONDITION = "No condition predicted yet.";
-  const DEFAULT_SEVERITY = "Severity will appear once we have enough detail.";
-  const DEFAULT_ADVICE = "We'll share guidance once an assessment is complete.";
-  const DEFAULT_TIMESTAMP = "Awaiting input...";
+  const DEFAULT_CONDITION = "We'll share the likely condition once we review your details.";
+  const DEFAULT_SEVERITY = "We're still gauging how serious things are.";
+  const DEFAULT_ADVICE = "Next steps will appear here as soon as we have a recommendation.";
+  const DEFAULT_TIMESTAMP = "Waiting for your check-in.";
+  const SEVERITY_CLASSES = ['severity-unknown','severity-mild','severity-moderate','severity-severe'];
+  const MIC_COPY = {
+    idle: { key:'home.mic', fallback:'Tap to speak' },
+    listening: { key:'home.micListening', fallback:'Listening...' },
+    submitting: { key:'home.micSubmitting', fallback:'Processing...' }
+  };
 
   const prefs = JSON.parse(localStorage.getItem(PREF_KEY)||'{}');
   let auth = null;
@@ -51,9 +72,9 @@
     { text: "How are you feeling today?", type: "text" },
     { text: "How long have you been feeling this?", type: "choice", options: ["A few hours","A day","2-3 days","A week or more"] },
     { text: "How bad is the issue?", type: "choice", options: ["Light","Medium","Severe"] },
-    { text: "Have you noticed any other symptoms?", type: "choice", options: ["Fever","Nausea or vomiting","Cough or breathing difficulty","Diarrhea","Chest pain or tightness","Dizziness or fatigue","None of these"] },
-    { text: "Does it get better or worse after any of these?", type: "choice", options: ["After eating","When resting","When moving or standing","Changes randomly","Not sure"] }
+    { text: "Have you noticed any other symptoms?", type: "choice", options: ["Fever","Nausea or vomiting","Cough or breathing difficulty","Diarrhea","Chest pain or tightness","Dizziness or fatigue","None of these"] }
   ];
+  const BASE_QUESTION_COUNT = questions.length;
 
   let currentQuestion = 0;
   let currentAnswers = [];
@@ -63,6 +84,10 @@
   let audioChunks = [];
   let micStream = null;
   let recordingState = 'idle';
+  let activeMicButton = micButton;
+  let entryFlowMode = null;
+  let questionOffset = 0;
+  let pendingNormalizedText = "";
 
   const ICONS = {
     clock: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l2.5 1.5"/></svg>`,
@@ -136,12 +161,63 @@
 
   function normalizeDisplay(text){
     if(!text) return '';
-    try{ return text.normalize('NFKD').replace(/[^A-Za-z0-9.,()%+\-\/\s]/g,' ').replace(/\s+/g,' ').trim(); }
-    catch(err){ return String(text).replace(/[^A-Za-z0-9.,()%+\-\/\s]/g,' ').replace(/\s+/g,' ').trim(); }
+    try{ return text.normalize('NFKD').replace(/[^A-Za-z0-9.,()%+\-\/\s']/g,' ').replace(/\s+/g,' ').trim(); }
+    catch(err){ return String(text).replace(/[^A-Za-z0-9.,()%+\-\/\s']/g,' ').replace(/\s+/g,' ').trim(); }
   }
   function clipText(text, max=160){
     if(!text) return '';
     return text.length<=max ? text : `${text.slice(0,max-1)}...`;
+  }
+  function toTitleCase(text){
+    if(!text) return '';
+    return text
+      .toLowerCase()
+      .split(/\s+/)
+      .map(word=>{
+        if(!word) return word;
+        return word.charAt(0).toUpperCase() + word.slice(1);
+      })
+      .join(' ')
+      .replace(/\b(I|Ii|Iii|Iv|V|Vi|Vii|Viii|Ix|X)\b/g, match=>match.toUpperCase());
+  }
+  function updateProgressDisplay(index){
+    const total = Math.max(1, BASE_QUESTION_COUNT - questionOffset);
+    let label;
+    if(index >= BASE_QUESTION_COUNT){
+      label = "All questions complete";
+    } else {
+      const step = Math.max(1, index - questionOffset + 1);
+      const clampedStep = Math.min(total, step);
+      label = `Question ${clampedStep} of ${total}`;
+    }
+    if(questionProgress) questionProgress.textContent = label;
+    if(entryProgress) entryProgress.textContent = label;
+  }
+  function setEntryChoiceDefault(){
+    if(entrySpeakBtn){
+      entrySpeakBtn.disabled = false;
+      entrySpeakBtn.classList.remove('is-listening');
+      const textEl = entrySpeakBtn.querySelector('.question-btn-label, .entry-label, .mic-text');
+      if(textEl) textEl.textContent = MIC_COPY.idle.fallback;
+    }
+    if(entryTypeBtn){
+      entryTypeBtn.disabled = false;
+    }
+    entryTextWrap?.classList.add('is-hidden');
+    if(entryText) entryText.value='';
+    updateProgressDisplay(currentQuestion);
+  }
+  function openHowToModal(){
+    if(!howToModal) return;
+    howToModal.classList.remove('is-hidden');
+    document.body.classList.add('modal-open');
+  }
+  function closeHowToModal(){
+    if(!howToModal) return;
+    howToModal.classList.add('is-hidden');
+    if(!document.querySelector('.modal:not(.is-hidden)')){
+      document.body.classList.remove('modal-open');
+    }
   }
   function severityBadgeFromText(text){
     const lower = (text||'').toLowerCase();
@@ -149,6 +225,26 @@
     if(lower.includes('moderate')) return 'badge badge-moderate';
     if(lower.includes('mild')) return 'badge badge-mild';
     return 'badge badge-neutral';
+  }
+  function severityLevelFromText(text){
+    const lower = (text||'').toLowerCase();
+    if(!lower) return 'unknown';
+    if(lower.includes('severe') || lower.includes('emergency') || lower.includes('critical')) return 'severe';
+    if(lower.includes('moderate') || lower.includes('medium') || lower.includes('watch')) return 'moderate';
+    if(lower.includes('mild') || lower.includes('low') || lower.includes('stable') || lower.includes('light')) return 'mild';
+    if(lower.includes('unknown') || lower.includes('undetermined') || lower.includes('not assessed')) return 'unknown';
+    return 'unknown';
+  }
+  function applySeverityTheme(text){
+    const level = severityLevelFromText(text);
+    if(analysisCard){
+      analysisCard.classList.remove(...SEVERITY_CLASSES);
+      analysisCard.classList.add(`severity-${level}`);
+    }
+    if(severityRow){
+      severityRow.dataset.severity = level;
+    }
+    return level;
   }
   function renderHistory(){
     if(!histCards || !histEmpty) return;
@@ -208,23 +304,31 @@
   }
 
   function resetAnalysisView(){
-    setAnalysisText(analysisCondition, DEFAULT_CONDITION, DEFAULT_CONDITION);
-    setAnalysisText(analysisSeverity, DEFAULT_SEVERITY, DEFAULT_SEVERITY);
-    setAnalysisText(analysisAdvice, DEFAULT_ADVICE, DEFAULT_ADVICE);
+    setAnalysisText(analysisCondition, null, DEFAULT_CONDITION);
+    setAnalysisText(analysisSeverity, null, DEFAULT_SEVERITY);
+    setAnalysisText(analysisAdvice, null, DEFAULT_ADVICE);
     if(analysisTimestamp) analysisTimestamp.textContent = DEFAULT_TIMESTAMP;
     analysisCard?.classList.add('is-hidden');
     refreshBtn?.classList.add('is-hidden');
+    applySeverityTheme('unknown');
   }
   function resetFlow(){
     currentQuestion = 0;
     currentAnswers = [];
+    questionOffset = 0;
     questionText && (questionText.textContent = "");
     document.querySelector('#choicesContainer')?.remove();
     if(answerInput){ answerInput.value=''; answerInput.style.display='block'; }
     if(nextBtn) nextBtn.style.display='inline-block';
+    updateProgressDisplay(0);
   }
   function openGuidedFlow(options={}){
     heroIntro?.classList.add('is-hidden');
+    closeHowToModal();
+    entryChoice?.classList.add('is-hidden');
+    setEntryChoiceDefault();
+    entryFlowMode = null;
+    activeMicButton = micButton;
     guidedBox?.classList.remove('is-hidden');
     guidedActions?.classList.remove('is-hidden');
     if(!guidedStarted) guidedStarted = true;
@@ -236,6 +340,7 @@
         answerInput.style.display='none';
       }
     }
+    questionOffset = currentAnswers.length;
     currentQuestion = options.startIndex ?? currentAnswers.length;
     showQuestion(currentQuestion);
     if(options.autoFocus !== false && answerInput && answerInput.style.display !== 'none'){
@@ -244,16 +349,24 @@
   }
   function saveAnswer(answer){ if(answer) currentAnswers.push(answer); }
   function showQuestion(index){
+    updateProgressDisplay(index);
     document.querySelector('#choicesContainer')?.remove();
     if(index >= questions.length){
       questionText && (questionText.textContent = "Thanks! Your responses have been recorded.");
       if(answerInput) answerInput.style.display='none';
       if(nextBtn) nextBtn.style.display='none';
-      submitSACA(null,{fromFlow:true});
+      submitSACA(null,{fromFlow:true, mode:'predict'});
       return;
     }
     const q = questions[index];
-    questionText && (questionText.textContent = q.text);
+    if(questionHeading) questionHeading.textContent = q.text;
+    if(questionText){
+      if(q.type === 'choice'){
+        questionText.textContent = "Choose the option that fits best.";
+      } else {
+        questionText.textContent = "Type a quick response below.";
+      }
+    }
     if(q.type === 'text'){
       if(answerInput){
         answerInput.style.display='block';
@@ -285,8 +398,13 @@
 
   function setAnalysisText(node, text, fallback){
     if(!node) return;
-    if(text){ node.textContent = text; node.classList.remove('muted'); }
-    else { node.textContent = fallback; node.classList.add('muted'); }
+    if(text && text !== fallback){
+      node.textContent = text;
+      node.classList.remove('muted');
+    } else {
+      node.textContent = fallback;
+      node.classList.add('muted');
+    }
   }
   function parseAnalysis(raw){
     const result = { condition:null, conditionConfidence:null, severity:null, severityConfidence:null, advice:null };
@@ -311,29 +429,26 @@
     });
     return result;
   }
-  function formatWithConfidence(label, confidence){
-    if(!label) return null;
-    if(typeof confidence === 'number' && !Number.isNaN(confidence)){
-      const pct = Math.round(confidence*100);
-      return `${label} (${pct}% confidence)`;
-    }
-    return label;
-  }
-
   function setMicLabel(state){
     recordingState = state;
-    if(!micButton) return;
-    const map = { listening:'home.micListening', submitting:'home.micSubmitting' };
-    const key = map[state] || 'home.mic';
-    if(micText){ micText.setAttribute('data-i18n', key); }
-    micButton.classList.toggle('is-listening', state==='listening');
+    const copy = MIC_COPY[state] || MIC_COPY.idle;
+    if(micText){ micText.setAttribute('data-i18n', copy.key); }
+    micButton?.classList.toggle('is-listening', state==='listening');
+    const activeButton = activeMicButton && activeMicButton !== micButton ? activeMicButton : micButton;
+    if(activeButton && activeButton !== micButton){
+      const textEl = activeButton.querySelector('.question-btn-label, .entry-label, .mic-text');
+      if(textEl) textEl.textContent = copy.fallback;
+      activeButton.classList.toggle('is-listening', state==='listening');
+    }
     applyStrings();
   }
   async function startRecording(){
     if(recordingState==='submitting') return;
     if(!navigator.mediaDevices?.getUserMedia){ alert('Audio recording is not supported in this browser.'); return; }
+    const button = activeMicButton || micButton;
     try{
-      micButton && (micButton.disabled = true);
+      if(button) button.disabled = true;
+      if(button && button!==micButton) button.classList.add('is-listening');
       micStream = await navigator.mediaDevices.getUserMedia({ audio:true });
       audioChunks = [];
       mediaRecorder = new MediaRecorder(micStream);
@@ -346,35 +461,68 @@
       alert('Could not access the microphone. Please check permissions.');
       setMicLabel('idle');
     } finally {
-      if(micButton) micButton.disabled = false;
+      if(button){
+        button.disabled = false;
+        if(recordingState!=='listening'){
+          button.classList.remove('is-listening');
+        }
+      }
     }
   }
   function stopRecording(){
     if(recordingState!=='listening') return;
     setMicLabel('submitting');
-    if(micButton) micButton.disabled = true;
+    const button = activeMicButton || micButton;
+    if(button) button.disabled = true;
     try{ mediaRecorder?.stop(); }
     catch(err){ console.error(err); handleStop(); }
   }
   async function handleStop(){
+    const button = activeMicButton || micButton;
     const blob = audioChunks.length ? new Blob(audioChunks,{type:'audio/wav'}) : null;
     if(micStream){ micStream.getTracks().forEach(track=>track.stop()); micStream=null; }
     audioChunks = [];
     mediaRecorder = null;
     if(blob && blob.size){
-      try{ await submitSACA(blob,{allowEmpty:true, fromAudio:true}); }
-      catch(err){ alert('Audio submission failed.'); console.error(err); }
+      try{
+        const data = await submitSACA(blob,{ allowEmpty:true, mode:'transcribe' });
+        const transcriptText =
+          normalizeDisplay(data.normalized_text) ||
+          normalizeDisplay(data.transcription) ||
+          normalizeDisplay(data.raw_text) ||
+          normalizeDisplay(data.transcript) || '';
+        pendingNormalizedText = transcriptText;
+        resetAnalysisView();
+        currentAnswers = [];
+        guidedStarted = false;
+        if(transcriptText){
+          openGuidedFlow({ prefill: transcriptText, startIndex:1, autoFocus:false });
+        } else {
+          openGuidedFlow({ startIndex:1, autoFocus:true });
+        }
+        setMicLabel('idle');
+      } catch(err){
+        alert('Audio submission failed.');
+        console.error(err);
+        setMicLabel('idle');
+      }
     } else {
       alert('No audio captured. Please try again.');
       setMicLabel('idle');
     }
-    if(micButton){ micButton.disabled = false; if(recordingState!=='listening') setMicLabel('idle'); }
+    if(button){
+      button.disabled = false;
+      button.classList.remove('is-listening');
+    }
+    if(entryTypeBtn) entryTypeBtn.disabled = false;
+    entryFlowMode = null;
+    activeMicButton = micButton;
+    if(recordingState!=='listening') setMicLabel('idle');
   }
 
   async function submitSACA(audioBlob=null, options={}){
-    const allowEmpty = !!options.allowEmpty || !!audioBlob;
-    const fromFlow = !!options.fromFlow;
-    const fromAudio = !!options.fromAudio;
+    const mode = options.mode || (options.fromFlow ? 'predict' : 'predict');
+    const allowEmpty = !!options.allowEmpty || !!audioBlob || mode === 'transcribe';
     if(!allowEmpty && currentAnswers.length === 0){
       alert(t('home.needAnswers') || 'Please answer all questions before submitting.');
       return null;
@@ -384,35 +532,78 @@
     const formData = new FormData();
     if(audioBlob) formData.append('file', audioBlob, 'user_audio.wav');
     formData.append('answers', JSON.stringify({ answers: answersForSend }));
+    formData.append('mode', mode);
 
     try {
       const res = await fetch('/upload-audio', { method:'POST', body: formData });
       if(!res.ok) throw new Error('Upload failed');
       const data = await res.json();
 
-      const transcriptText = normalizeDisplay(data.transcription || data.transcript || data.nlp_text || answersForSend[0]);
-
-      if(fromAudio){
-        resetAnalysisView();
-        currentAnswers = [];
-        guidedStarted = false;
-        if(transcriptText){
-          openGuidedFlow({ prefill: transcriptText, autoFocus:false });
-        } else {
-          openGuidedFlow({ autoFocus:true });
-        }
-        setMicLabel('idle');
+      if(mode === 'transcribe'){
         return data;
       }
 
-      const parsed = parseAnalysis(data.result || '');
-      const conditionDisplay = normalizeDisplay(formatWithConfidence(parsed.condition, parsed.conditionConfidence)) || DEFAULT_CONDITION;
-      const severityDisplay = normalizeDisplay(formatWithConfidence(parsed.severity, parsed.severityConfidence) || data.severity) || DEFAULT_SEVERITY;
-      const adviceDisplay = normalizeDisplay(parsed.advice || data.advice) || DEFAULT_ADVICE;
+      const transcriptText = normalizeDisplay(data.raw_text || data.transcription || data.transcript || data.nlp_text || answersForSend[0]);
 
+      const parsed = parseAnalysis(data.result || '');
+
+      // === 🧠 Smarter language formatting for model results ===
+      // 🩺 Predicted condition: Title-cased, clean
+let conditionSource = normalizeDisplay(parsed.condition) || normalizeDisplay(data.condition);
+if(conditionSource){
+  conditionSource = conditionSource.replace(/\(.*?\)/g,'').trim();
+}
+let conditionDisplay = conditionSource
+  ? toTitleCase(conditionSource)
+  : DEFAULT_CONDITION;
+
+// 🎚️ Severity: Natural, human phrasing
+let severitySource = normalizeDisplay(parsed.severity) || normalizeDisplay(data.severity) || '';
+let severityText = severitySource
+  .replace(/severity\s*(level)?\s*:?\s*/i, '')
+  .replace(/\(.*?\)/g, '')
+  .trim();
+
+if (severityText) {
+  const lower = severityText.toLowerCase();
+  if (lower.includes('severe')) {
+    severityDisplay = "This condition appears severe.";
+  } else if (lower.includes('moderate')) {
+    severityDisplay = "This condition appears moderate.";
+  } else if (lower.includes('mild') || lower.includes('light')) {
+    severityDisplay = "This condition appears mild.";
+  } else {
+    severityDisplay = `Current severity: ${toTitleCase(severityText)}.`;
+  }
+} else {
+  severityDisplay = DEFAULT_SEVERITY;
+}
+
+
+let adviceDisplay = normalizeDisplay(parsed.advice) || normalizeDisplay(data.advice) || DEFAULT_ADVICE;
+if (adviceDisplay !== DEFAULT_ADVICE) {
+  // Remove stray letters or symbols
+  adviceDisplay = adviceDisplay
+    .replace(/^u\s*/i, '') // removes “U ” or “u ”
+    .replace(/^\s*a\s*/i, '') // removes leading "a "
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  // Ensure capitalization and full stop
+  if (adviceDisplay && !/^[A-Z]/.test(adviceDisplay)) {
+    adviceDisplay = adviceDisplay.charAt(0).toUpperCase() + adviceDisplay.slice(1);
+  }
+  if (adviceDisplay && !/[.!?]$/.test(adviceDisplay)) {
+    adviceDisplay += '.';
+  }
+}
+
+
+      // ✅ Apply updated outputs
       setAnalysisText(analysisCondition, conditionDisplay, DEFAULT_CONDITION);
       setAnalysisText(analysisSeverity, severityDisplay, DEFAULT_SEVERITY);
       setAnalysisText(analysisAdvice, adviceDisplay, DEFAULT_ADVICE);
+      applySeverityTheme(severitySource || severityDisplay);
       if(analysisTimestamp){
         const now = new Date();
         analysisTimestamp.textContent = `Updated ${now.toLocaleTimeString([], { hour:'numeric', minute:'2-digit' })}`;
@@ -428,14 +619,9 @@
 
       logHistoryEntry({ transcript: transcriptText, condition: conditionDisplay, severity: severityDisplay, advice: adviceDisplay });
 
-      if(fromAudio && transcriptText){
-        currentAnswers = [];
-        guidedStarted = false;
-        openGuidedFlow({ prefill: transcriptText, autoFocus:false });
-      } else {
-        currentAnswers = [];
-        guidedStarted = false;
-      }
+      currentAnswers = [];
+      guidedStarted = false;
+      pendingNormalizedText = "";
 
       setMicLabel('idle');
       return data;
@@ -452,6 +638,7 @@
     currentAnswers = [];
     currentQuestion = 0;
     guidedStarted = false;
+    pendingNormalizedText = "";
     heroIntro?.classList.remove('is-hidden');
     micButton?.classList.remove('is-hidden','is-listening');
     micButton && (micButton.disabled = false);
@@ -459,6 +646,13 @@
     refreshBtn?.classList.add('is-hidden');
     guidedBox?.classList.add('is-hidden');
     guidedActions?.classList?.add('is-hidden');
+    entryChoice?.classList.add('is-hidden');
+    setEntryChoiceDefault();
+    activeMicButton = micButton;
+    entryFlowMode = null;
+    questionOffset = 0;
+    updateProgressDisplay(0);
+    closeHowToModal();
     document.querySelector('#choicesContainer')?.remove();
     resetAnalysisView();
   }
@@ -510,10 +704,68 @@
   });
   answerInput?.addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); nextBtn?.click(); } });
   showGuidedBtn?.addEventListener('click', ()=>openGuidedFlow({ autoFocus:true }));
-  getStartedBtn?.addEventListener('click', ()=>openGuidedFlow({ autoFocus:true }));
+  getStartedBtn?.addEventListener('click', ()=>{
+    heroIntro?.classList.add('is-hidden');
+    guidedBox?.classList.add('is-hidden');
+    guidedActions?.classList.add('is-hidden');
+    closeHowToModal();
+    resetFlow();
+    setEntryChoiceDefault();
+    entryChoice?.classList.remove('is-hidden');
+    entryFlowMode = null;
+    activeMicButton = micButton;
+  });
+  howToBtn?.addEventListener('click', openHowToModal);
+  howToClose?.addEventListener('click', closeHowToModal);
+  howToBackdrop?.addEventListener('click', closeHowToModal);
+  document.addEventListener('keydown', e=>{
+    if(e.key === 'Escape' && !howToModal?.classList.contains('is-hidden')){
+      closeHowToModal();
+    }
+  });
+  entryTypeBtn?.addEventListener('click', ()=>{
+    entryFlowMode = 'type';
+    entryTextWrap?.classList.remove('is-hidden');
+    entryText?.focus();
+  });
+  entryTextCancel?.addEventListener('click', ()=>{
+    entryFlowMode = null;
+    if(entryText) entryText.value='';
+    entryTextWrap?.classList.add('is-hidden');
+  });
+  entryTextSubmit?.addEventListener('click', ()=>{
+    const value = (entryText?.value||'').trim();
+    if(!value){
+      entryText?.focus();
+      return;
+    }
+    entryFlowMode = 'type';
+    entryTextWrap?.classList.add('is-hidden');
+    entryText?.blur();
+    openGuidedFlow({ prefill:value, startIndex:1, autoFocus:true });
+  });
+  entrySpeakBtn?.addEventListener('click', async ()=>{
+    if(recordingState==='submitting') return;
+    if(recordingState==='listening'){
+      stopRecording();
+      return;
+    }
+    entryFlowMode = 'speak';
+    activeMicButton = entrySpeakBtn;
+    if(entryTypeBtn) entryTypeBtn.disabled = true;
+    await startRecording();
+    if(recordingState!=='listening'){
+      if(entryTypeBtn) entryTypeBtn.disabled = false;
+      setEntryChoiceDefault();
+      activeMicButton = micButton;
+      entryFlowMode = null;
+    }
+  });
   refreshBtn?.addEventListener('click', resetExperience);
 
   micButton?.addEventListener('click', ()=>{
+    activeMicButton = micButton;
+    entryFlowMode = null;
     if(recordingState==='listening'){ stopRecording(); }
     else if(recordingState!=='submitting'){ startRecording(); }
   });
