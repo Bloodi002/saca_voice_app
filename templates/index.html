@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>SACA - Your Health Companion</title>
-  <link rel="stylesheet" href="{{ request.url_for('static', path='/styles.css') }}?v=20240602">
+  <link rel="stylesheet" href="{{ request.url_for('static', path='/styles.css') }}?v=20240617">
 </head>
 <body>
 <header>
@@ -52,7 +52,15 @@
       </span>
     </label>
     <button type="button" id="openAuth" class="btn" data-i18n="ui.login">Login</button>
-    <button id="logoutBtn" type="button" class="btn-ghost is-hidden" data-i18n="ui.logout">Logout</button>
+    <button id="logoutBtn" type="button" class="btn-ghost logout-btn is-hidden">
+      <span class="logout-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" focusable="false" role="presentation">
+          <path d="M11 6V5a2 2 0 0 1 2-2h7v18h-7a2 2 0 0 1-2-2v-1" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M7 12h8m0 0-3-3m3 3-3 3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </span>
+      <span data-i18n="ui.logout">Logout</span>
+    </button>
   </div>
 </header>
 <main>
@@ -91,15 +99,22 @@
         <h2 id="entryQuestion" class="question-title">How are you feeling today?</h2>
         <p class="question-sub">Speak it out loud or write a short note so we can help.</p>
         <div class="question-actions question-actions--choice">
-          <button id="entrySpeak" type="button" class="question-btn question-btn--primary">
+          <button id="entrySpeak" type="button" class="question-btn question-btn--primary question-btn--card">
             <span class="question-btn-icon" aria-hidden="true">
               <svg viewBox="0 0 24 24" focusable="false" role="presentation">
-                <path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 1 0-6 0v6a3 3 0 0 0 3 3Zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.93V21h2v-2.07A7 7 0 0 0 19 12h-2Z" fill="currentColor"/>
+                <path d="M12 3a3 3 0 0 1 3 3v5a3 3 0 1 1-6 0V6a3 3 0 0 1 3-3Zm7 8a1 1 0 0 1-2 0 5 5 0 1 1-10 0 1 1 0 0 1-2 0 7 7 0 0 0 6 6.93V20h-3a1 1 0 1 0 0 2h6a1 1 0 1 0 0-2h-3v-2.07A7 7 0 0 0 19 11Z" fill="currentColor"/>
               </svg>
             </span>
             <span class="question-btn-label">Tap to speak</span>
           </button>
-          <button id="entryType" type="button" class="question-btn question-btn--secondary">Write your symptoms</button>
+          <button id="entryType" type="button" class="question-btn question-btn--secondary question-btn--card">
+            <span class="question-btn-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" focusable="false" role="presentation">
+                <path d="M4 5a2 2 0 0 1 2-2h8.17a2 2 0 0 1 1.41.59l4.83 4.83a2 2 0 0 1 .59 1.41V19a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2ZM14 5.83V10h4.17ZM8.58 18l-.58-.58 6.95-6.95 1.16 1.16L9.16 18Z" fill="currentColor"/>
+              </svg>
+            </span>
+            <span class="question-btn-label">Write your symptoms</span>
+          </button>
         </div>
         <div id="entryTextWrap" class="entry-text-wrap is-hidden">
           <textarea id="entryText" class="question-textarea" rows="3" placeholder="Type a short note about how you're feeling"></textarea>
@@ -178,7 +193,15 @@
         </section>
       </div>
       <div class="analysis-actions">
-        <button id="resetExperience" type="button" class="btn-ghost refresh-btn is-hidden">Start another check-in</button>
+        <button id="resetExperience" type="button" class="btn-ghost refresh-btn is-hidden">
+          <span class="refresh-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" focusable="false" role="presentation">
+              <path d="M20 4v6h-6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M20 10a8 8 0 1 1-2.34-5.66L20 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+          <span>Start another check-in</span>
+        </button>
       </div>
     </div>
     <button id="historyTrigger" type="button" class="history-trigger is-hidden" data-requires-auth="true">

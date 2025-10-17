@@ -61,6 +61,8 @@
   const signupPass = qs('#signupPass');
   const signupConfirm = qs('#signupConfirm');
   const authMessage = qs('#authMessage');
+  const langToggle = qs('#langToggle');
+  const langLabel = qs('#langLabel');
 
   const DEFAULT_CONDITION = "We'll share the likely condition once we review your details.";
   const DEFAULT_SEVERITY = "We're still gauging how serious things are.";
@@ -79,6 +81,12 @@
   let auth = null;
   try{ auth = JSON.parse(localStorage.getItem(AUTH_KEY)||'null'); }
   catch(err){ auth = null; }
+  if(!prefs.lang || !['en','ae'].includes(prefs.lang)) prefs.lang = 'en';
+  const LANGUAGE_SEQUENCE = ['en','ae'];
+  const LANGUAGE_META = {
+    en:{ labelKey:'languageEn', toggleKey:'switchToAe', next:'ae' },
+    ae:{ labelKey:'languageAe', toggleKey:'switchToEnglish', next:'en' }
+  };
   const langSelect = qs('#langSelect');
   const themeSelect = qs('#themeSelect');
   const contrastToggle = qs('#contrastToggle');
@@ -108,7 +116,9 @@
   const ICONS = {
     clock: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l2.5 1.5"/></svg>`,
     sun: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 3v2M12 19v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M3 12h2M19 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>`,
-    calendar: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M7 14h2v2H7zM11 14h2v2h-2zM15 14h2v2h-2z"/></svg>`,
+    calendarDay: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><circle cx="12" cy="15" r="2"/></svg>`,
+    calendarRange: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M8 15h8M10 13v4M14 13v4"/></svg>`,
+    calendarWeek: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M6 15h12M6 18h8"/></svg>`,
     gauge: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5.5 19a8.5 8.5 0 1 1 13 0Z"/><path d="M12 12l3.5 3.5"/><path d="M7 12h.01M12 7v.01M17 12h.01M12 17h.01"/></svg>`,
     thermo: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 14.76A3 3 0 1 1 10 14V5a2 2 0 1 1 4 0z"/><path d="M10 11h4"/></svg>`,
     lungs: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v8M12 11c-1.5-2-4-3-6-2V19c2 0 3.5-.5 5-2m1-6c1.5-2 4-3 6-2V19c-2 0-3.5-.5-5-2"/></svg>`,
@@ -124,7 +134,9 @@
   function getChoiceIcon(option){
     const text = (option||'').toLowerCase();
     if(text.includes('hour')) return ICONS.clock;
-    if(text.includes('day') || text.includes('week')) return ICONS.calendar;
+    if(text.includes('2-3') || text.includes('few days') || text.includes('couple of days')) return ICONS.calendarRange;
+    if(text.includes('week')) return ICONS.calendarWeek;
+    if(text.includes('day')) return ICONS.calendarDay;
     if(text.includes('light')) return ICONS.sun;
     if(text.includes('medium')) return ICONS.gauge;
     if(text.includes('severe')) return ICONS.dizzy;
@@ -148,6 +160,52 @@
   function applyContrast(){ document.documentElement.setAttribute('data-contrast', prefs.contrast==='high'?'high':'normal'); }
   function applyEasy(){ document.body.classList.toggle('easy-read', !!prefs.easy); }
 
+  function getAvailableLanguages(){
+    if(langSelect){
+      const opts = Array.from(langSelect.options||[]).map(opt=>opt.value).filter(Boolean);
+      if(opts.length) return opts;
+    }
+    return LANGUAGE_SEQUENCE;
+  }
+  function labelForLanguage(lang){
+    const meta = LANGUAGE_META[lang] || LANGUAGE_META.en;
+    const currentStrings = STR?.[prefs.lang||'en']?.ui;
+    const fallbackStrings = STR?.en?.ui;
+    if(meta){
+      if(currentStrings && currentStrings[meta.labelKey]) return currentStrings[meta.labelKey];
+      if(fallbackStrings && fallbackStrings[meta.labelKey]) return fallbackStrings[meta.labelKey];
+    }
+    return lang?.toUpperCase?.()||'EN';
+  }
+  function toggleCopyForLanguage(lang){
+    const meta = LANGUAGE_META[lang] || LANGUAGE_META.en;
+    const strings = STR?.[lang]?.ui;
+    const fallbackStrings = STR?.en?.ui;
+    if(meta){
+      if(strings && strings[meta.toggleKey]) return strings[meta.toggleKey];
+      if(fallbackStrings && fallbackStrings[meta.toggleKey]) return fallbackStrings[meta.toggleKey];
+    }
+    return 'Switch language';
+  }
+  function updateLanguageToggleUI(){
+    if(langLabel){
+      langLabel.textContent = labelForLanguage(prefs.lang||'en');
+    }
+    if(langToggle){
+      langToggle.setAttribute('aria-label', toggleCopyForLanguage(prefs.lang||'en'));
+      langToggle.setAttribute('data-lang', prefs.lang||'en');
+    }
+  }
+  function nextLanguage(current){
+    const available = getAvailableLanguages();
+    const currentLang = available.includes(current) ? current : available[0] || 'en';
+    const metaNext = LANGUAGE_META[currentLang]?.next;
+    if(metaNext && available.includes(metaNext)) return metaNext;
+    if(available.length < 2) return currentLang;
+    const idx = available.indexOf(currentLang);
+    return available[(idx+1)%available.length];
+  }
+
   function t(path){
     const parts = path.split('.'); let cur = STR?.[prefs.lang||'en']||STR?.en||{};
     for(const p of parts) if(cur && p in cur) cur = cur[p]; else return null;
@@ -162,6 +220,7 @@
       const key = el.getAttribute('data-i18n-placeholder'); const val = t(key);
       if(val!=null) el.setAttribute('placeholder', val);
     });
+    updateLanguageToggleUI();
   }
   function isAuthed(){ return !!(auth && auth.email); }
   function persistAuth(){ if(isAuthed()){ localStorage.setItem(AUTH_KEY, JSON.stringify(auth)); } else { localStorage.removeItem(AUTH_KEY); }}
@@ -569,6 +628,14 @@
       const choicesDiv = document.createElement('div');
       choicesDiv.id = 'choicesContainer';
       choicesDiv.className = 'choice-grid';
+      const optionCount = q.options.length;
+      choicesDiv.dataset.count = optionCount;
+      if(optionCount === 3){
+        choicesDiv.classList.add('choice-grid--wide');
+      }
+      if(optionCount >= 6){
+        choicesDiv.classList.add('choice-grid--cols3');
+      }
       q.options.forEach(opt=>{
         const btn = document.createElement('button');
         btn.type = 'button';
@@ -891,6 +958,15 @@ if (adviceDisplay !== DEFAULT_ADVICE) {
   historyDismiss?.addEventListener('click', hideHistoryModal);
 
   authEls.forEach(el=>el.addEventListener('click', guardProtectedLink));
+  langToggle?.addEventListener('click', ()=>{
+    const current = prefs.lang || 'en';
+    const next = nextLanguage(current);
+    if(next === current) return;
+    prefs.lang = next;
+    savePrefs();
+    if(langSelect) langSelect.value = next;
+    applyStrings();
+  });
   langSelect?.addEventListener('change', ()=>{ prefs.lang=langSelect.value; savePrefs(); applyStrings(); });
   themeSelect?.addEventListener('change', ()=>{ prefs.theme=themeSelect.value; savePrefs(); applyTheme(); });
   contrastToggle?.addEventListener('change', ()=>{ prefs.contrast=contrastToggle.checked?'high':'normal'; savePrefs(); applyContrast(); });
