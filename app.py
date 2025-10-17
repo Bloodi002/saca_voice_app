@@ -48,6 +48,7 @@ async def upload_audio(
     audio_norm: str = ""
     typed_norm: str = ""
     raw_text = ""
+    free_text_raw = ""
     user_answers = []
 
     # === 1. Handle audio upload and transcription ===
@@ -64,6 +65,7 @@ async def upload_audio(
         try:
             raw_from_audio, norm_from_audio = VOICE_PIPE.process(str(filepath))
             raw_text = raw_from_audio
+            free_text_raw = raw_from_audio
             audio_norm = norm_from_audio
             if mode == "transcribe":
                 return JSONResponse(
@@ -88,7 +90,10 @@ async def upload_audio(
             text_from_form = " ".join(user_answers).strip()
             if text_from_form:
                 _, text_norm = VOICE_PIPE.process_text(text_from_form)
-                raw_text = raw_text or text_from_form
+                if not raw_text:
+                    raw_text = text_from_form
+                if not free_text_raw:
+                    free_text_raw = user_answers[0] if user_answers else text_from_form
                 typed_norm = text_norm
                 norm_text = text_norm or norm_text
         except json.JSONDecodeError as exc:
@@ -126,17 +131,21 @@ async def upload_audio(
         return value if value else fallback
 
     norm_text = norm_text or audio_norm or typed_norm
+    primary_text = (free_text_raw or raw_text or "").strip()
+    if not primary_text:
+        primary_text = (audio_norm or typed_norm or normalized_audio or "").strip()
     base_text = (norm_text or raw_text or "").strip()
     free_text_segment = base_text.rstrip(".")
     if not free_text_segment:
         free_text_segment = "no description provided"
 
+    free_text_segment = _clean(primary_text)
     model_input = ", ".join(
         [
-            f"free text [{_clean(free_text_segment)}]",
-            f"duration [{_clean(duration_answer)}]",
-            f"severity [{_clean(severity_answer)}]",
-            f"also [{_clean(symptoms_answer)}]",
+            f"{free_text_segment}",
+            f"duration {_clean(duration_answer)}",
+            f"severity {_clean(severity_answer)}",
+            f"also {_clean(symptoms_answer)}",
         ]
     )
 
@@ -161,6 +170,7 @@ async def upload_audio(
             "severity": severity_line,
             "questions": questions,
             "user_answers": user_answers,
+            "free_text": free_text_segment,
             "download": filename,
         }
     )

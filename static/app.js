@@ -19,6 +19,8 @@
   const questionProgress = qs('#questionProgress');
   const entryProgress = qs('#entryProgress');
   const answerInput  = qs('#answerInput');
+  const answerInputWrap = answerInput?.closest('.pill-input') || null;
+  const questionActions = answerInputWrap?.closest('.question-actions') || qs('.question-actions');
   const nextBtn      = qs('#nextQuestion');
   const analysisCard = qs('#sacaResult');
   const analysisCondition = qs('#analysisCondition');
@@ -100,7 +102,6 @@
   let recordingState = 'idle';
   let activeMicButton = micButton;
   let entryFlowMode = null;
-  let questionOffset = 0;
   let pendingNormalizedText = "";
   let sessionHistory = [];
 
@@ -273,12 +274,12 @@
     switchAuthMode('login');
   }
   function updateProgressDisplay(index){
-    const total = Math.max(1, BASE_QUESTION_COUNT - questionOffset);
+    const total = Math.max(1, BASE_QUESTION_COUNT);
     let label;
-    if(index >= BASE_QUESTION_COUNT){
+    if(index >= total){
       label = "All questions complete";
     } else {
-      const step = Math.max(1, index - questionOffset + 1);
+      const step = Math.max(1, index + 1);
       const clampedStep = Math.min(total, step);
       label = `Question ${clampedStep} of ${total}`;
     }
@@ -494,10 +495,14 @@
   function resetFlow(){
     currentQuestion = 0;
     currentAnswers = [];
-    questionOffset = 0;
     questionText && (questionText.textContent = "");
     document.querySelector('#choicesContainer')?.remove();
-    if(answerInput){ answerInput.value=''; answerInput.style.display='block'; }
+    if(answerInput){
+      answerInput.value='';
+      answerInput.style.display='block';
+    }
+    if(answerInputWrap) answerInputWrap.style.display='block';
+    if(questionActions) questionActions.style.display='flex';
     if(nextBtn) nextBtn.style.display='inline-block';
     updateProgressDisplay(0);
   }
@@ -519,7 +524,6 @@
         answerInput.style.display='none';
       }
     }
-    questionOffset = currentAnswers.length;
     currentQuestion = options.startIndex ?? currentAnswers.length;
     showQuestion(currentQuestion);
     if(options.autoFocus !== false && answerInput && answerInput.style.display !== 'none'){
@@ -533,6 +537,8 @@
     if(index >= questions.length){
       questionText && (questionText.textContent = "Thanks! Your responses have been recorded.");
       if(answerInput) answerInput.style.display='none';
+      if(answerInputWrap) answerInputWrap.style.display='none';
+      if(questionActions) questionActions.style.display='none';
       if(nextBtn) nextBtn.style.display='none';
       submitSACA(null,{fromFlow:true, mode:'predict'});
       return;
@@ -552,10 +558,14 @@
         if(currentAnswers.length){ answerInput.value = currentAnswers[0]; }
         else answerInput.value='';
       }
+      if(answerInputWrap) answerInputWrap.style.display='block';
+      if(questionActions) questionActions.style.display='flex';
       if(nextBtn) nextBtn.style.display='inline-block';
     } else if(q.type === 'choice'){
       if(answerInput) answerInput.style.display='none';
+      if(answerInputWrap) answerInputWrap.style.display='none';
       if(nextBtn) nextBtn.style.display='none';
+      if(questionActions) questionActions.style.display='none';
       const choicesDiv = document.createElement('div');
       choicesDiv.id = 'choicesContainer';
       choicesDiv.className = 'choice-grid';
@@ -833,7 +843,6 @@ if (adviceDisplay !== DEFAULT_ADVICE) {
     setEntryChoiceDefault();
     activeMicButton = micButton;
     entryFlowMode = null;
-    questionOffset = 0;
     updateProgressDisplay(0);
     closeHowToModal();
     document.querySelector('#choicesContainer')?.remove();
