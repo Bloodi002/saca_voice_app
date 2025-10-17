@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>SACA - Your Health Companion</title>
-  <link rel="stylesheet" href="/static/styles.css">
+  <link rel="stylesheet" href="{{ request.url_for('static', path='/styles.css') }}?v=20240617">
 </head>
 <body>
 <header>
@@ -52,7 +52,15 @@
       </span>
     </label>
     <button type="button" id="openAuth" class="btn" data-i18n="ui.login">Login</button>
-    <button id="logoutBtn" type="button" class="btn-ghost is-hidden" data-i18n="ui.logout">Logout</button>
+    <button id="logoutBtn" type="button" class="btn-ghost logout-btn is-hidden">
+      <span class="logout-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" focusable="false" role="presentation">
+          <path d="M11 6V5a2 2 0 0 1 2-2h7v18h-7a2 2 0 0 1-2-2v-1" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M7 12h8m0 0-3-3m3 3-3 3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </span>
+      <span data-i18n="ui.logout">Logout</span>
+    </button>
   </div>
 </header>
 <main>
@@ -72,63 +80,41 @@
       <button type="button" id="getStartedBtn" class="btn">Get Started</button>
       <button type="button" id="howToBtn" class="how-to-btn">How to Use</button>
     </div>
+    <button id="historyTrigger" type="button" class="history-trigger is-hidden" data-requires-auth="true">
+      <span class="history-trigger-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" focusable="false" role="presentation">
+          <path d="M4 12a8 8 0 1 1 8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M12 6v6l3 2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </span>
+      <span>View recent history</span>
+    </button>
   </div>
 
   <h2 id="preCheckHeading" class="simple-heading is-hidden" data-i18n="home.heading">How are you feeling today?</h2>
 </div>
-
-      <div id="preCheckCta" class="cta is-hidden">
-        <button id="micHome" type="button" class="btn btn-wide mic-btn" aria-live="polite">
-          <span class="mic-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" focusable="false" role="presentation">
-              <path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 1 0-6 0v6a3 3 0 0 0 3 3Zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.93V21h2v-2.07A7 7 0 0 0 19 12h-2Z" fill="currentColor"/>
-            </svg>
-          </span>
-          <span class="mic-text" data-i18n="home.mic">Tap here to speak</span>
-        </button>
-        <button id="showGuided" type="button" class="btn-outline btn-wide guide-btn">
-          <span class="guide-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" focusable="false" role="presentation">
-              <path d="M7 4a3 3 0 0 1 3-3h4a3 3 0 0 1 3 3h2.25A1.75 1.75 0 0 1 21 5.75v14.5A1.75 1.75 0 0 1 19.25 22H4.75A1.75 1.75 0 0 1 3 20.25V5.75C3 4.78 3.78 4 4.75 4H7Zm2-.75A1.25 1.25 0 0 0 7.75 4.5V6h8.5V4.5A1.25 1.25 0 0 0 15 3.25h-6Z" fill="currentColor"/>
-            </svg>
-          </span>
-          <span class="guide-text" data-i18n="home.typeBtn">Type/Choose Your Symptoms</span>
-        </button>
-      </div>
-      <div id="historyToggleCard" class="history-toggle-card is-hidden" data-requires-auth="true">
-        <button id="toggleHistory" type="button" class="history-toggle-btn" aria-expanded="false" aria-controls="historyPanel">
-          <span class="history-toggle-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" focusable="false" role="presentation">
-              <path d="M5 4h14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Zm2 4h10M7 12h6m-6 4h4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </span>
-          <div class="history-toggle-copy">
-            <span class="history-toggle-title" data-i18n="history.title">Your History</span>
-            <span class="history-toggle-sub" data-i18n="history.toggleHint">Review your latest conversations</span>
-          </div>
-          <span class="history-toggle-status" id="historyToggleStatus" aria-hidden="true">Show</span>
-        </button>
-        <div id="historyPanel" class="history-panel is-hidden">
-          <div id="histEmpty" class="empty-state" data-i18n="history.empty">No entries yet. Your latest check-ins will appear here.</div>
-          <div id="histCards" class="hist-grid"></div>
-        </div>
-      </div>
-    </div>
     <div id="entryChoice" class="entry-choice is-hidden" role="form" aria-labelledby="entryQuestion">
       <div class="question-card question-card--active">
         <span id="entryProgress" class="question-chip">Question 1 of 4</span>
         <h2 id="entryQuestion" class="question-title">How are you feeling today?</h2>
         <p class="question-sub">Speak it out loud or write a short note so we can help.</p>
         <div class="question-actions question-actions--choice">
-          <button id="entrySpeak" type="button" class="question-btn question-btn--primary">
+          <button id="entrySpeak" type="button" class="question-btn question-btn--primary question-btn--card">
             <span class="question-btn-icon" aria-hidden="true">
               <svg viewBox="0 0 24 24" focusable="false" role="presentation">
-                <path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 1 0-6 0v6a3 3 0 0 0 3 3Zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.93V21h2v-2.07A7 7 0 0 0 19 12h-2Z" fill="currentColor"/>
+                <path d="M12 3a3 3 0 0 1 3 3v5a3 3 0 1 1-6 0V6a3 3 0 0 1 3-3Zm7 8a1 1 0 0 1-2 0 5 5 0 1 1-10 0 1 1 0 0 1-2 0 7 7 0 0 0 6 6.93V20h-3a1 1 0 1 0 0 2h6a1 1 0 1 0 0-2h-3v-2.07A7 7 0 0 0 19 11Z" fill="currentColor"/>
               </svg>
             </span>
             <span class="question-btn-label">Tap to speak</span>
           </button>
-          <button id="entryType" type="button" class="question-btn question-btn--secondary">Write your symptoms</button>
+          <button id="entryType" type="button" class="question-btn question-btn--secondary question-btn--card">
+            <span class="question-btn-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" focusable="false" role="presentation">
+                <path d="M4 5a2 2 0 0 1 2-2h8.17a2 2 0 0 1 1.41.59l4.83 4.83a2 2 0 0 1 .59 1.41V19a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2ZM14 5.83V10h4.17ZM8.58 18l-.58-.58 6.95-6.95 1.16 1.16L9.16 18Z" fill="currentColor"/>
+              </svg>
+            </span>
+            <span class="question-btn-label">Write your symptoms</span>
+          </button>
         </div>
         <div id="entryTextWrap" class="entry-text-wrap is-hidden">
           <textarea id="entryText" class="question-textarea" rows="3" placeholder="Type a short note about how you're feeling"></textarea>
@@ -207,30 +193,77 @@
         </section>
       </div>
       <div class="analysis-actions">
-        <button id="resetExperience" type="button" class="btn-ghost refresh-btn is-hidden">Start another check-in</button>
+        <button id="resetExperience" type="button" class="btn-ghost refresh-btn is-hidden">
+          <span class="refresh-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" focusable="false" role="presentation">
+              <path d="M20 4v6h-6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M20 10a8 8 0 1 1-2.34-5.66L20 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+          <span>Start another check-in</span>
+        </button>
       </div>
     </div>
+    <button id="historyTrigger" type="button" class="history-trigger is-hidden" data-requires-auth="true">
+      <span class="history-trigger-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" focusable="false" role="presentation">
+          <path d="M4 12a8 8 0 1 1 8 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M12 6v6l3 2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </span>
+      <span>View recent history</span>
+    </button>
   </section>
 </main>
-<div id="authModal" class="modal is-hidden" role="dialog" aria-modal="true" aria-labelledby="authTitle">
-  <div class="modal-backdrop" id="closeAuth"></div>
-  <div class="modal-shell">
-    <button type="button" class="modal-close" id="dismissAuth" aria-label="Close login">
+<div id="historyModal" class="modal is-hidden" role="dialog" aria-modal="true" aria-labelledby="historyTitle">
+  <div class="modal-backdrop" id="closeHistory"></div>
+  <div class="modal-shell history-shell">
+    <button type="button" class="modal-close" id="dismissHistory" aria-label="Close history">
       <svg viewBox="0 0 24 24" focusable="false" role="presentation">
         <path d="m8 8 8 8m0-8-8 8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
       </svg>
     </button>
-    <div class="modal-body">
-      <h2 id="authTitle" data-i18n="auth.title">Welcome</h2>
-      <p class="sub" data-i18n="auth.sub">Login or create an account to continue</p>
-      <div class="pill-input">
-        <input type="email" id="loginEmail" placeholder="Email" data-i18n-placeholder="auth.emailL"/>
+    <div class="modal-body history-body">
+      <h2 id="historyTitle">Your recent check-ins</h2>
+      <div id="histEmpty" class="history-empty is-hidden">No saved check-ins yet. Your next check-in will appear here.</div>
+      <div id="histCards" class="history-grid"></div>
+    </div>
+  </div>
+</div>
+<div id="authModal" class="modal is-hidden" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+  <div class="modal-backdrop" id="closeAuth"></div>
+  <div class="modal-shell auth-shell">
+    <button type="button" class="modal-close" id="dismissAuth" aria-label="Close account modal">
+      <svg viewBox="0 0 24 24" focusable="false" role="presentation">
+        <path d="m8 8 8 8m0-8-8 8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </button>
+    <div class="modal-body auth-body">
+      <div class="auth-tabs" role="tablist">
+        <button type="button" class="auth-tab is-active" data-mode="login" role="tab" aria-selected="true">Login</button>
+        <button type="button" class="auth-tab" data-mode="signup" role="tab" aria-selected="false">Sign up</button>
       </div>
-      <div class="pill-input">
-        <input type="password" id="loginPass" placeholder="Password" data-i18n-placeholder="auth.passL"/>
-      </div>
-      <button id="doLogin" type="button" class="btn" data-i18n="auth.login">Login</button>
-      <span id="loginOk" class="sub-13" style="display:none;" data-i18n="auth.ok">Logged in</span>
+      <div id="authMessage" class="auth-message is-hidden" role="alert"></div>
+      <form id="loginForm" class="auth-form" novalidate>
+        <h2 id="authTitle">Welcome back</h2>
+        <p class="auth-sub">Enter your details to continue.</p>
+        <label class="auth-label" for="loginEmail">Email</label>
+        <input type="email" id="loginEmail" autocomplete="email" required placeholder="name@example.com">
+        <label class="auth-label" for="loginPass">Password</label>
+        <input type="password" id="loginPass" autocomplete="current-password" required placeholder="Password">
+        <button id="doLogin" type="submit" class="btn auth-submit">Login</button>
+      </form>
+      <form id="signupForm" class="auth-form is-hidden" novalidate>
+        <h2>Join SACA</h2>
+        <p class="auth-sub">Create an account to save your check-ins.</p>
+        <label class="auth-label" for="signupEmail">Email</label>
+        <input type="email" id="signupEmail" autocomplete="email" required placeholder="name@example.com">
+        <label class="auth-label" for="signupPass">Password</label>
+        <input type="password" id="signupPass" autocomplete="new-password" required placeholder="Password (min 6 characters)">
+        <label class="auth-label" for="signupConfirm">Confirm password</label>
+        <input type="password" id="signupConfirm" autocomplete="new-password" required placeholder="Repeat password">
+        <button id="doSignup" type="submit" class="btn auth-submit">Sign up</button>
+      </form>
     </div>
   </div>
 </div>
@@ -254,7 +287,7 @@
     </div>
   </div>
 </div>
-<script src="/static/strings.js"></script>
-<script src="/static/app.js"></script>
+<script src="{{ request.url_for('static', path='/strings.js') }}?v=20240602"></script>
+<script src="{{ request.url_for('static', path='/app.js') }}?v=20240602"></script>
 </body>
 </html>
