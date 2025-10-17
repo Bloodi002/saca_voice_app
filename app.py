@@ -44,7 +44,9 @@ async def upload_audio(
 ):
     """Handle uploaded audio or form answers."""
     filename = None
-    norm_text = normalized_audio.strip()
+    norm_text = (normalized_audio or "").strip()
+    audio_norm: str = ""
+    typed_norm: str = ""
     raw_text = ""
     user_answers = []
 
@@ -62,6 +64,7 @@ async def upload_audio(
         try:
             raw_from_audio, norm_from_audio = VOICE_PIPE.process(str(filepath))
             raw_text = raw_from_audio
+            audio_norm = norm_from_audio
             if mode == "transcribe":
                 return JSONResponse(
                     {
@@ -70,9 +73,7 @@ async def upload_audio(
                         "transcription": raw_from_audio,
                     }
                 )
-            norm_text = " ".join(
-                part for part in [norm_text, norm_from_audio] if part
-            ).strip()
+            norm_text = norm_from_audio or norm_text
         except Exception as exc:  # pragma: no cover - surfacing runtime issues
             return JSONResponse(
                 {"error": f"ASR/Normalization failed: {exc}"},
@@ -87,12 +88,9 @@ async def upload_audio(
             text_from_form = " ".join(user_answers).strip()
             if text_from_form:
                 _, text_norm = VOICE_PIPE.process_text(text_from_form)
-                raw_text = " ".join(
-                    part for part in [raw_text, text_from_form] if part
-                ).strip()
-                norm_text = " ".join(
-                    part for part in [norm_text, text_norm] if part
-                ).strip()
+                raw_text = raw_text or text_from_form
+                typed_norm = text_norm
+                norm_text = text_norm or norm_text
         except json.JSONDecodeError as exc:
             return JSONResponse(
                 {"error": f"Failed to parse answers: {exc}"},
@@ -117,13 +115,38 @@ async def upload_audio(
             status_code=400,
         )
 
+    # === Assemble final model input string ===
+    answers_count = len(user_answers)
+    duration_answer = user_answers[1] if answers_count > 1 else ""
+    severity_answer = user_answers[2] if answers_count > 2 else ""
+    symptoms_answer = user_answers[3] if answers_count > 3 else ""
+
+    def _clean(value: str, fallback: str = "not provided") -> str:
+        value = (value or "").strip()
+        return value if value else fallback
+
+    norm_text = norm_text or audio_norm or typed_norm
+    base_text = (norm_text or raw_text or "").strip()
+    free_text_segment = base_text.rstrip(".")
+    if not free_text_segment:
+        free_text_segment = "no description provided"
+
+    model_input = ", ".join(
+        [
+            f"free text [{_clean(free_text_segment)}]",
+            f"duration [{_clean(duration_answer)}]",
+            f"severity [{_clean(severity_answer)}]",
+            f"also [{_clean(symptoms_answer)}]",
+        ]
+    )
+
     # === 3. Predict with SACA model ===
     print("====================================")
     print("NORMALIZED TEXT SENT TO MODEL:")
-    print(norm_text)
+    print(model_input)
     print("====================================")
 
-    saca_result = predict_from_text(norm_text, MODELS)
+    saca_result = predict_from_text(model_input, MODELS)
 
     parts = saca_result.split("\n")
     severity_line = (
@@ -134,7 +157,7 @@ async def upload_audio(
         {
             "result": saca_result,
             "raw_text": raw_text,
-            "normalized_text": norm_text,
+            "normalized_text": model_input,
             "severity": severity_line,
             "questions": questions,
             "user_answers": user_answers,
