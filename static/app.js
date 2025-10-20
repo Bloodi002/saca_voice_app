@@ -2,6 +2,35 @@
   const PREF_KEY='sacaPrefs', LS_KEY='sacaHistory', AUTH_KEY='sacaAuth';
   const qs = s=>document.querySelector(s);
   const STR = window.STR;
+  const FALLBACK_ANALYSIS = {
+    condition:"We'll share the likely condition once we review your details.",
+    severity:"We're still gauging how serious things are.",
+    advice:"Next steps will appear here as soon as we have a recommendation.",
+    timestamp:"Waiting for your check-in."
+  };
+  const FALLBACK_ERRORS = {
+    mediaUnsupported:"Audio recording is not supported in this browser.",
+    microphone:"Could not access the microphone. Please check permissions.",
+    audioSubmit:"Audio submission failed.",
+    noAudio:"No audio captured. Please try again.",
+    uploadFailed:"Upload failed"
+  };
+
+  function translate(path, fallback = ""){
+    const value = t(path);
+    if(value === null || value === undefined || value === ""){
+      return fallback;
+    }
+    return value;
+  }
+
+  function formatTemplate(template, replacements = {}){
+    if(typeof template !== 'string') return template || '';
+    return Object.entries(replacements).reduce((acc,[key,val])=>{
+      const pattern = new RegExp(`\\{${key}\\}`, 'g');
+      return acc.replace(pattern, val);
+    }, template);
+  }
 
   const heroIntro = qs('#heroIntro');
   const micButton = qs('#micHome');
@@ -66,15 +95,11 @@
   const langToggle = qs('#langToggle');
   const langLabel = qs('#langLabel');
 
-  const DEFAULT_CONDITION = "We'll share the likely condition once we review your details.";
-  const DEFAULT_SEVERITY = "We're still gauging how serious things are.";
-  const DEFAULT_ADVICE = "Next steps will appear here as soon as we have a recommendation.";
-  const DEFAULT_TIMESTAMP = "Waiting for your check-in.";
   const SEVERITY_CLASSES = ['severity-unknown','severity-mild','severity-moderate','severity-severe'];
   const MIC_COPY = {
-    idle: { key:'home.mic', fallback:'Tap to speak' },
-    listening: { key:'home.micListening', fallback:'Listening...' },
-    submitting: { key:'home.micSubmitting', fallback:'Processing...' }
+    idle: { key:'home.mic', fallback:'Tap here to speak' },
+    listening: { key:'home.micListening', fallback:'Listening... tap to stop' },
+    submitting: { key:'home.micSubmitting', fallback:'Submitting...' }
   };
   const USERS_KEY = 'sacaUsers';
   const MIN_PASSWORD_LENGTH = 6;
@@ -95,10 +120,41 @@
   const easyToggle = qs('#easyToggle');
 
   const questions = [
-    { text: "How are you feeling today?", type: "text" },
-    { text: "How long have you been feeling this?", type: "choice", options: ["A few hours","A day","2-3 days","A week or more"] },
-    { text: "How bad is the issue?", type: "choice", options: ["Light","Medium","Severe"] },
-    { text: "Have you noticed any other symptoms?", type: "choice", options: ["Fever","Nausea or vomiting","Cough or breathing difficulty","Diarrhea","Chest pain","Dizziness or fatigue"] }
+    { textKey: "flow.questions.q1", fallback: "How are you feeling today?", type: "text" },
+    {
+      textKey: "flow.questions.q2",
+      fallback: "How long have you been feeling this?",
+      type: "choice",
+      options: [
+        { value: "A few hours", labelKey: "flow.questions.duration.fewHours" },
+        { value: "A day", labelKey: "flow.questions.duration.day" },
+        { value: "2-3 days", labelKey: "flow.questions.duration.fewDays" },
+        { value: "A week or more", labelKey: "flow.questions.duration.weekPlus" }
+      ]
+    },
+    {
+      textKey: "flow.questions.q3",
+      fallback: "How bad is the issue?",
+      type: "choice",
+      options: [
+        { value: "Light", labelKey: "flow.questions.severity.light" },
+        { value: "Medium", labelKey: "flow.questions.severity.medium" },
+        { value: "Severe", labelKey: "flow.questions.severity.severe" }
+      ]
+    },
+    {
+      textKey: "flow.questions.q4",
+      fallback: "Have you noticed any other symptoms?",
+      type: "choice",
+      options: [
+        { value: "Fever", labelKey: "entry.options.fever" },
+        { value: "Nausea or vomiting", labelKey: "entry.options.nausea" },
+        { value: "Cough or breathing difficulty", labelKey: "entry.options.breathing" },
+        { value: "Diarrhea", labelKey: "entry.options.diarrhea" },
+        { value: "Chest pain", labelKey: "entry.options.chest" },
+        { value: "Dizziness or fatigue", labelKey: "entry.options.dizzy" }
+      ]
+    }
   ];
   const BASE_QUESTION_COUNT = questions.length;
 
@@ -617,15 +673,58 @@
     return cur;
   }
   function applyStrings(){
+    const lang = prefs.lang || 'en';
+    if(document.documentElement){
+      document.documentElement.setAttribute('lang', lang);
+    }
+    const titleCopy = translate('meta.title', document.title);
+    if(titleCopy) document.title = titleCopy;
+
     document.querySelectorAll('[data-i18n]').forEach(el=>{
-      const key = el.getAttribute('data-i18n'); const val = t(key);
+      const key = el.getAttribute('data-i18n');
+      if(!key) return;
+      const fallback = el.getAttribute('data-i18n-fallback') || el.textContent;
+      const argsAttr = el.getAttribute('data-i18n-args');
+      let val = translate(key, fallback);
+      if(argsAttr){
+        try{
+          const args = JSON.parse(argsAttr);
+          val = formatTemplate(val, args);
+        }catch(err){}
+      }
       if(val!=null) el.textContent = val;
     });
+
+    document.querySelectorAll('[data-i18n-html]').forEach(el=>{
+      const key = el.getAttribute('data-i18n-html');
+      if(!key) return;
+      const fallback = el.getAttribute('data-i18n-fallback') || el.innerHTML;
+      const val = translate(key, fallback);
+      if(val!=null) el.innerHTML = val;
+    });
+
     document.querySelectorAll('[data-i18n-placeholder]').forEach(el=>{
-      const key = el.getAttribute('data-i18n-placeholder'); const val = t(key);
+      const key = el.getAttribute('data-i18n-placeholder');
+      if(!key) return;
+      const fallback = el.getAttribute('placeholder') || '';
+      const val = translate(key, fallback);
       if(val!=null) el.setAttribute('placeholder', val);
     });
+
+    document.querySelectorAll('[data-i18n-attr]').forEach(el=>{
+      const mapping = el.getAttribute('data-i18n-attr');
+      if(!mapping) return;
+      mapping.split(';').forEach(entry=>{
+        const [attr, key] = entry.split(':').map(part=>part && part.trim());
+        if(!attr || !key) return;
+        const fallback = el.getAttribute(attr) || '';
+        const val = translate(key, fallback);
+        if(val!=null) el.setAttribute(attr, val);
+      });
+    });
+
     updateLanguageToggleUI();
+    updateProgressDisplay(currentQuestion);
   }
   function isAuthed(){ return !!(auth && auth.email); }
   function persistAuth(){ if(isAuthed()){ localStorage.setItem(AUTH_KEY, JSON.stringify(auth)); } else { localStorage.removeItem(AUTH_KEY); }}
@@ -645,7 +744,7 @@
     if(isAuthed()) return;
     evt?.preventDefault();
     showAuthModal('login');
-    showAuthMessage('Please log in to view your history.', 'error');
+    showAuthMessage(translate('history.loginPrompt', 'Please log in to view your history.'), 'error');
   }
   function initPrefsUI(){
     if(langSelect) langSelect.value = prefs.lang||'en';
@@ -739,23 +838,46 @@
   }
   function updateProgressDisplay(index){
     const total = Math.max(1, BASE_QUESTION_COUNT);
-    let label;
-    if(index >= total){
-      label = "All questions complete";
-    } else {
-      const step = Math.max(1, index + 1);
-      const clampedStep = Math.min(total, step);
-      label = `Question ${clampedStep} of ${total}`;
+    if(questionProgress){
+      if(index >= total){
+        questionProgress.setAttribute('data-i18n', 'flow.progressComplete');
+        questionProgress.removeAttribute('data-i18n-args');
+        questionProgress.textContent = translate('flow.progressComplete', 'All questions complete');
+      } else {
+        const step = Math.max(1, index + 1);
+        const clampedStep = Math.min(total, step);
+        questionProgress.setAttribute('data-i18n', 'flow.progress');
+        const args = { current: clampedStep, total };
+        questionProgress.setAttribute('data-i18n-args', JSON.stringify(args));
+        const template = translate('flow.progress', 'Question {current} of {total}');
+        questionProgress.textContent = formatTemplate(template, args);
+      }
     }
-    if(questionProgress) questionProgress.textContent = label;
-    if(entryProgress) entryProgress.textContent = label;
+    if(entryProgress){
+      if(index >= total){
+        entryProgress.setAttribute('data-i18n', 'flow.progressComplete');
+        entryProgress.removeAttribute('data-i18n-args');
+        entryProgress.textContent = translate('flow.progressComplete', 'All questions complete');
+      } else {
+        const step = Math.max(1, index + 1);
+        const clampedStep = Math.min(total, step);
+        entryProgress.setAttribute('data-i18n', 'flow.progress');
+        const args = { current: clampedStep, total };
+        entryProgress.setAttribute('data-i18n-args', JSON.stringify(args));
+        const template = translate('flow.progress', 'Question {current} of {total}');
+        entryProgress.textContent = formatTemplate(template, args);
+      }
+    }
   }
   function setEntryChoiceDefault(){
     if(entrySpeakBtn){
       entrySpeakBtn.disabled = false;
       entrySpeakBtn.classList.remove('is-listening');
       const textEl = entrySpeakBtn.querySelector('.question-btn-label, .entry-label, .mic-text');
-      if(textEl) textEl.textContent = MIC_COPY.idle.fallback;
+      if(textEl){
+        textEl.setAttribute('data-i18n', MIC_COPY.idle.key);
+        textEl.textContent = translate(MIC_COPY.idle.key, MIC_COPY.idle.fallback);
+      }
     }
     if(entryTypeBtn){
       entryTypeBtn.disabled = false;
@@ -857,39 +979,88 @@
     if(!histCards || !histEmpty) return;
     histCards.innerHTML = '';
     if(!isAuthed()){
-      histEmpty.textContent = 'Log in to see your recent check-ins.';
-      histEmpty.classList.remove('is-hidden');
+      if(histEmpty){
+        histEmpty.setAttribute('data-i18n', 'history.loginPrompt');
+        histEmpty.setAttribute('data-i18n-fallback', 'Log in to see your recent check-ins.');
+        histEmpty.textContent = translate('history.loginPrompt', 'Log in to see your recent check-ins.');
+        histEmpty.classList.remove('is-hidden');
+      }
       return;
     }
     const entries = readHist().slice(0,4);
     if(!entries.length){
-      histEmpty.textContent = 'No saved check-ins yet. Your next check-in will appear here.';
-      histEmpty.classList.remove('is-hidden');
+      if(histEmpty){
+        histEmpty.setAttribute('data-i18n', 'history.emptyModal');
+        histEmpty.setAttribute('data-i18n-fallback', 'No saved check-ins yet. Your next check-in will appear here.');
+        histEmpty.textContent = translate('history.emptyModal', 'No saved check-ins yet. Your next check-in will appear here.');
+        histEmpty.classList.remove('is-hidden');
+      }
       return;
     }
     histEmpty.classList.add('is-hidden');
     entries.forEach(entry=>{
       const card = document.createElement('article');
       const date = new Date(entry.ts||Date.now());
-      const severityLabel = normalizeDisplay(entry.severity) || 'Not rated';
-      const severityLevel = severityLevelFromText(severityLabel);
-      const severityChipText = severityLevel === 'unknown' ? 'Reviewing' : toTitleCase(severityLevel);
-      const severityDescription = severityLabel ? severityLabel.split('(')[0].trim() : 'Not rated';
-      const conditionLabel = normalizeDisplay(entry.condition) || 'General check-in';
-      const preview = clipText(normalizeDisplay(entry.transcript)|| 'No transcript captured.');
+      const severityLabelRaw = normalizeDisplay(entry.severity) || '';
+      const severityLevel = severityLevelFromText(severityLabelRaw);
+      const severityKey = severityLevel && severityLevel !== 'unknown'
+        ? `history.severity.${severityLevel}`
+        : 'history.severity.none';
+      const severityChipText = severityLevel === 'unknown'
+        ? translate('history.reviewing', 'Reviewing')
+        : translate(severityKey, toTitleCase(severityLevel || 'none'));
+      const severityDescription = severityLabelRaw
+        ? severityLabelRaw.split('(')[0].trim()
+        : translate('history.severity.none', 'No severity');
+      const usedSeverityFallback = !severityLabelRaw;
+
+      const conditionRaw = normalizeDisplay(entry.condition);
+      const usedConditionFallback = !conditionRaw;
+      const conditionLabel = conditionRaw || translate('history.unknownCondition', 'General check-in');
+
+      const transcriptRaw = normalizeDisplay(entry.transcript);
+      const snippetFallback = translate('history.noText', 'No symptoms captured.');
+      const previewSource = transcriptRaw || snippetFallback;
+      const previewText = clipText(previewSource);
+      const previewUsesFallback = !transcriptRaw;
+
       const adviceText = normalizeDisplay(entry.advice);
+      const adviceHeading = translate('analysis.adviceTitle', 'Suggested next steps');
+
       const formattedTime = date.toLocaleString([], { dateStyle:'medium', timeStyle:'short' });
       card.className = `history-card history-card--${severityLevel}`;
       card.innerHTML = `
         <header class="history-card-head">
-          <span class=\"history-chip history-chip--${severityLevel}\">${severityChipText}</span>
-          <time class=\"history-time\" datetime=\"${date.toISOString()}\">${formattedTime}</time>
+          <span class="history-chip history-chip--${severityLevel}">${severityChipText}</span>
+          <time class="history-time" datetime="${date.toISOString()}">${formattedTime}</time>
         </header>
-        <h3 class=\"history-condition\">${conditionLabel}</h3>
-        <p class=\"history-severity\">${severityDescription}</p>
-        <p class=\"history-snippet\">${preview}</p>
-        ${adviceText ? `<div class=\"history-advice\"><span>Next steps</span><p>${adviceText}</p></div>` : ''}
+        <h3 class="history-condition">${conditionLabel}</h3>
+        <p class="history-severity">${severityDescription}</p>
+        <p class="history-snippet">${previewText}</p>
+        ${adviceText ? `<div class="history-advice"><span data-i18n="analysis.adviceTitle">${adviceHeading}</span><p>${adviceText}</p></div>` : ''}
       `;
+      const chipEl = card.querySelector('.history-chip');
+      if(chipEl){
+        if(severityLevel === 'unknown'){
+          chipEl.setAttribute('data-i18n', 'history.reviewing');
+        } else if(severityLevel){
+          chipEl.setAttribute('data-i18n', severityKey);
+        }
+      }
+      if(usedConditionFallback){
+        card.querySelector('.history-condition')?.setAttribute('data-i18n', 'history.unknownCondition');
+      }
+      if(usedSeverityFallback){
+        card.querySelector('.history-severity')?.setAttribute('data-i18n', 'history.severity.none');
+      }
+      if(previewUsesFallback){
+        card.querySelector('.history-snippet')?.setAttribute('data-i18n', 'history.noText');
+      }
+      if(adviceText){
+        const adviceLabel = card.querySelector('.history-advice span');
+        adviceLabel?.setAttribute('data-i18n', 'analysis.adviceTitle');
+        adviceLabel?.setAttribute('data-i18n-fallback', adviceHeading);
+      }
       histCards.appendChild(card);
     });
   }
@@ -915,8 +1086,8 @@
   }
   function showHistoryModal(){
     if(!isAuthed()){
-      showAuthModal('login');
-      showAuthMessage('Please log in to view your history.', 'error');
+    showAuthModal('login');
+    showAuthMessage(translate('history.loginPrompt', 'Please log in to view your history.'), 'error');
       return;
     }
     renderHistory();
@@ -948,10 +1119,18 @@
   }
 
   function resetAnalysisView(){
-    setAnalysisText(analysisCondition, null, DEFAULT_CONDITION);
-    setAnalysisText(analysisSeverity, null, DEFAULT_SEVERITY);
-    setAnalysisText(analysisAdvice, null, DEFAULT_ADVICE);
-    if(analysisTimestamp) analysisTimestamp.textContent = DEFAULT_TIMESTAMP;
+    const fallbackCondition = translate('analysis.defaultCondition', FALLBACK_ANALYSIS.condition);
+    const fallbackSeverity = translate('analysis.defaultSeverity', FALLBACK_ANALYSIS.severity);
+    const fallbackAdvice = translate('analysis.defaultAdvice', FALLBACK_ANALYSIS.advice);
+    setAnalysisText(analysisCondition, null, 'analysis.defaultCondition', fallbackCondition);
+    setAnalysisText(analysisSeverity, null, 'analysis.defaultSeverity', fallbackSeverity);
+    setAnalysisText(analysisAdvice, null, 'analysis.defaultAdvice', fallbackAdvice);
+    if(analysisTimestamp){
+      analysisTimestamp.setAttribute('data-i18n', 'analysis.timestamp');
+      analysisTimestamp.setAttribute('data-i18n-fallback', FALLBACK_ANALYSIS.timestamp);
+      analysisTimestamp.removeAttribute('data-i18n-args');
+      analysisTimestamp.textContent = translate('analysis.timestamp', FALLBACK_ANALYSIS.timestamp);
+    }
     analysisCard?.classList.add('is-hidden');
     refreshBtn?.classList.add('is-hidden');
     applySeverityTheme('unknown');
@@ -999,7 +1178,11 @@
     updateProgressDisplay(index);
     document.querySelector('#choicesContainer')?.remove();
     if(index >= questions.length){
-      questionText && (questionText.textContent = "Thanks! Your responses have been recorded.");
+      if(questionText){
+        questionText.setAttribute('data-i18n', 'flow.thanks');
+        questionText.setAttribute('data-i18n-fallback', 'Thanks! Your responses have been recorded.');
+        questionText.textContent = translate('flow.thanks', 'Thanks! Your responses have been recorded.');
+      }
       if(answerInput) answerInput.style.display='none';
       if(answerInputWrap) answerInputWrap.style.display='none';
       if(questionActions) questionActions.style.display='none';
@@ -1008,12 +1191,20 @@
       return;
     }
     const q = questions[index];
-    if(questionHeading) questionHeading.textContent = q.text;
+    if(questionHeading){
+      if(q.textKey) questionHeading.setAttribute('data-i18n', q.textKey);
+      if(q.fallback) questionHeading.setAttribute('data-i18n-fallback', q.fallback);
+      questionHeading.textContent = translate(q.textKey, q.fallback || '');
+    }
     if(questionText){
       if(q.type === 'choice'){
-        questionText.textContent = "Choose the option that fits best.";
+        questionText.setAttribute('data-i18n', 'flow.choiceHint');
+        questionText.setAttribute('data-i18n-fallback', 'Choose the option that fits best.');
+        questionText.textContent = translate('flow.choiceHint', 'Choose the option that fits best.');
       } else {
-        questionText.textContent = "Type a quick response below.";
+        questionText.setAttribute('data-i18n', 'flow.textHint');
+        questionText.setAttribute('data-i18n-fallback', 'Type a quick response below.');
+        questionText.textContent = translate('flow.textHint', 'Type a quick response below.');
       }
     }
     if(q.type === 'text'){
@@ -1045,9 +1236,18 @@
         const btn = document.createElement('button');
         btn.type = 'button';
         btn.className = 'choiceBtn choice-card';
-        btn.innerHTML = `<span class="choice-icon">${getChoiceIcon(opt)}</span><span class="choice-label">${opt}</span>`;
+        const iconSpan = document.createElement('span');
+        iconSpan.className = 'choice-icon';
+        iconSpan.innerHTML = getChoiceIcon(opt.value || opt.label || opt);
+        const labelSpan = document.createElement('span');
+        labelSpan.className = 'choice-label';
+        if(opt.labelKey) labelSpan.setAttribute('data-i18n', opt.labelKey);
+        const fallbackLabel = typeof opt === 'string' ? opt : (opt.value || opt.label || '');
+        if(opt.labelKey) labelSpan.setAttribute('data-i18n-fallback', fallbackLabel);
+        labelSpan.textContent = translate(opt.labelKey, fallbackLabel);
+        btn.append(iconSpan, labelSpan);
         btn.addEventListener('click',()=>{
-          saveAnswer(opt);
+          saveAnswer(opt.value || opt.label || opt);
           currentQuestion++;
           showQuestion(currentQuestion);
         });
@@ -1057,13 +1257,21 @@
     }
   }
 
-  function setAnalysisText(node, text, fallback){
+  function setAnalysisText(node, text, key, fallback){
     if(!node) return;
-    if(text && text !== fallback){
+    if(text && text.trim()){
       node.textContent = text;
       node.classList.remove('muted');
+      if(key){
+        node.removeAttribute('data-i18n');
+        node.removeAttribute('data-i18n-fallback');
+      }
     } else {
-      node.textContent = fallback;
+      if(key){
+        node.setAttribute('data-i18n', key);
+        if(fallback) node.setAttribute('data-i18n-fallback', fallback);
+      }
+      node.textContent = translate(key, fallback || '');
       node.classList.add('muted');
     }
   }
@@ -1093,19 +1301,27 @@
   function setMicLabel(state){
     recordingState = state;
     const copy = MIC_COPY[state] || MIC_COPY.idle;
-    if(micText){ micText.setAttribute('data-i18n', copy.key); }
+    if(micText){
+      micText.setAttribute('data-i18n', copy.key);
+      micText.setAttribute('data-i18n-fallback', copy.fallback);
+      micText.textContent = translate(copy.key, copy.fallback);
+    }
     micButton?.classList.toggle('is-listening', state==='listening');
     const activeButton = activeMicButton && activeMicButton !== micButton ? activeMicButton : micButton;
     if(activeButton && activeButton !== micButton){
       const textEl = activeButton.querySelector('.question-btn-label, .entry-label, .mic-text');
-      if(textEl) textEl.textContent = copy.fallback;
+      if(textEl){
+        textEl.setAttribute('data-i18n', copy.key);
+        textEl.setAttribute('data-i18n-fallback', copy.fallback);
+        textEl.textContent = translate(copy.key, copy.fallback);
+      }
       activeButton.classList.toggle('is-listening', state==='listening');
     }
     applyStrings();
   }
   async function startRecording(){
     if(recordingState==='submitting') return;
-    if(!navigator.mediaDevices?.getUserMedia){ alert('Audio recording is not supported in this browser.'); return; }
+    if(!navigator.mediaDevices?.getUserMedia){ alert(translate('errors.mediaUnsupported', FALLBACK_ERRORS.mediaUnsupported)); return; }
     const button = activeMicButton || micButton;
     try{
       if(button) button.disabled = true;
@@ -1119,7 +1335,7 @@
       setMicLabel('listening');
     } catch(err){
       console.error(err);
-      alert('Could not access the microphone. Please check permissions.');
+      alert(translate('errors.microphone', FALLBACK_ERRORS.microphone));
       setMicLabel('idle');
     } finally {
       if(button){
@@ -1163,12 +1379,12 @@
         }
         setMicLabel('idle');
       } catch(err){
-        alert('Audio submission failed.');
+        alert(translate('errors.audioSubmit', FALLBACK_ERRORS.audioSubmit));
         console.error(err);
         setMicLabel('idle');
       }
     } else {
-      alert('No audio captured. Please try again.');
+      alert(translate('errors.noAudio', FALLBACK_ERRORS.noAudio));
       setMicLabel('idle');
     }
     if(button){
@@ -1210,6 +1426,9 @@
       const transcriptText = normalizeDisplay(data.raw_text || data.transcription || data.transcript || data.nlp_text || answersForSend[0]);
 
       const parsed = parseAnalysis(data.result || '');
+      const defaultConditionText = translate('analysis.defaultCondition', FALLBACK_ANALYSIS.condition);
+      const defaultSeverityText = translate('analysis.defaultSeverity', FALLBACK_ANALYSIS.severity);
+      const defaultAdviceText = translate('analysis.defaultAdvice', FALLBACK_ANALYSIS.advice);
 
       // === 🧠 Smarter language formatting for model results ===
       // 🩺 Predicted condition: Title-cased, clean
@@ -1219,7 +1438,7 @@ if(conditionSource){
 }
 let conditionDisplay = conditionSource
   ? toTitleCase(conditionSource)
-  : DEFAULT_CONDITION;
+  : defaultConditionText;
 
 // 🎚️ Severity: Natural, human phrasing
 let severitySource = normalizeDisplay(parsed.severity) || normalizeDisplay(data.severity) || '';
@@ -1228,24 +1447,23 @@ let severityText = severitySource
   .replace(/\(.*?\)/g, '')
   .trim();
 
+let severityDisplay = defaultSeverityText;
 if (severityText) {
   const lower = severityText.toLowerCase();
   if (lower.includes('severe')) {
-    severityDisplay = "This condition appears severe.";
+    severityDisplay = translate('analysis.severitySevere', 'This condition appears severe.');
   } else if (lower.includes('moderate')) {
-    severityDisplay = "This condition appears moderate.";
+    severityDisplay = translate('analysis.severityModerate', 'This condition appears moderate.');
   } else if (lower.includes('mild') || lower.includes('light')) {
-    severityDisplay = "This condition appears mild.";
+    severityDisplay = translate('analysis.severityMild', 'This condition appears mild.');
   } else {
-    severityDisplay = `Current severity: ${toTitleCase(severityText)}.`;
+    const severityTemplate = translate('analysis.severityGeneric', 'Current severity: {severity}.');
+    severityDisplay = formatTemplate(severityTemplate, { severity: toTitleCase(severityText) });
   }
-} else {
-  severityDisplay = DEFAULT_SEVERITY;
 }
 
-
-let adviceDisplay = normalizeDisplay(parsed.advice) || normalizeDisplay(data.advice) || DEFAULT_ADVICE;
-if (adviceDisplay !== DEFAULT_ADVICE) {
+let adviceDisplay = normalizeDisplay(parsed.advice) || normalizeDisplay(data.advice) || defaultAdviceText;
+if (adviceDisplay !== defaultAdviceText) {
   // Remove stray letters or symbols
   adviceDisplay = adviceDisplay
     .replace(/^u\s*/i, '') // removes “U ” or “u ”
@@ -1264,13 +1482,18 @@ if (adviceDisplay !== DEFAULT_ADVICE) {
 
 
       // ✅ Apply updated outputs
-      setAnalysisText(analysisCondition, conditionDisplay, DEFAULT_CONDITION);
-      setAnalysisText(analysisSeverity, severityDisplay, DEFAULT_SEVERITY);
-      setAnalysisText(analysisAdvice, adviceDisplay, DEFAULT_ADVICE);
+      setAnalysisText(analysisCondition, conditionDisplay, 'analysis.defaultCondition', defaultConditionText);
+      setAnalysisText(analysisSeverity, severityDisplay, 'analysis.defaultSeverity', defaultSeverityText);
+      setAnalysisText(analysisAdvice, adviceDisplay, 'analysis.defaultAdvice', defaultAdviceText);
       applySeverityTheme(severitySource || severityDisplay);
       if(analysisTimestamp){
         const now = new Date();
-        analysisTimestamp.textContent = `Updated ${now.toLocaleTimeString([], { hour:'numeric', minute:'2-digit' })}`;
+        const timeString = now.toLocaleTimeString([], { hour:'numeric', minute:'2-digit' });
+        const updatedTemplate = translate('analysis.updated', 'Updated {time}');
+        analysisTimestamp.setAttribute('data-i18n', 'analysis.updated');
+        analysisTimestamp.setAttribute('data-i18n-fallback', 'Updated {time}');
+        analysisTimestamp.setAttribute('data-i18n-args', JSON.stringify({ time: timeString }));
+        analysisTimestamp.textContent = formatTemplate(updatedTemplate, { time: timeString });
       }
 
       analysisCard?.classList.remove('is-hidden');
@@ -1291,7 +1514,7 @@ if (adviceDisplay !== DEFAULT_ADVICE) {
       return data;
     } catch(err){
       console.error(err);
-      if(!options.silent){ alert('Upload failed'); }
+      if(!options.silent){ alert(translate('errors.uploadFailed', FALLBACK_ERRORS.uploadFailed)); }
       setMicLabel('idle');
       throw err;
     }
@@ -1380,7 +1603,7 @@ if (adviceDisplay !== DEFAULT_ADVICE) {
   nextBtn?.addEventListener('click', ()=>{
     const ans = (answerInput?.value||'').trim();
     if(ans){ saveAnswer(ans); currentQuestion++; showQuestion(currentQuestion); }
-    else alert('Please add your answer before continuing.');
+    else alert(translate('flow.requireAnswer', 'Please add your answer before continuing.'));
   });
   answerInput?.addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); nextBtn?.click(); } });
   showGuidedBtn?.addEventListener('click', ()=>openGuidedFlow({ autoFocus:true }));

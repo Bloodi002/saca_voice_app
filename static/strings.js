@@ -1,8 +1,90 @@
 /* strings.js: i18n dictionaries */
 window.STR = {
   en: {
-    ui:{login:"Login",account:"Account",logout:"Logout",language:"Language",highContrast:"High contrast",easyRead:"Easy-Read",languageEn:"English",languageAe:"Aboriginal English",switchToEnglish:"Switch to English",switchToAe:"Switch to Aboriginal English"},
-    home:{banner:"Your Health Companion",heading:"How are you feeling today?",sub:"Tell us about your symptoms",mic:"Tap here to speak",micListening:"Listening... tap to stop",micStop:"Tap to stop",micSubmitting:"Submitting...",type:"Type your symptoms",typeBtn:"Type/Choose Your Symptoms",guidedTitle:"Guided check-in",needAnswers:"Please complete the guided questions before submitting.",history:"Your History",emergency:"Call Emergency"},
+    meta:{
+      title:"SACA - Your Health Companion"
+    },
+    ui:{
+      login:"Login",
+      account:"Account",
+      logout:"Logout",
+      language:"Language",
+      highContrast:"High contrast",
+      highContrastHint:"Sharper colours",
+      easyRead:"Easy-Read",
+      easyReadHint:"Bigger text",
+      languageEn:"English",
+      languageAe:"Aboriginal English",
+      switchToEnglish:"Switch to English",
+      switchToAe:"Switch to Aboriginal English",
+      viewHistory:"View recent history",
+      startOver:"Start another check-in"
+    },
+    home:{
+      banner:"Your Health Companion",
+      heading:"How are you feeling today?",
+      sub:"Tell us about your symptoms",
+      heroTag:"HEALTH ASSISTANT FOR PALM ISLANDS COMMUNITY",
+      heroBody:"SACA is your trusted health companion designed for the Palm Island community. It helps you describe your symptoms easily, understand your condition, and connect with the right care.",
+      getStarted:"Get Started",
+      howTo:"How to Use",
+      entryIntro:"Speak it out loud or write a short note so we can help.",
+      mic:"Tap here to speak",
+      micListening:"Listening... tap to stop",
+      micStop:"Tap to stop",
+      micSubmitting:"Submitting...",
+      type:"Type your symptoms",
+      typeBtn:"Type/Choose Your Symptoms",
+      guidedTitle:"Guided check-in",
+      needAnswers:"Please complete the guided questions before submitting.",
+      history:"Your History",
+      emergency:"Call Emergency"
+    },
+    flow:{
+      progress:"Question {current} of {total}",
+      progressComplete:"All questions complete",
+      thanks:"Thanks! Your responses have been recorded.",
+      choiceHint:"Choose the option that fits best.",
+      textHint:"Type a quick response below.",
+      answerPlaceholder:"Type your answer",
+      notePlaceholder:"Type a short note about how you're feeling",
+      continue:"Continue",
+      cancel:"Cancel",
+      next:"Next",
+      requireAnswer:"Please add your answer before continuing.",
+      questions:{
+        q1:"How are you feeling today?",
+        q2:"How long have you been feeling this?",
+        q3:"How bad is the issue?",
+        q4:"Have you noticed any other symptoms?",
+        duration:{
+          fewHours:"A few hours",
+          day:"A day",
+          fewDays:"2-3 days",
+          weekPlus:"A week or more"
+        },
+        severity:{
+          light:"Light",
+          medium:"Medium",
+          severe:"Severe"
+        }
+      }
+    },
+    entry:{
+      question:"How are you feeling today?",
+      intro:"Speak it out loud or write a short note so we can help.",
+      speak:"Tap to speak",
+      type:"Write your symptoms",
+      quickLabel:"Quick symptom options",
+      options:{
+        fever:"Fever",
+        nausea:"Nausea or vomiting",
+        breathing:"Cough or breathing difficulty",
+        diarrhea:"Diarrhea",
+        chest:"Chest pain",
+        dizzy:"Dizziness or fatigue"
+      }
+    },
     choose:{title:"Choose Symptoms",searchPH:"Type your symptoms or choose below (comma-separated)"},
     common:{raw:"Raw input",rawPH:"Anything you speak here will appear as-is.",proc:"Processed (NLP)",procPH:"Your NLP output will appear here.",save:"Save to history",back:"Back to Home"},
     triage:{title:"Severity summary",start:"Start typing or speaking to get advice.",call000:"Call 000",info:"Emergency info"},
@@ -18,6 +100,8 @@ window.STR = {
       toggleShow:"Show",
       toggleHide:"Hide",
       empty:"No entries yet. Your latest check-ins will appear here.",
+      modalTitle:"Your recent check-ins",
+      emptyModal:"No saved check-ins yet. Your next check-in will appear here.",
       date:"Date & Time",
       lockedTitle:"History is protected",
       lockedBody:"Log in to see your saved check-ins.",
@@ -26,16 +110,149 @@ window.STR = {
       loginPrompt:"Log in to view your recent history.",
       unknownCondition:"General check-in",
       noText:"No symptoms captured.",
+      reviewing:"Checking",
       severity:{mild:"Mild",moderate:"Moderate",severe:"Severe",none:"No severity"}
     },
     emg:{title:"Emergency",sub:"If someone is seriously ill or injured, or their life is at risk, call 000.",whenTitle:"When to call 000",whenList:"Severe chest pain or trouble breathing - Severe bleeding - Unconsciousness - Seizures - Sudden weakness or numbness - Severe allergic reaction",otherTitle:"Other options (non-emergency)",otherText:"Visit a GP, urgent care, or call a nurse service in your state or territory."},
     sev:{breathing:"If severe shortness of breath, call 000 now.",chest:"Chest pain with sweating, nausea, or shortness of breath? Call 000.",belly:"Severe pain, blood in vomit or stool, or dehydration needs urgent care.",skin:"Rash with swelling of tongue or lips or any breathing issue? Call 000.",fever:"High fever with confusion, stiff neck, or rash needs urgent care."},
-    auth:{title:"Welcome",sub:"Login or create an account to continue",emailL:"Email",passL:"Password",login:"Login",ok:"Logged in - taking you home...",requireFields:"Enter email and password to continue."},
-    analysis:{offlineCondition:"Summary from your notes:",offlineSeverity:"Severity unavailable while offline.",offlineAdvice:"We couldn't reach the server. Please try again shortly or contact a clinician if anything feels urgent."}
+    auth:{
+      title:"Welcome",
+      sub:"Login or create an account to continue",
+      emailL:"Email",
+      passL:"Password",
+      passPlaceholder:"Password",
+      passNewPlaceholder:"Password (min 6 characters)",
+      passRepeatPlaceholder:"Repeat password",
+      confirmL:"Confirm password",
+      login:"Login",
+      tabLogin:"Login",
+      tabSignup:"Sign up",
+      ok:"Logged in - taking you home...",
+      requireFields:"Enter email and password to continue.",
+      welcomeBack:"Welcome back",
+      welcomeSub:"Enter your details to continue.",
+      joinTitle:"Join SACA",
+      joinSub:"Create an account to save your check-ins."
+    },
+    analysis:{
+      title:"SACA analysis",
+      timestamp:"Waiting for your check-in.",
+      conditionTitle:"Likely condition",
+      severityTitle:"What we're seeing",
+      adviceTitle:"Suggested next steps",
+      defaultCondition:"We'll share the likely condition once we review your details.",
+      defaultSeverity:"We're still gauging how serious things are.",
+      defaultAdvice:"Next steps will appear here as soon as we have a recommendation.",
+      severitySevere:"This condition appears severe.",
+      severityModerate:"This condition appears moderate.",
+      severityMild:"This condition appears mild.",
+      severityGeneric:"Current severity: {severity}.",
+      updated:"Updated {time}",
+      offlineCondition:"Summary from your notes:",
+      offlineSeverity:"Severity unavailable while offline.",
+      offlineAdvice:"We couldn't reach the server. Please try again shortly or contact a clinician if anything feels urgent."
+    },
+    howto:{
+      title:"How to use SACA",
+      lead:"In just a few taps we'll help you figure out the next best step.",
+      step1:"<strong>Share how you feel.</strong> Tap <em>Tap to speak</em> or <em>Write your symptoms</em> to tell us what's going on.",
+      step2:"<strong>Answer quick follow-ups.</strong> A couple of short questions help us understand the bigger picture.",
+      step3:"<strong>Review personalised advice.</strong> We'll suggest what to do next and highlight anything urgent.",
+      footnote:"Need to start over? Use \"Start another check-in\" any time."
+    },
+    errors:{
+      mediaUnsupported:"Audio recording is not supported in this browser.",
+      microphone:"Could not access the microphone. Please check permissions.",
+      audioSubmit:"Audio submission failed.",
+      noAudio:"No audio captured. Please try again.",
+      uploadFailed:"Upload failed"
+    }
   },
   ae: {
-    ui:{login:"Log in",account:"Account",logout:"Log out",language:"Language",highContrast:"High contrast",easyRead:"Easy-Read",languageEn:"English",languageAe:"Aboriginal English",switchToEnglish:"Swap to English",switchToAe:"Swap to Aboriginal English"},
-    home:{banner:"Your Health Buddy",heading:"How ya feelin' today?",sub:"Tell us what's up with your body",mic:"Tap to yarn (talk)",micListening:"Listening... tap to finish",micStop:"Tap to finish",micSubmitting:"Sending...",type:"Type your symptoms",typeBtn:"Type or pick symptoms",guidedTitle:"Guided check-in",needAnswers:"Answer the guided questions before sending.",history:"Your Story (History)",emergency:"Call 000"},
+    meta:{
+      title:"SACA - Your Health Buddy"
+    },
+    ui:{
+      login:"Log in",
+      account:"Account",
+      logout:"Log out",
+      language:"Language",
+      highContrast:"High contrast",
+      highContrastHint:"Colours look stronger",
+      easyRead:"Easy-Read",
+      easyReadHint:"Bigger words",
+      languageEn:"English",
+      languageAe:"Aboriginal English",
+      switchToEnglish:"Swap to English",
+      switchToAe:"Swap to Aboriginal English",
+      viewHistory:"See your recent yarns",
+      startOver:"Start another yarn"
+    },
+    home:{
+      banner:"Your Health Buddy",
+      heading:"How ya feelin' today?",
+      sub:"Tell us what's up with your body",
+      heroTag:"HEALTH ASSISTANT FOR PALM ISLAND MOB",
+      heroBody:"SACA is your health buddy made for the Palm Island mob. It helps you yarn about how you're feeling, understand what's goin' on, and find the right care.",
+      getStarted:"Get started",
+      howTo:"How to use",
+      entryIntro:"Yarn it out loud or write a quick note so we can help.",
+      mic:"Tap to yarn (talk)",
+      micListening:"Listening... tap to finish",
+      micStop:"Tap to finish",
+      micSubmitting:"Sending...",
+      type:"Type your symptoms",
+      typeBtn:"Type or pick symptoms",
+      guidedTitle:"Guided check-in",
+      needAnswers:"Answer the guided questions before sending.",
+      history:"Your Story (History)",
+      emergency:"Call 000"
+    },
+    flow:{
+      progress:"Question {current} of {total}",
+      progressComplete:"All questions done",
+      thanks:"Deadly! We saved your answers.",
+      choiceHint:"Pick the option that fits best.",
+      textHint:"Type a quick yarn below.",
+      answerPlaceholder:"Type your answer",
+      notePlaceholder:"Type a short yarn about how you're feeling",
+      continue:"Keep going",
+      cancel:"Cancel",
+      next:"Next",
+      requireAnswer:"Please add your answer before continuing.",
+      questions:{
+        q1:"How ya feelin' today?",
+        q2:"How long you been feelin' this way?",
+        q3:"How bad does it feel?",
+        q4:"Noticed any other symptoms?",
+        duration:{
+          fewHours:"Just a few hours",
+          day:"One day",
+          fewDays:"2-3 days",
+          weekPlus:"A week or more"
+        },
+        severity:{
+          light:"Not too bad",
+          medium:"Medium",
+          severe:"Real bad"
+        }
+      }
+    },
+    entry:{
+      question:"How ya feelin' today?",
+      intro:"Yarn it out loud or write a quick note so we can help.",
+      speak:"Tap to yarn",
+      type:"Write your symptoms",
+      quickLabel:"Quick symptom options",
+      options:{
+        fever:"Got a fever",
+        nausea:"Feel sick (nausea or spewin')",
+        breathing:"Breathin' trouble",
+        diarrhea:"Runny tummy (diarrhea)",
+        chest:"Chest sore",
+        dizzy:"Dizzy or tired"
+      }
+    },
     choose:{title:"Pick your symptoms",searchPH:"Type here or pick below (use commas)"},
     common:{raw:"Your words",rawPH:"What you say shows here.",proc:"Cleaned up (computer)",procPH:"Computer version shows here.",save:"Save to history",back:"Back to Home"},
     triage:{title:"How serious is it?",start:"Start talkin' or typing to get advice.",call000:"Call 000",info:"Emergency info"},
@@ -51,6 +268,8 @@ window.STR = {
       toggleShow:"Show",
       toggleHide:"Hide",
       empty:"No notes yet. Your latest yarns will appear here.",
+      modalTitle:"Your recent yarns",
+      emptyModal:"No saved yarns yet. Your next check-in will yarn here.",
       date:"Date & Time",
       lockedTitle:"History is private",
       lockedBody:"Log in to see your saved yarns.",
@@ -59,16 +278,149 @@ window.STR = {
       loginPrompt:"Log in to see your yarns.",
       unknownCondition:"General check-in",
       noText:"No symptoms saved.",
+      reviewing:"Reviewing",
       severity:{mild:"Mild",moderate:"Medium",severe:"Severe",none:"No severity"}
     },
     emg:{title:"Emergency",sub:"If someone is real sick or in danger, call 000.",whenTitle:"When to call 000",whenList:"Bad chest pain or can't breathe - Lots of bleeding - Passed out - Fits (seizures) - Sudden weak or numb - Big allergic reaction",otherTitle:"Other help (not emergency)",otherText:"See a GP, urgent care, or ring your state nurse line."},
     sev:{breathing:"If real short of breath, call 000 now.",chest:"Chest sore with sweat, sick, or short breath? Call 000.",belly:"Very bad tummy pain, blood in spew or poo, or dry (dehydrated) needs urgent care.",skin:"Rash with swollen tongue or lips or breathing trouble? Call 000.",fever:"High fever with mixed up (confused), stiff neck, or rash needs urgent care."},
-    auth:{title:"Welcome",sub:"Log in or make account",emailL:"Email",passL:"Password",login:"Log in",ok:"Logged in - taking you home...",requireFields:"Type email and password first."},
-    analysis:{offlineCondition:"What you told us:",offlineSeverity:"Cannot rate severity while offline.",offlineAdvice:"We could not reach the server. Try again soon or yarn with the clinic mob if you are worried."}
+    auth:{
+      title:"Welcome",
+      sub:"Log in or make account",
+      emailL:"Email",
+      passL:"Password",
+      passPlaceholder:"Password",
+      passNewPlaceholder:"Password (min 6 characters)",
+      passRepeatPlaceholder:"Repeat password",
+      confirmL:"Confirm password",
+      login:"Log in",
+      tabLogin:"Log in",
+      tabSignup:"Sign up",
+      ok:"Logged in - taking you home...",
+      requireFields:"Type email and password first.",
+      welcomeBack:"Welcome back",
+      welcomeSub:"Enter your details to keep going.",
+      joinTitle:"Join SACA",
+      joinSub:"Make an account to save your yarns."
+    },
+    analysis:{
+      title:"SACA yarn",
+      timestamp:"Waiting for your yarn.",
+      conditionTitle:"What's likely goin' on",
+      severityTitle:"How serious it looks",
+      adviceTitle:"Next steps to think about",
+      defaultCondition:"We'll yarn the likely issue once we look over what you shared.",
+      defaultSeverity:"We're still workin' out how serious it is.",
+      defaultAdvice:"We'll drop next steps here once we got a good read.",
+      severitySevere:"This one looks real serious.",
+      severityModerate:"This one looks medium serious.",
+      severityMild:"This one looks pretty mild.",
+      severityGeneric:"Current severity: {severity}.",
+      updated:"Updated {time}",
+      offlineCondition:"What you told us:",
+      offlineSeverity:"Cannot rate severity while offline.",
+      offlineAdvice:"We could not reach the server. Try again soon or yarn with the clinic mob if you are worried."
+    },
+    howto:{
+      title:"How to use SACA",
+      lead:"Just a few taps and we'll guide you on what to do.",
+      step1:"<strong>Share how you feel.</strong> Tap <em>Tap to yarn</em> or <em>Write your symptoms</em> to let us know what's happenin'.",
+      step2:"<strong>Answer quick follow-ups.</strong> A few short questions help us see the full picture.",
+      step3:"<strong>Check the advice.</strong> We'll yarn the next steps and flag anything urgent.",
+      footnote:"Need to start again? Tap \"Start another yarn\" any time."
+    },
+    errors:{
+      mediaUnsupported:"This browser can't record yarns (audio).",
+      microphone:"Couldn't use the microphone. Please check permissions.",
+      audioSubmit:"Audio yarn failed to send.",
+      noAudio:"No yarn saved. Please try again.",
+      uploadFailed:"Upload failed"
+    }
   },
   es: {
-    ui:{login:"Acceder",account:"Cuenta",logout:"Cerrar sesion",language:"Idioma",highContrast:"Alto contraste",easyRead:"Lectura facil",languageEn:"Ingles",languageAe:"Ingles aborigen",switchToEnglish:"Cambiar a ingles",switchToAe:"Cambiar a ingles aborigen"},
-    home:{banner:"Tu companero de salud",heading:"Como te sientes hoy?",sub:"Cuentanos tus sintomas",mic:"Toca para hablar",micListening:"Escuchando... toca para detener",micStop:"Toca para detener",micSubmitting:"Enviando...",type:"Escribe tus sintomas",typeBtn:"Escribe o elige tus sintomas",guidedTitle:"Chequeo guiado",needAnswers:"Completa las preguntas guiadas antes de enviar.",history:"Tu historial",emergency:"Llamar a emergencias"},
+    meta:{
+      title:"SACA - Tu companero de salud"
+    },
+    ui:{
+      login:"Acceder",
+      account:"Cuenta",
+      logout:"Cerrar sesion",
+      language:"Idioma",
+      highContrast:"Alto contraste",
+      highContrastHint:"Colores mas nitidos",
+      easyRead:"Lectura facil",
+      easyReadHint:"Texto mas grande",
+      languageEn:"Ingles",
+      languageAe:"Ingles aborigen",
+      switchToEnglish:"Cambiar a ingles",
+      switchToAe:"Cambiar a ingles aborigen",
+      viewHistory:"Ver historial reciente",
+      startOver:"Empezar otro control"
+    },
+    home:{
+      banner:"Tu companero de salud",
+      heading:"Como te sientes hoy?",
+      sub:"Cuentanos tus sintomas",
+      heroTag:"ASISTENTE DE SALUD PARA LA COMUNIDAD DE PALM ISLAND",
+      heroBody:"SACA es tu acompanante de salud pensado para la comunidad de Palm Island. Te ayuda a describir tus sintomas, entender tu condicion y conectarte con la atencion adecuada.",
+      getStarted:"Comenzar",
+      howTo:"Como usar",
+      entryIntro:"Habla en voz alta o escribe una nota corta para que podamos ayudarte.",
+      mic:"Toca para hablar",
+      micListening:"Escuchando... toca para detener",
+      micStop:"Toca para detener",
+      micSubmitting:"Enviando...",
+      type:"Escribe tus sintomas",
+      typeBtn:"Escribe o elige tus sintomas",
+      guidedTitle:"Chequeo guiado",
+      needAnswers:"Completa las preguntas guiadas antes de enviar.",
+      history:"Tu historial",
+      emergency:"Llamar a emergencias"
+    },
+    flow:{
+      progress:"Pregunta {current} de {total}",
+      progressComplete:"Todas las preguntas completas",
+      thanks:"Gracias. Guardamos tus respuestas.",
+      choiceHint:"Elige la opcion que mejor encaje.",
+      textHint:"Escribe una respuesta rapida abajo.",
+      answerPlaceholder:"Escribe tu respuesta",
+      notePlaceholder:"Escribe una nota corta sobre como te sientes",
+      continue:"Continuar",
+      cancel:"Cancelar",
+      next:"Siguiente",
+      requireAnswer:"Agrega tu respuesta antes de continuar.",
+      questions:{
+        q1:"Como te sientes hoy?",
+        q2:"Cuanto tiempo llevas asi?",
+        q3:"Que tan grave es el problema?",
+        q4:"Has notado otros sintomas?",
+        duration:{
+          fewHours:"Unas pocas horas",
+          day:"Un dia",
+          fewDays:"2-3 dias",
+          weekPlus:"Una semana o mas"
+        },
+        severity:{
+          light:"Leve",
+          medium:"Media",
+          severe:"Grave"
+        }
+      }
+    },
+    entry:{
+      question:"Como te sientes hoy?",
+      intro:"Habla en voz alta o escribe una nota corta para que podamos ayudarte.",
+      speak:"Toca para hablar",
+      type:"Escribe tus sintomas",
+      quickLabel:"Opciones rapidas de sintomas",
+      options:{
+        fever:"Fiebre",
+        nausea:"Nauseas o vomitos",
+        breathing:"Tos o dificultad para respirar",
+        diarrhea:"Diarrea",
+        chest:"Dolor en el pecho",
+        dizzy:"Mareos o cansancio"
+      }
+    },
     choose:{title:"Elige sintomas",searchPH:"Escribe tus sintomas o elige abajo (separados por comas)"},
     common:{raw:"Entrada original",rawPH:"Lo que digas aparecera aqui.",proc:"Procesado (NLP)",procPH:"La salida de NLP aparecera aqui.",save:"Guardar en historial",back:"Volver al inicio"},
     triage:{title:"Resumen de gravedad",start:"Empieza a escribir o hablar para obtener consejo.",call000:"Llamar al 000",info:"Info de emergencia"},
@@ -84,6 +436,8 @@ window.STR = {
       toggleShow:"Mostrar",
       toggleHide:"Ocultar",
       empty:"Aun no hay registros. Tus ultimas consultas apareceran aqui.",
+      modalTitle:"Tus chequeos recientes",
+      emptyModal:"Todavia no hay chequeos guardados. El siguiente aparecera aqui.",
       date:"Fecha y hora",
       lockedTitle:"Historial protegido",
       lockedBody:"Inicia sesion para ver tus registros guardados.",
@@ -92,12 +446,63 @@ window.STR = {
       loginPrompt:"Inicia sesion para ver tus conversaciones recientes.",
       unknownCondition:"Revision general",
       noText:"Sin sintomas guardados.",
+      reviewing:"Revisando",
       severity:{mild:"Leve",moderate:"Moderada",severe:"Severa",none:"Sin gravedad"}
     },
     emg:{title:"Emergencia",sub:"Si la vida corre peligro, llama al 000.",whenTitle:"Cuando llamar al 000",whenList:"Dolor toracico severo o dificultad para respirar - Sangrado severo - Inconsciencia - Convulsiones - Debilidad o entumecimiento subitos - Reaccion alergica severa",otherTitle:"Otras opciones (no urgencia)",otherText:"Ve a un medico de cabecera, urgencias leves o llama a la linea de enfermeria de tu estado."},
     sev:{breathing:"Si hay gran dificultad para respirar, llama al 000 ahora.",chest:"Dolor toracico con sudor, nauseas o falta de aire? Llama al 000.",belly:"Dolor abdominal intenso, sangre en vomito o heces, o deshidratacion necesita urgencias.",skin:"Sarpullido con hinchazon de lengua o labios o dificultad para respirar? Llama al 000.",fever:"Fiebre alta con confusion, rigidez de cuello o sarpullido necesita urgencias."},
-    auth:{title:"Bienvenido",sub:"Accede o crea una cuenta",emailL:"Correo",passL:"Contrasena",login:"Acceder",ok:"Accedido - yendo al inicio...",requireFields:"Escribe correo y contrasena."},
-    analysis:{offlineCondition:"Resumen de tus notas:",offlineSeverity:"Severidad no disponible sin conexion.",offlineAdvice:"No pudimos contactar al servidor. Intentalo de nuevo pronto o habla con un profesional si te preocupa."}
+    auth:{
+      title:"Bienvenido",
+      sub:"Accede o crea una cuenta",
+      emailL:"Correo",
+      passL:"Contrasena",
+      passPlaceholder:"Contrasena",
+      passNewPlaceholder:"Contrasena (minimo 6 caracteres)",
+      passRepeatPlaceholder:"Repite la contrasena",
+      confirmL:"Confirmar contrasena",
+      login:"Acceder",
+      tabLogin:"Acceder",
+      tabSignup:"Registrarse",
+      ok:"Accedido - yendo al inicio...",
+      requireFields:"Escribe correo y contrasena.",
+      welcomeBack:"Bienvenido de nuevo",
+      welcomeSub:"Ingresa tus datos para continuar.",
+      joinTitle:"Unete a SACA",
+      joinSub:"Crea una cuenta para guardar tus chequeos."
+    },
+    analysis:{
+      title:"Analisis de SACA",
+      timestamp:"Esperando tu chequeo.",
+      conditionTitle:"Condicion probable",
+      severityTitle:"Que estamos viendo",
+      adviceTitle:"Siguientes pasos sugeridos",
+      defaultCondition:"Compartiremos la condicion probable despues de revisar tus datos.",
+      defaultSeverity:"Seguimos evaluando que tan serio es.",
+      defaultAdvice:"Los siguientes pasos apareceran aqui cuando tengamos una recomendacion.",
+      severitySevere:"Esta condicion parece grave.",
+      severityModerate:"Esta condicion parece moderada.",
+      severityMild:"Esta condicion parece leve.",
+      severityGeneric:"Severidad actual: {severity}.",
+      updated:"Actualizado {time}",
+      offlineCondition:"Resumen de tus notas:",
+      offlineSeverity:"Severidad no disponible sin conexion.",
+      offlineAdvice:"No pudimos contactar al servidor. Intentalo de nuevo pronto o habla con un profesional si te preocupa."
+    },
+    howto:{
+      title:"Como usar SACA",
+      lead:"En pocos toques te guiamos al mejor siguiente paso.",
+      step1:"<strong>Comparte como te sientes.</strong> Toca <em>Toca para hablar</em> o <em>Escribe tus sintomas</em> para contarnos que ocurre.",
+      step2:"<strong>Responde preguntas rapidas.</strong> Un par de preguntas cortas nos ayudan a ver el panorama completo.",
+      step3:"<strong>Revisa el consejo personal.</strong> Diremos que hacer despues y marcamos lo urgente.",
+      footnote:"Necesitas reiniciar? Usa \"Empezar otro control\" en cualquier momento."
+    },
+    errors:{
+      mediaUnsupported:"Este navegador no puede grabar audio.",
+      microphone:"No se pudo acceder al microfono. Revisa los permisos.",
+      audioSubmit:"Error al enviar el audio.",
+      noAudio:"No se capturo audio. Intenta de nuevo.",
+      uploadFailed:"Fallo la carga"
+    }
   }
 };
 
