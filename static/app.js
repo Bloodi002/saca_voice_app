@@ -35,6 +35,8 @@
   const entryText = qs('#entryText');
   const entryTextSubmit = qs('#entryTextSubmit');
   const entryTextCancel = qs('#entryTextCancel');
+  const entryPresetContainer = qs('#entrySymptomOptions');
+  const entryPresetButtons = entryPresetContainer ? Array.from(entryPresetContainer.querySelectorAll('.entry-choice-card')) : [];
   const refreshBtn = qs('#resetExperience');
   const historyCard = qs('#historyCard');
   const homeCards = qs('#homeCards');
@@ -96,7 +98,7 @@
     { text: "How are you feeling today?", type: "text" },
     { text: "How long have you been feeling this?", type: "choice", options: ["A few hours","A day","2-3 days","A week or more"] },
     { text: "How bad is the issue?", type: "choice", options: ["Light","Medium","Severe"] },
-    { text: "Have you noticed any other symptoms?", type: "choice", options: ["Fever","Nausea or vomiting","Cough or breathing difficulty","Diarrhea","Chest pain or tightness","Dizziness or fatigue","None of these"] }
+    { text: "Have you noticed any other symptoms?", type: "choice", options: ["Fever","Nausea or vomiting","Cough or breathing difficulty","Diarrhea","Chest pain","Dizziness or fatigue"] }
   ];
   const BASE_QUESTION_COUNT = questions.length;
 
@@ -114,21 +116,410 @@
   let sessionHistory = [];
 
   const ICONS = {
-    clock: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l2.5 1.5"/></svg>`,
-    sun: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 3v2M12 19v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M3 12h2M19 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>`,
-    calendarDay: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><circle cx="12" cy="15" r="2"/></svg>`,
-    calendarRange: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M8 15h8M10 13v4M14 13v4"/></svg>`,
-    calendarWeek: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M6 15h12M6 18h8"/></svg>`,
-    gauge: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5.5 19a8.5 8.5 0 1 1 13 0Z"/><path d="M12 12l3.5 3.5"/><path d="M7 12h.01M12 7v.01M17 12h.01M12 17h.01"/></svg>`,
-    thermo: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 14.76A3 3 0 1 1 10 14V5a2 2 0 1 1 4 0z"/><path d="M10 11h4"/></svg>`,
-    lungs: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v8M12 11c-1.5-2-4-3-6-2V19c2 0 3.5-.5 5-2m1-6c1.5-2 4-3 6-2V19c-2 0-3.5-.5-5-2"/></svg>`,
-    heart: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-6.5-4.35-8.5-8.04C1.5 8.58 3.5 5 6.75 5c2.07 0 3.25 1.32 3.25 1.32S11.93 5 14 5c3.25 0 5.25 3.58 3.5 6.96C18.5 15.65 12 20 12 20Z"/></svg>`,
-    stomach: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3v4a4 4 0 0 1-4 4H9.5c-2.5 0-4.5 2-4.5 5a6 6 0 0 0 12 0c0-1.6-.7-3.05-1.8-4"/></svg>`,
-    dizzy: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><path d="m9 9 1.5 1.5M15 15l-1.5-1.5M15 9l-1.5 1.5M9 15l1.5-1.5M9.75 18.5c.7-.3 1.5-.5 2.25-.5s1.55.2 2.25.5"/></svg>`,
-    rest: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 14h16M5 7v11M19 7v11"/><path d="M9.5 11a1.5 1.5 0 1 0 0-3"/></svg>`,
-    walk: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="5" r="1.5"/><path d="M9 21l1-4 3-3m3 7-1-5-2-2m1-3-2-1-2 1-1.5 2M16 13l2-2"/></svg>`,
-    swirl: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 4a7 7 0 1 1 4 13c-3 0-4-3-2-4 3-2 1-6-2-6-4 0-6 5-3 8"/></svg>`,
-    question: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 7a3 3 0 1 1 6 0c0 2-3 3-3 5"/><path d="M12 17h.01"/></svg>`
+    clock: `<svg viewBox="0 0 80 80" focusable="false" role="presentation">
+  <defs>
+    <radialGradient id="clockGlow" cx="48%" cy="32%" r="70%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.96"/>
+      <stop offset="45%" stop-color="#ffe3bc" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#ff9a4c"/>
+    </radialGradient>
+    <linearGradient id="clockFace" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fff7ec"/>
+      <stop offset="55%" stop-color="#ffdaba"/>
+      <stop offset="100%" stop-color="#ffa565"/>
+    </linearGradient>
+    <linearGradient id="clockHand" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffcf6d"/>
+      <stop offset="100%" stop-color="#ff6b3b"/>
+    </linearGradient>
+  </defs>
+  <g fill="none">
+    <circle cx="40" cy="40" r="34" fill="url(#clockGlow)"/>
+    <ellipse cx="40" cy="62" rx="18" ry="6" fill="#803113" opacity="0.18"/>
+    <circle cx="36" cy="36" r="18" fill="url(#clockFace)" stroke="#ffb36d" stroke-width="3"/>
+    <path d="M36 22v14l10 6" stroke="url(#clockHand)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="36" cy="36" r="3.5" fill="#ffffff" stroke="#ff7b3d" stroke-width="1.5"/>
+    <circle cx="36" cy="24" r="2.4" fill="#fff1e2" opacity="0.7"/>
+    <circle cx="26" cy="36" r="2" fill="#fff1e2" opacity="0.6"/>
+    <circle cx="36" cy="46" r="2" fill="#fff1e2" opacity="0.6"/>
+  </g>
+</svg>`,
+    calendarDay: `<svg viewBox="0 0 80 80" focusable="false" role="presentation">
+  <defs>
+    <radialGradient id="calDayGlow" cx="50%" cy="30%" r="72%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.96"/>
+      <stop offset="45%" stop-color="#dff7ff" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#4db6ff"/>
+    </radialGradient>
+    <linearGradient id="calDayBody" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#f4fbff"/>
+      <stop offset="55%" stop-color="#cfeeef"/>
+      <stop offset="100%" stop-color="#6fd0ff"/>
+    </linearGradient>
+    <linearGradient id="calDayClip" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#7dd8ff"/>
+    </linearGradient>
+  </defs>
+  <g fill="none">
+    <circle cx="40" cy="40" r="34" fill="url(#calDayGlow)"/>
+    <ellipse cx="40" cy="62" rx="18" ry="6" fill="#1b4d71" opacity="0.2"/>
+    <rect x="22" y="18" width="36" height="44" rx="10" fill="url(#calDayBody)" stroke="#8adfff" stroke-width="2.6"/>
+    <rect x="28" y="14" width="24" height="12" rx="6" fill="url(#calDayClip)" stroke="#9ce3ff" stroke-width="2"/>
+    <path d="M28 30h24" stroke="#4fbaff" stroke-width="4" stroke-linecap="round"/>
+    <rect x="34" y="38" width="12" height="12" rx="4" fill="#ffffff" stroke="#3aa3ef" stroke-width="2.4"/>
+    <path d="M38 44h6" stroke="#37a2f2" stroke-width="3" stroke-linecap="round"/>
+  </g>
+</svg>`,
+    calendarRange: `<svg viewBox="0 0 80 80" focusable="false" role="presentation">
+  <defs>
+    <radialGradient id="calRangeGlow" cx="48%" cy="28%" r="74%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.95"/>
+      <stop offset="45%" stop-color="#ffe0ef" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#ff6fae"/>
+    </radialGradient>
+    <linearGradient id="calRangeBody" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#fff3fa"/>
+      <stop offset="60%" stop-color="#ffd0e7"/>
+      <stop offset="100%" stop-color="#ff85c1"/>
+    </linearGradient>
+    <linearGradient id="calRangeHighlight" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffe6f3"/>
+      <stop offset="100%" stop-color="#ff7fb9"/>
+    </linearGradient>
+  </defs>
+  <g fill="none">
+    <circle cx="40" cy="40" r="34" fill="url(#calRangeGlow)"/>
+    <ellipse cx="40" cy="62" rx="18" ry="6" fill="#7c2450" opacity="0.18"/>
+    <rect x="22" y="18" width="36" height="44" rx="10" fill="url(#calRangeBody)" stroke="#ffa1cc" stroke-width="2.6"/>
+    <rect x="28" y="14" width="24" height="12" rx="6" fill="url(#calRangeHighlight)" stroke="#ffb7d8" stroke-width="2"/>
+    <path d="M28 30h24" stroke="#ff8dc3" stroke-width="4" stroke-linecap="round"/>
+    <rect x="30" y="38" width="10" height="12" rx="4" fill="#ffffff" stroke="#ff7fb9" stroke-width="2.4"/>
+    <rect x="40" y="38" width="14" height="12" rx="4" fill="#ffffff" stroke="#ff7fb9" stroke-width="2.4"/>
+    <path d="M32 44h6M42 44h10" stroke="#ff73b3" stroke-width="3" stroke-linecap="round"/>
+  </g>
+</svg>`,
+    calendarWeek: `<svg viewBox="0 0 80 80" focusable="false" role="presentation">
+  <defs>
+    <radialGradient id="calWeekGlow" cx="52%" cy="30%" r="74%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.94"/>
+      <stop offset="45%" stop-color="#dff8d1" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#63d07b"/>
+    </radialGradient>
+    <linearGradient id="calWeekBody" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#effff0"/>
+      <stop offset="55%" stop-color="#cbf4d3"/>
+      <stop offset="100%" stop-color="#7ae39f"/>
+    </linearGradient>
+    <linearGradient id="calWeekClip" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#83e5a0"/>
+    </linearGradient>
+  </defs>
+  <g fill="none">
+    <circle cx="40" cy="40" r="34" fill="url(#calWeekGlow)"/>
+    <ellipse cx="40" cy="62" rx="18" ry="6" fill="#1b6a32" opacity="0.18"/>
+    <rect x="22" y="18" width="36" height="44" rx="10" fill="url(#calWeekBody)" stroke="#8deeab" stroke-width="2.6"/>
+    <rect x="28" y="14" width="24" height="12" rx="6" fill="url(#calWeekClip)" stroke="#95f0b3" stroke-width="2"/>
+    <path d="M28 30h24" stroke="#62d684" stroke-width="4" stroke-linecap="round"/>
+    <path d="M28 40h24" stroke="#51cf77" stroke-width="4" stroke-linecap="round"/>
+    <path d="M28 48h24" stroke="#46c76c" stroke-width="4" stroke-linecap="round"/>
+  </g>
+</svg>`,
+    severityLight: `<svg viewBox="0 0 80 80" focusable="false" role="presentation">
+  <defs>
+    <radialGradient id="sevLightGlow" cx="50%" cy="35%" r="72%">
+      <stop offset="0%" stop-color="#f5fbff" stop-opacity="0.95"/>
+      <stop offset="45%" stop-color="#d0ecff" stop-opacity="0.92"/>
+      <stop offset="100%" stop-color="#4b9dff"/>
+    </radialGradient>
+    <linearGradient id="sevLightWave" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#e6f5ff"/>
+      <stop offset="60%" stop-color="#9cd1ff"/>
+      <stop offset="100%" stop-color="#4b9dff"/>
+    </linearGradient>
+    <linearGradient id="sevLightMeter" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.95"/>
+      <stop offset="100%" stop-color="#7ab6ff" stop-opacity="0.85"/>
+    </linearGradient>
+  </defs>
+  <g fill="none">
+    <circle cx="40" cy="40" r="34" fill="url(#sevLightGlow)"/>
+    <ellipse cx="40" cy="62" rx="18" ry="6" fill="#1a4f8f" opacity="0.18"/>
+    <path d="M20 48c4-12 20-20 32-12" stroke="url(#sevLightWave)" stroke-width="8" stroke-linecap="round" opacity="0.4"/>
+    <path d="M28 50c3-7 14-12 20-8" stroke="url(#sevLightWave)" stroke-width="9" stroke-linecap="round"/>
+    <circle cx="48" cy="42" r="9" fill="url(#sevLightMeter)" stroke="#3b89ef" stroke-width="2.6"/>
+    <path d="M48 36v6" stroke="#3b89ef" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="48" cy="44" r="2.6" fill="#ffffff" opacity="0.85"/>
+  </g>
+</svg>`,
+    severityModerate: `<svg viewBox="0 0 80 80" focusable="false" role="presentation">
+  <defs>
+    <radialGradient id="sevModGlow" cx="50%" cy="34%" r="72%">
+      <stop offset="0%" stop-color="#fff9e8" stop-opacity="0.95"/>
+      <stop offset="45%" stop-color="#ffe6a8" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#ffb629"/>
+    </radialGradient>
+    <linearGradient id="sevModBody" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fff7d0"/>
+      <stop offset="60%" stop-color="#ffe087"/>
+      <stop offset="100%" stop-color="#ffb629"/>
+    </linearGradient>
+    <linearGradient id="sevModMark" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#fff0c2"/>
+      <stop offset="100%" stop-color="#ff8f0f"/>
+    </linearGradient>
+  </defs>
+  <g fill="none">
+    <circle cx="40" cy="40" r="34" fill="url(#sevModGlow)"/>
+    <ellipse cx="40" cy="62" rx="18" ry="6" fill="#91601b" opacity="0.2"/>
+    <path d="M40 18 61 56a4 4 0 0 1-3.5 6H22.5a4 4 0 0 1-3.5-6Z" fill="url(#sevModBody)" stroke="#ffbe42" stroke-width="3"/>
+    <path d="M40 28v14" stroke="url(#sevModMark)" stroke-width="6" stroke-linecap="round"/>
+    <circle cx="40" cy="48" r="3.6" fill="#ff8f0f" stroke="#fff1c9" stroke-width="2"/>
+  </g>
+</svg>`,
+    severitySevere: `<svg viewBox="0 0 80 80" focusable="false" role="presentation">
+  <defs>
+    <radialGradient id="sevSevereGlow" cx="50%" cy="34%" r="72%">
+      <stop offset="0%" stop-color="#ffe6ec" stop-opacity="0.95"/>
+      <stop offset="45%" stop-color="#ff9aa9" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#ff394f"/>
+    </radialGradient>
+    <linearGradient id="sevSevereBody" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffe3e9"/>
+      <stop offset="55%" stop-color="#ff7887"/>
+      <stop offset="100%" stop-color="#ff1f3d"/>
+    </linearGradient>
+    <linearGradient id="sevSevereLight" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#ff8d99" stop-opacity="0.6"/>
+    </linearGradient>
+  </defs>
+  <g fill="none">
+    <circle cx="40" cy="40" r="34" fill="url(#sevSevereGlow)"/>
+    <ellipse cx="40" cy="62" rx="18" ry="6" fill="#6f1322" opacity="0.22"/>
+    <rect x="26" y="18" width="28" height="32" rx="8" fill="url(#sevSevereBody)" stroke="#ff4459" stroke-width="3"/>
+    <path d="M26 38h28" stroke="#ff8d99" stroke-width="4" opacity="0.45"/>
+    <circle cx="40" cy="52" r="12" fill="#2b0a13" opacity="0.35"/>
+    <path d="M30 22c3 6 10 6 10 6s7 0 10-6" stroke="url(#sevSevereLight)" stroke-width="4" stroke-linecap="round" opacity="0.9"/>
+    <path d="M40 30v10" stroke="#fff0f2" stroke-width="5" stroke-linecap="round"/>
+    <path d="M40 44v8" stroke="#ffb0ba" stroke-width="5" stroke-linecap="round"/>
+    <circle cx="40" cy="56" r="4.5" fill="#ffffff" stroke="#ff3c55" stroke-width="2"/>
+  </g>
+</svg>`,
+    thermo: `<svg viewBox="0 0 80 80" focusable="false" role="presentation">
+  <defs>
+    <radialGradient id="thermoGlow" cx="48%" cy="30%" r="72%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.95"/>
+      <stop offset="45%" stop-color="#ffe2df" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#ff5f7f"/>
+    </radialGradient>
+    <linearGradient id="thermoBody" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#fff3f4"/>
+      <stop offset="55%" stop-color="#ffd1d7"/>
+      <stop offset="100%" stop-color="#ff6d86"/>
+    </linearGradient>
+    <linearGradient id="thermoMercury" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ff9fb1"/>
+      <stop offset="100%" stop-color="#ff275a"/>
+    </linearGradient>
+  </defs>
+  <g fill="none">
+    <circle cx="40" cy="40" r="34" fill="url(#thermoGlow)"/>
+    <ellipse cx="40" cy="62" rx="18" ry="6" fill="#741f33" opacity="0.18"/>
+    <rect x="30" y="18" width="12" height="34" rx="6" fill="url(#thermoBody)" stroke="#ff8da4" stroke-width="2.4"/>
+    <circle cx="36" cy="55" r="11" fill="url(#thermoMercury)" stroke="#ff476c" stroke-width="3"/>
+    <rect x="34" y="22" width="4.5" height="24" rx="2.2" fill="#ff275a" opacity="0.8"/>
+    <path d="M38 28h6" stroke="#ff9fb1" stroke-width="3" stroke-linecap="round" opacity="0.7"/>
+    <path d="M38 36h6" stroke="#ff9fb1" stroke-width="3" stroke-linecap="round" opacity="0.7"/>
+    <path d="M38 44h6" stroke="#ff9fb1" stroke-width="3" stroke-linecap="round" opacity="0.7"/>
+  </g>
+</svg>`,
+    lungs: `<svg viewBox="0 0 80 80" focusable="false" role="presentation">
+  <defs>
+    <radialGradient id="lungsGlow" cx="50%" cy="34%" r="72%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.95"/>
+      <stop offset="45%" stop-color="#e0f7ff" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#66c7ff"/>
+    </radialGradient>
+    <linearGradient id="lungsLeft" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f3fbff"/>
+      <stop offset="100%" stop-color="#7dd4ff"/>
+    </linearGradient>
+    <linearGradient id="lungsRight" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#f3fbff"/>
+      <stop offset="100%" stop-color="#5fc3ff"/>
+    </linearGradient>
+  </defs>
+  <g fill="none">
+    <circle cx="40" cy="40" r="34" fill="url(#lungsGlow)"/>
+    <ellipse cx="40" cy="63" rx="18" ry="6" fill="#154a71" opacity="0.2"/>
+    <path d="M38 20c1.2 0 2 1 2 2v16c0 6-3 14-12 18-6 2.7-10-1-10-5V37c0-6 5-11 10-9 4 1.6 10-3 10-8Z" fill="url(#lungsLeft)" stroke="#8ad9ff" stroke-width="2.6"/>
+    <path d="M42 20c-1.2 0-2 1-2 2v16c0 6 3 14 12 18 6 2.7 10-1 10-5V37c0-6-5-11-10-9-4 1.6-10-3-10-8Z" fill="url(#lungsRight)" stroke="#6fcbff" stroke-width="2.6"/>
+    <path d="M40 16v16" stroke="#4db1ff" stroke-width="4" stroke-linecap="round"/>
+    <path d="M28 36c4 1 7 4 8 8" stroke="#53b5ff" stroke-width="3" stroke-linecap="round"/>
+    <path d="M52 36c-4 1-7 4-8 8" stroke="#53b5ff" stroke-width="3" stroke-linecap="round"/>
+  </g>
+</svg>`,
+    heart: `<svg viewBox="0 0 80 80" focusable="false" role="presentation">
+  <defs>
+    <radialGradient id="heartGlow" cx="48%" cy="32%" r="72%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.94"/>
+      <stop offset="45%" stop-color="#ffe2f0" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#ff5f8b"/>
+    </radialGradient>
+    <linearGradient id="heartBody" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fff0f6"/>
+      <stop offset="60%" stop-color="#ff9fba"/>
+      <stop offset="100%" stop-color="#ff4f7a"/>
+    </linearGradient>
+  </defs>
+  <g fill="none">
+    <circle cx="40" cy="40" r="34" fill="url(#heartGlow)"/>
+    <ellipse cx="40" cy="62" rx="18" ry="6" fill="#771732" opacity="0.2"/>
+    <path d="M40 56C28 47 22 41 20 34c-2-6 2-13 9-15 4-1 8 1 11 4 3-3 7-5 11-4 7 2 11 9 9 15-2 7-8 13-20 22Z" fill="url(#heartBody)" stroke="#ff6f98" stroke-width="3"/>
+    <path d="M30 25c3-2 7-1 9 3" stroke="#fff5f8" stroke-width="3.2" stroke-linecap="round" opacity="0.8"/>
+  </g>
+</svg>`,
+    stomach: `<svg viewBox="0 0 80 80" focusable="false" role="presentation">
+  <defs>
+    <radialGradient id="stomachGlow" cx="50%" cy="34%" r="72%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.95"/>
+      <stop offset="45%" stop-color="#e9ffeb" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#64d690"/>
+    </radialGradient>
+    <linearGradient id="stomachBody" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f2fff5"/>
+      <stop offset="60%" stop-color="#baffca"/>
+      <stop offset="100%" stop-color="#56c880"/>
+    </linearGradient>
+    <linearGradient id="stomachHighlight" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#8ef4ae" stop-opacity="0.7"/>
+    </linearGradient>
+  </defs>
+  <g fill="none">
+    <circle cx="40" cy="40" r="34" fill="url(#stomachGlow)"/>
+    <ellipse cx="40" cy="62" rx="18" ry="6" fill="#1d6b3a" opacity="0.2"/>
+    <path d="M44 20c0 10 4 14 7 18 4 4 5 10 1 15-5 7-16 11-24 7-7-3-10-12-6-20 4-8 4-11 3-17" fill="url(#stomachBody)" stroke="#80e5a5" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M33 28c2 4 0 8-3 13" stroke="#ffffff" stroke-width="3" stroke-linecap="round" opacity="0.65"/>
+    <path d="M40 30c2 3 5 4 8 3" stroke="url(#stomachHighlight)" stroke-width="3" stroke-linecap="round" opacity="0.8"/>
+  </g>
+</svg>`,
+    dizzy: `<svg viewBox="0 0 80 80" focusable="false" role="presentation">
+  <defs>
+    <radialGradient id="dizzyGlow" cx="50%" cy="34%" r="72%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.95"/>
+      <stop offset="45%" stop-color="#ffe6e0" stop-opacity="0.88"/>
+      <stop offset="100%" stop-color="#ff6a6a"/>
+    </radialGradient>
+    <linearGradient id="dizzySwirl" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.95"/>
+      <stop offset="60%" stop-color="#ffd0c7"/>
+      <stop offset="100%" stop-color="#ff856e"/>
+    </linearGradient>
+  </defs>
+  <g fill="none">
+    <circle cx="40" cy="40" r="34" fill="url(#dizzyGlow)"/>
+    <ellipse cx="40" cy="62" rx="18" ry="6" fill="#821f1f" opacity="0.2"/>
+    <path d="M26 32c3-8 14-11 21-5 6 5 2 13-5 15-7 2-9 9-4 12 5 3 12 1 14-4" stroke="url(#dizzySwirl)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+    <g stroke="#ff9a8f" stroke-width="4" stroke-linecap="round">
+      <path d="M28 22l6 6"/>
+      <path d="M52 22l-6 6"/>
+      <path d="M28 50l6-6"/>
+      <path d="M52 50l-6-6"/>
+    </g>
+    <circle cx="40" cy="36" r="3.6" fill="#ffffff" opacity="0.85"/>
+  </g>
+</svg>`,
+    rest: `<svg viewBox="0 0 80 80" focusable="false" role="presentation">
+  <defs>
+    <radialGradient id="restGlow" cx="50%" cy="32%" r="72%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.95"/>
+      <stop offset="45%" stop-color="#e0ecff" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#638cff"/>
+    </radialGradient>
+    <linearGradient id="restBed" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f6f8ff"/>
+      <stop offset="60%" stop-color="#d0dcff"/>
+      <stop offset="100%" stop-color="#6c88ff"/>
+    </linearGradient>
+  </defs>
+  <g fill="none">
+    <circle cx="40" cy="40" r="34" fill="url(#restGlow)"/>
+    <ellipse cx="40" cy="62" rx="18" ry="6" fill="#21367d" opacity="0.2"/>
+    <rect x="22" y="30" width="36" height="22" rx="6" fill="url(#restBed)" stroke="#7b92ff" stroke-width="3"/>
+    <circle cx="30" cy="34" r="6" fill="#ffffff" stroke="#7b92ff" stroke-width="2.4"/>
+    <path d="M26 44h24" stroke="#506ffc" stroke-width="5" stroke-linecap="round"/>
+  </g>
+</svg>`,
+    walk: `<svg viewBox="0 0 80 80" focusable="false" role="presentation">
+  <defs>
+    <radialGradient id="walkGlow" cx="50%" cy="32%" r="72%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.95"/>
+      <stop offset="45%" stop-color="#e8f7ff" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#4fd0ff"/>
+    </radialGradient>
+    <linearGradient id="walkBody" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f5fbff"/>
+      <stop offset="60%" stop-color="#a8e6ff"/>
+      <stop offset="100%" stop-color="#4fc7ff"/>
+    </linearGradient>
+  </defs>
+  <g fill="none">
+    <circle cx="40" cy="40" r="34" fill="url(#walkGlow)"/>
+    <ellipse cx="40" cy="62" rx="18" ry="6" fill="#14617c" opacity="0.22"/>
+    <path d="M38 20c2 0 4 1.4 4 3.4 0 3-4 4-4 6.6" stroke="#4fc7ff" stroke-width="4" stroke-linecap="round"/>
+    <path d="M34 32c-3 4-7 7-10 7" stroke="#69d8ff" stroke-width="4" stroke-linecap="round"/>
+    <path d="m40 34 8 4-4 8" stroke="#2a9ed4" stroke-width="4" stroke-linecap="round"/>
+    <path d="m36 38-2 6" stroke="#2a9ed4" stroke-width="4" stroke-linecap="round"/>
+    <path d="M36 44c-2 5-4 12-4 16" stroke="#2a9ed4" stroke-width="4" stroke-linecap="round"/>
+    <path d="M48 40c0 4-2 10-2 14" stroke="#2a9ed4" stroke-width="4" stroke-linecap="round"/>
+    <path d="M32 60h10" stroke="#2a9ed4" stroke-width="4" stroke-linecap="round"/>
+    <path d="M44 60h8" stroke="#2a9ed4" stroke-width="4" stroke-linecap="round"/>
+  </g>
+</svg>`,
+    swirl: `<svg viewBox="0 0 80 80" focusable="false" role="presentation">
+  <defs>
+    <radialGradient id="swirlGlow" cx="50%" cy="30%" r="74%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.95"/>
+      <stop offset="45%" stop-color="#f2e6ff" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#9d6bff"/>
+    </radialGradient>
+    <linearGradient id="swirlBody" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f9f3ff"/>
+      <stop offset="55%" stop-color="#d8c5ff"/>
+      <stop offset="100%" stop-color="#8057ff"/>
+    </linearGradient>
+  </defs>
+  <g fill="none">
+    <circle cx="40" cy="40" r="34" fill="url(#swirlGlow)"/>
+    <ellipse cx="40" cy="62" rx="18" ry="6" fill="#37237a" opacity="0.2"/>
+    <path d="M32 28c5-8 18-10 24 0 5 8-1 18-10 18-9 0-11 10-2 12 7 2 12-4 12-9" stroke="url(#swirlBody)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="32" cy="28" r="4" fill="#ffffff" opacity="0.7"/>
+    <circle cx="54" cy="38" r="3.5" fill="#ffffff" opacity="0.65"/>
+  </g>
+</svg>`,
+    question: `<svg viewBox="0 0 80 80" focusable="false" role="presentation">
+  <defs>
+    <radialGradient id="questionGlow" cx="50%" cy="32%" r="72%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.95"/>
+      <stop offset="45%" stop-color="#e7edff" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#5e78ff"/>
+    </radialGradient>
+    <linearGradient id="questionBubble" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f6f8ff"/>
+      <stop offset="60%" stop-color="#d1d9ff"/>
+      <stop offset="100%" stop-color="#7088ff"/>
+    </linearGradient>
+  </defs>
+  <g fill="none">
+    <circle cx="40" cy="40" r="34" fill="url(#questionGlow)"/>
+    <ellipse cx="40" cy="62" rx="18" ry="6" fill="#1d2c7a" opacity="0.18"/>
+    <path d="M28 28c0-6 5-10 12-10 7 0 12 4 12 10 0 4-2 7-6 9-3 1.5-4 3-4 6" fill="none" stroke="url(#questionBubble)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="40" cy="58" r="4.5" fill="url(#questionBubble)" stroke="#6a82ff" stroke-width="2"/>
+  </g>
+</svg>`
   };
 
   function getChoiceIcon(option){
@@ -137,9 +528,9 @@
     if(text.includes('2-3') || text.includes('few days') || text.includes('couple of days')) return ICONS.calendarRange;
     if(text.includes('week')) return ICONS.calendarWeek;
     if(text.includes('day')) return ICONS.calendarDay;
-    if(text.includes('light')) return ICONS.sun;
-    if(text.includes('medium')) return ICONS.gauge;
-    if(text.includes('severe')) return ICONS.dizzy;
+    if(text.includes('light')) return ICONS.severityLight;
+    if(text.includes('medium')) return ICONS.severityModerate;
+    if(text.includes('severe')) return ICONS.severitySevere;
     if(text.includes('fever')) return ICONS.thermo;
     if(text.includes('nausea') || text.includes('vomit')) return ICONS.stomach;
     if(text.includes('cough') || text.includes('breath')) return ICONS.lungs;
@@ -147,12 +538,26 @@
     if(text.includes('chest')) return ICONS.heart;
     if(text.includes('dizziness') || text.includes('fatigue')) return ICONS.dizzy;
     if(text.includes('none')) return ICONS.question;
-    if(text.includes('eat')) return ICONS.stomach;
     if(text.includes('rest')) return ICONS.rest;
     if(text.includes('moving') || text.includes('standing')) return ICONS.walk;
-    if(text.includes('random')) return ICONS.swirl;
-    if(text.includes('sure')) return ICONS.question;
-    return ICONS.question;
+  if(text.includes('random')) return ICONS.swirl;
+  if(text.includes('sure')) return ICONS.question;
+  return ICONS.question;
+}
+
+  function setupEntryPresetOptions(){
+    if(!entryPresetButtons.length) return;
+    entryPresetButtons.forEach(btn=>{
+      const value = btn.dataset.option || btn.textContent.trim();
+      const iconSlot = btn.querySelector('.choice-icon');
+      if(iconSlot){
+        iconSlot.innerHTML = getChoiceIcon(value);
+      }
+      btn.addEventListener('click', ()=>{
+        if(!value) return;
+        openGuidedFlow({ prefill:value, startIndex:1, autoFocus:false });
+      });
+    });
   }
 
   function savePrefs(){ localStorage.setItem(PREF_KEY, JSON.stringify(prefs)); }
@@ -1056,5 +1461,6 @@ if (adviceDisplay !== DEFAULT_ADVICE) {
   renderHistory();
   updateAuthUI();
   resetExperience();
+  setupEntryPresetOptions();
   applyStrings();
 })();

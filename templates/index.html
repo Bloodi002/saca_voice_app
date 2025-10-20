@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>SACA - Your Health Companion</title>
-  <link rel="stylesheet" href="{{ request.url_for('static', path='/styles.css') }}?v=20240617">
+  <link rel="stylesheet" href="{{ request.url_for('static', path='/styles.css') }}?v=20241018">
 </head>
 <body>
 <header>
@@ -114,6 +114,32 @@
               </svg>
             </span>
             <span class="question-btn-label">Write your symptoms</span>
+          </button>
+        </div>
+        <div id="entrySymptomOptions" class="choice-grid choice-grid--cols3 entry-choice-options" aria-label="Quick symptom options">
+          <button type="button" class="choice-card entry-choice-card" data-option="Fever">
+            <span class="choice-icon"></span>
+            <span class="choice-label">Fever</span>
+          </button>
+          <button type="button" class="choice-card entry-choice-card" data-option="Nausea or vomiting">
+            <span class="choice-icon"></span>
+            <span class="choice-label">Nausea or vomiting</span>
+          </button>
+          <button type="button" class="choice-card entry-choice-card" data-option="Cough or breathing difficulty">
+            <span class="choice-icon"></span>
+            <span class="choice-label">Cough or breathing difficulty</span>
+          </button>
+          <button type="button" class="choice-card entry-choice-card" data-option="Diarrhea">
+            <span class="choice-icon"></span>
+            <span class="choice-label">Diarrhea</span>
+          </button>
+          <button type="button" class="choice-card entry-choice-card" data-option="Chest pain">
+            <span class="choice-icon"></span>
+            <span class="choice-label">Chest pain</span>
+          </button>
+          <button type="button" class="choice-card entry-choice-card" data-option="Dizziness or fatigue">
+            <span class="choice-icon"></span>
+            <span class="choice-label">Dizziness or fatigue</span>
           </button>
         </div>
         <div id="entryTextWrap" class="entry-text-wrap is-hidden">
@@ -288,6 +314,6 @@
   </div>
 </div>
 <script src="{{ request.url_for('static', path='/strings.js') }}?v=20240602"></script>
-<script src="{{ request.url_for('static', path='/app.js') }}?v=20240602"></script>
+<script src="{{ request.url_for('static', path='/app.js') }}?v=20241018"></script>
 </body>
 </html>
