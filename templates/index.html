@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>SACA - Your Health Companion</title>
-  <link rel="stylesheet" href="{{ request.url_for('static', path='/styles.css') }}?v=20240617">
+  <link rel="stylesheet" href="{{ request.url_for('static', path='/styles.css') }}?v=20241018">
 </head>
 <body>
 <header>
@@ -32,7 +32,7 @@
         </span>
         <span class="toggle-copy">
           <span class="toggle-title" data-i18n="ui.highContrast">High contrast</span>
-          <span class="toggle-sub">Sharper colours</span>
+          <span class="toggle-sub" data-i18n="ui.highContrastHint">Sharper colours</span>
         </span>
       </span>
     </label>
@@ -47,7 +47,7 @@
         </span>
         <span class="toggle-copy">
           <span class="toggle-title" data-i18n="ui.easyRead">Easy-Read</span>
-          <span class="toggle-sub">Bigger text</span>
+          <span class="toggle-sub" data-i18n="ui.easyReadHint">Bigger text</span>
         </span>
       </span>
     </label>
@@ -69,16 +69,16 @@
  
 
   <div class="hero-overlay">
-     <span class="hero-tag">HEALTH ASSISTANT FOR PALM ISLANDS COMMUNITY</span>
+     <span class="hero-tag" data-i18n="home.heroTag">HEALTH ASSISTANT FOR PALM ISLANDS COMMUNITY</span>
     <h1 class="main-title" data-i18n="home.banner">Your Health Companion</h1>
-    <p>
+    <p data-i18n="home.heroBody">
       SACA is your trusted health companion designed for the Palm Island community.
       It helps you describe your symptoms easily, understand your condition,
       and connect with the right care.
     </p>
     <div class="hero-actions">
-      <button type="button" id="getStartedBtn" class="btn">Get Started</button>
-      <button type="button" id="howToBtn" class="how-to-btn">How to Use</button>
+      <button type="button" id="getStartedBtn" class="btn" data-i18n="home.getStarted">Get Started</button>
+      <button type="button" id="howToBtn" class="how-to-btn" data-i18n="home.howTo">How to Use</button>
     </div>
     <button id="historyTrigger" type="button" class="history-trigger is-hidden" data-requires-auth="true">
       <span class="history-trigger-icon" aria-hidden="true">
@@ -87,7 +87,7 @@
           <path d="M12 6v6l3 2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </span>
-      <span>View recent history</span>
+      <span data-i18n="ui.viewHistory">View recent history</span>
     </button>
   </div>
 
@@ -95,9 +95,9 @@
 </div>
     <div id="entryChoice" class="entry-choice is-hidden" role="form" aria-labelledby="entryQuestion">
       <div class="question-card question-card--active">
-        <span id="entryProgress" class="question-chip">Question 1 of 4</span>
-        <h2 id="entryQuestion" class="question-title">How are you feeling today?</h2>
-        <p class="question-sub">Speak it out loud or write a short note so we can help.</p>
+        <span id="entryProgress" class="question-chip"></span>
+        <h2 id="entryQuestion" class="question-title" data-i18n="entry.question">How are you feeling today?</h2>
+        <p class="question-sub" data-i18n="entry.intro">Speak it out loud or write a short note so we can help.</p>
         <div class="question-actions question-actions--choice">
           <button id="entrySpeak" type="button" class="question-btn question-btn--primary question-btn--card">
             <span class="question-btn-icon" aria-hidden="true">
@@ -105,7 +105,7 @@
                 <path d="M12 3a3 3 0 0 1 3 3v5a3 3 0 1 1-6 0V6a3 3 0 0 1 3-3Zm7 8a1 1 0 0 1-2 0 5 5 0 1 1-10 0 1 1 0 0 1-2 0 7 7 0 0 0 6 6.93V20h-3a1 1 0 1 0 0 2h6a1 1 0 1 0 0-2h-3v-2.07A7 7 0 0 0 19 11Z" fill="currentColor"/>
               </svg>
             </span>
-            <span class="question-btn-label">Tap to speak</span>
+            <span class="question-btn-label" data-i18n="entry.speak">Tap to speak</span>
           </button>
           <button id="entryType" type="button" class="question-btn question-btn--secondary question-btn--card">
             <span class="question-btn-icon" aria-hidden="true">
@@ -113,29 +113,55 @@
                 <path d="M4 5a2 2 0 0 1 2-2h8.17a2 2 0 0 1 1.41.59l4.83 4.83a2 2 0 0 1 .59 1.41V19a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2ZM14 5.83V10h4.17ZM8.58 18l-.58-.58 6.95-6.95 1.16 1.16L9.16 18Z" fill="currentColor"/>
               </svg>
             </span>
-            <span class="question-btn-label">Write your symptoms</span>
+            <span class="question-btn-label" data-i18n="entry.type">Write your symptoms</span>
+          </button>
+        </div>
+        <div id="entrySymptomOptions" class="choice-grid choice-grid--cols3 entry-choice-options" aria-label="Quick symptom options" data-i18n-attr="aria-label:entry.quickLabel">
+          <button type="button" class="choice-card entry-choice-card" data-option="Fever">
+            <span class="choice-icon"></span>
+            <span class="choice-label" data-i18n="entry.options.fever">Fever</span>
+          </button>
+          <button type="button" class="choice-card entry-choice-card" data-option="Nausea or vomiting">
+            <span class="choice-icon"></span>
+            <span class="choice-label" data-i18n="entry.options.nausea">Nausea or vomiting</span>
+          </button>
+          <button type="button" class="choice-card entry-choice-card" data-option="Cough or breathing difficulty">
+            <span class="choice-icon"></span>
+            <span class="choice-label" data-i18n="entry.options.breathing">Cough or breathing difficulty</span>
+          </button>
+          <button type="button" class="choice-card entry-choice-card" data-option="Diarrhea">
+            <span class="choice-icon"></span>
+            <span class="choice-label" data-i18n="entry.options.diarrhea">Diarrhea</span>
+          </button>
+          <button type="button" class="choice-card entry-choice-card" data-option="Chest pain">
+            <span class="choice-icon"></span>
+            <span class="choice-label" data-i18n="entry.options.chest">Chest pain</span>
+          </button>
+          <button type="button" class="choice-card entry-choice-card" data-option="Dizziness or fatigue">
+            <span class="choice-icon"></span>
+            <span class="choice-label" data-i18n="entry.options.dizzy">Dizziness or fatigue</span>
           </button>
         </div>
         <div id="entryTextWrap" class="entry-text-wrap is-hidden">
-          <textarea id="entryText" class="question-textarea" rows="3" placeholder="Type a short note about how you're feeling"></textarea>
+          <textarea id="entryText" class="question-textarea" rows="3" placeholder="Type a short note about how you're feeling" data-i18n-placeholder="flow.notePlaceholder"></textarea>
           <div class="entry-text-actions">
-            <button id="entryTextSubmit" type="button" class="question-btn question-btn--primary">Continue</button>
-            <button id="entryTextCancel" type="button" class="question-btn question-btn--ghost">Cancel</button>
+            <button id="entryTextSubmit" type="button" class="question-btn question-btn--primary" data-i18n="flow.continue">Continue</button>
+            <button id="entryTextCancel" type="button" class="question-btn question-btn--ghost" data-i18n="flow.cancel">Cancel</button>
           </div>
         </div>
       </div>
     </div>
     <div id="guidedBox" class="guided-box is-hidden">
       <div id="questionContainer" class="question-card">
-        <span class="question-chip" id="questionProgress">Question 1 of 4</span>
+        <span class="question-chip" id="questionProgress"></span>
         <h2 class="question-title" id="questionHeading"></h2>
         <div class="question-body" id="questionBody">
           <p id="questionText" class="question-sub"></p>
           <div class="question-actions">
             <div class="pill-input">
-              <input type="text" id="answerInput" placeholder="Type your answer" aria-label="Answer" data-i18n-placeholder="home.type"/>
+              <input type="text" id="answerInput" placeholder="Type your answer" aria-label="Answer" data-i18n-placeholder="flow.answerPlaceholder"/>
             </div>
-            <button id="nextQuestion" type="button" class="question-btn question-btn--primary">Next</button>
+            <button id="nextQuestion" type="button" class="question-btn question-btn--primary" data-i18n="flow.next">Next</button>
           </div>
         </div>
       </div>
@@ -148,8 +174,8 @@
           </svg>
         </div>
         <div>
-          <h3>SACA analysis</h3>
-          <p class="analysis-meta" id="analysisTimestamp">Waiting for your check-in.</p>
+          <h3 data-i18n="analysis.title">SACA analysis</h3>
+          <p class="analysis-meta" id="analysisTimestamp" data-i18n="analysis.timestamp">Waiting for your check-in.</p>
         </div>
       </div>
       <div class="analysis-body">
@@ -162,8 +188,8 @@
             </svg>
           </span>
           <div class="analysis-item-copy">
-            <h4>Likely condition</h4>
-            <p id="analysisCondition" class="analysis-copy muted">We'll share the likely condition once we review your details.</p>
+            <h4 data-i18n="analysis.conditionTitle">Likely condition</h4>
+            <p id="analysisCondition" class="analysis-copy muted" data-i18n="analysis.defaultCondition">We'll share the likely condition once we review your details.</p>
           </div>
         </section>
         <section class="analysis-item" id="severityRow" data-severity="unknown">
@@ -175,8 +201,8 @@
             </svg>
           </span>
           <div class="analysis-item-copy">
-            <h4>What we're seeing</h4>
-            <p id="analysisSeverity" class="analysis-copy muted">We're still gauging how serious things are.</p>
+            <h4 data-i18n="analysis.severityTitle">What we're seeing</h4>
+            <p id="analysisSeverity" class="analysis-copy muted" data-i18n="analysis.defaultSeverity">We're still gauging how serious things are.</p>
           </div>
         </section>
         <section class="analysis-item" id="adviceRow">
@@ -187,8 +213,8 @@
             </svg>
           </span>
           <div class="analysis-item-copy">
-            <h4>Suggested next steps</h4>
-            <p id="analysisAdvice" class="analysis-copy muted">Next steps will appear here as soon as we have a recommendation.</p>
+            <h4 data-i18n="analysis.adviceTitle">Suggested next steps</h4>
+            <p id="analysisAdvice" class="analysis-copy muted" data-i18n="analysis.defaultAdvice">Next steps will appear here as soon as we have a recommendation.</p>
           </div>
         </section>
       </div>
@@ -200,7 +226,7 @@
               <path d="M20 10a8 8 0 1 1-2.34-5.66L20 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
           </span>
-          <span>Start another check-in</span>
+          <span data-i18n="ui.startOver">Start another check-in</span>
         </button>
       </div>
     </div>
@@ -211,7 +237,7 @@
           <path d="M12 6v6l3 2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </span>
-      <span>View recent history</span>
+      <span data-i18n="ui.viewHistory">View recent history</span>
     </button>
   </section>
 </main>
@@ -224,8 +250,8 @@
       </svg>
     </button>
     <div class="modal-body history-body">
-      <h2 id="historyTitle">Your recent check-ins</h2>
-      <div id="histEmpty" class="history-empty is-hidden">No saved check-ins yet. Your next check-in will appear here.</div>
+      <h2 id="historyTitle" data-i18n="history.modalTitle">Your recent check-ins</h2>
+      <div id="histEmpty" class="history-empty is-hidden" data-i18n="history.emptyModal">No saved check-ins yet. Your next check-in will appear here.</div>
       <div id="histCards" class="history-grid"></div>
     </div>
   </div>
@@ -240,29 +266,29 @@
     </button>
     <div class="modal-body auth-body">
       <div class="auth-tabs" role="tablist">
-        <button type="button" class="auth-tab is-active" data-mode="login" role="tab" aria-selected="true">Login</button>
-        <button type="button" class="auth-tab" data-mode="signup" role="tab" aria-selected="false">Sign up</button>
+        <button type="button" class="auth-tab is-active" data-mode="login" role="tab" aria-selected="true" data-i18n="auth.tabLogin">Login</button>
+        <button type="button" class="auth-tab" data-mode="signup" role="tab" aria-selected="false" data-i18n="auth.tabSignup">Sign up</button>
       </div>
       <div id="authMessage" class="auth-message is-hidden" role="alert"></div>
       <form id="loginForm" class="auth-form" novalidate>
-        <h2 id="authTitle">Welcome back</h2>
-        <p class="auth-sub">Enter your details to continue.</p>
-        <label class="auth-label" for="loginEmail">Email</label>
+        <h2 id="authTitle" data-i18n="auth.welcomeBack">Welcome back</h2>
+        <p class="auth-sub" data-i18n="auth.welcomeSub">Enter your details to continue.</p>
+        <label class="auth-label" for="loginEmail" data-i18n="auth.emailL">Email</label>
         <input type="email" id="loginEmail" autocomplete="email" required placeholder="name@example.com">
-        <label class="auth-label" for="loginPass">Password</label>
-        <input type="password" id="loginPass" autocomplete="current-password" required placeholder="Password">
-        <button id="doLogin" type="submit" class="btn auth-submit">Login</button>
+        <label class="auth-label" for="loginPass" data-i18n="auth.passL">Password</label>
+        <input type="password" id="loginPass" autocomplete="current-password" required placeholder="Password" data-i18n-placeholder="auth.passPlaceholder">
+        <button id="doLogin" type="submit" class="btn auth-submit" data-i18n="auth.login">Login</button>
       </form>
       <form id="signupForm" class="auth-form is-hidden" novalidate>
-        <h2>Join SACA</h2>
-        <p class="auth-sub">Create an account to save your check-ins.</p>
-        <label class="auth-label" for="signupEmail">Email</label>
+        <h2 data-i18n="auth.joinTitle">Join SACA</h2>
+        <p class="auth-sub" data-i18n="auth.joinSub">Create an account to save your check-ins.</p>
+        <label class="auth-label" for="signupEmail" data-i18n="auth.emailL">Email</label>
         <input type="email" id="signupEmail" autocomplete="email" required placeholder="name@example.com">
-        <label class="auth-label" for="signupPass">Password</label>
-        <input type="password" id="signupPass" autocomplete="new-password" required placeholder="Password (min 6 characters)">
-        <label class="auth-label" for="signupConfirm">Confirm password</label>
-        <input type="password" id="signupConfirm" autocomplete="new-password" required placeholder="Repeat password">
-        <button id="doSignup" type="submit" class="btn auth-submit">Sign up</button>
+        <label class="auth-label" for="signupPass" data-i18n="auth.passL">Password</label>
+        <input type="password" id="signupPass" autocomplete="new-password" required placeholder="Password (min 6 characters)" data-i18n-placeholder="auth.passNewPlaceholder">
+        <label class="auth-label" for="signupConfirm" data-i18n="auth.confirmL">Confirm password</label>
+        <input type="password" id="signupConfirm" autocomplete="new-password" required placeholder="Repeat password" data-i18n-placeholder="auth.passRepeatPlaceholder">
+        <button id="doSignup" type="submit" class="btn auth-submit" data-i18n="auth.tabSignup">Sign up</button>
       </form>
     </div>
   </div>
@@ -276,18 +302,18 @@
       </svg>
     </button>
     <div class="modal-body">
-      <h2 id="howToTitle">How to use SACA</h2>
-      <p class="how-to-lead">In just a few taps we'll help you figure out the next best step.</p>
+      <h2 id="howToTitle" data-i18n="howto.title">How to use SACA</h2>
+      <p class="how-to-lead" data-i18n="howto.lead">In just a few taps we'll help you figure out the next best step.</p>
       <ol class="how-to-steps">
-        <li><strong>Share how you feel.</strong> Tap <em>Tap to speak</em> or <em>Write your symptoms</em> to tell us what’s going on.</li>
-        <li><strong>Answer quick follow-ups.</strong> A couple of short questions help us understand the bigger picture.</li>
-        <li><strong>Review personalised advice.</strong> We’ll suggest what to do next and highlight anything urgent.</li>
+        <li data-i18n-html="howto.step1"><strong>Share how you feel.</strong> Tap <em>Tap to speak</em> or <em>Write your symptoms</em> to tell us what's going on.</li>
+        <li data-i18n-html="howto.step2"><strong>Answer quick follow-ups.</strong> A couple of short questions help us understand the bigger picture.</li>
+        <li data-i18n-html="howto.step3"><strong>Review personalised advice.</strong> We'll suggest what to do next and highlight anything urgent.</li>
       </ol>
-      <p class="how-to-footnote">Need to start over? Use “Start another check-in” any time.</p>
+      <p class="how-to-footnote" data-i18n="howto.footnote">Need to start over? Use "Start another check-in" any time.</p>
     </div>
   </div>
 </div>
 <script src="{{ request.url_for('static', path='/strings.js') }}?v=20240602"></script>
-<script src="{{ request.url_for('static', path='/app.js') }}?v=20240602"></script>
+<script src="{{ request.url_for('static', path='/app.js') }}?v=20241018"></script>
 </body>
 </html>

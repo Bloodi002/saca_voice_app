@@ -2,6 +2,35 @@
   const PREF_KEY='sacaPrefs', LS_KEY='sacaHistory', AUTH_KEY='sacaAuth';
   const qs = s=>document.querySelector(s);
   const STR = window.STR;
+  const FALLBACK_ANALYSIS = {
+    condition:"We'll share the likely condition once we review your details.",
+    severity:"We're still gauging how serious things are.",
+    advice:"Next steps will appear here as soon as we have a recommendation.",
+    timestamp:"Waiting for your check-in."
+  };
+  const FALLBACK_ERRORS = {
+    mediaUnsupported:"Audio recording is not supported in this browser.",
+    microphone:"Could not access the microphone. Please check permissions.",
+    audioSubmit:"Audio submission failed.",
+    noAudio:"No audio captured. Please try again.",
+    uploadFailed:"Upload failed"
+  };
+
+  function translate(path, fallback = ""){
+    const value = t(path);
+    if(value === null || value === undefined || value === ""){
+      return fallback;
+    }
+    return value;
+  }
+
+  function formatTemplate(template, replacements = {}){
+    if(typeof template !== 'string') return template || '';
+    return Object.entries(replacements).reduce((acc,[key,val])=>{
+      const pattern = new RegExp(`\\{${key}\\}`, 'g');
+      return acc.replace(pattern, val);
+    }, template);
+  }
 
   const heroIntro = qs('#heroIntro');
   const micButton = qs('#micHome');
@@ -35,6 +64,8 @@
   const entryText = qs('#entryText');
   const entryTextSubmit = qs('#entryTextSubmit');
   const entryTextCancel = qs('#entryTextCancel');
+  const entryPresetContainer = qs('#entrySymptomOptions');
+  const entryPresetButtons = entryPresetContainer ? Array.from(entryPresetContainer.querySelectorAll('.entry-choice-card')) : [];
   const refreshBtn = qs('#resetExperience');
   const historyCard = qs('#historyCard');
   const homeCards = qs('#homeCards');
@@ -64,15 +95,11 @@
   const langToggle = qs('#langToggle');
   const langLabel = qs('#langLabel');
 
-  const DEFAULT_CONDITION = "We'll share the likely condition once we review your details.";
-  const DEFAULT_SEVERITY = "We're still gauging how serious things are.";
-  const DEFAULT_ADVICE = "Next steps will appear here as soon as we have a recommendation.";
-  const DEFAULT_TIMESTAMP = "Waiting for your check-in.";
   const SEVERITY_CLASSES = ['severity-unknown','severity-mild','severity-moderate','severity-severe'];
   const MIC_COPY = {
-    idle: { key:'home.mic', fallback:'Tap to speak' },
-    listening: { key:'home.micListening', fallback:'Listening...' },
-    submitting: { key:'home.micSubmitting', fallback:'Processing...' }
+    idle: { key:'home.mic', fallback:'Tap here to speak' },
+    listening: { key:'home.micListening', fallback:'Listening... tap to stop' },
+    submitting: { key:'home.micSubmitting', fallback:'Submitting...' }
   };
   const USERS_KEY = 'sacaUsers';
   const MIN_PASSWORD_LENGTH = 6;
@@ -93,10 +120,41 @@
   const easyToggle = qs('#easyToggle');
 
   const questions = [
-    { text: "How are you feeling today?", type: "text" },
-    { text: "How long have you been feeling this?", type: "choice", options: ["A few hours","A day","2-3 days","A week or more"] },
-    { text: "How bad is the issue?", type: "choice", options: ["Light","Medium","Severe"] },
-    { text: "Have you noticed any other symptoms?", type: "choice", options: ["Fever","Nausea or vomiting","Cough or breathing difficulty","Diarrhea","Chest pain or tightness","Dizziness or fatigue","None of these"] }
+    { textKey: "flow.questions.q1", fallback: "How are you feeling today?", type: "text" },
+    {
+      textKey: "flow.questions.q2",
+      fallback: "How long have you been feeling this?",
+      type: "choice",
+      options: [
+        { value: "A few hours", labelKey: "flow.questions.duration.fewHours" },
+        { value: "A day", labelKey: "flow.questions.duration.day" },
+        { value: "2-3 days", labelKey: "flow.questions.duration.fewDays" },
+        { value: "A week or more", labelKey: "flow.questions.duration.weekPlus" }
+      ]
+    },
+    {
+      textKey: "flow.questions.q3",
+      fallback: "How bad is the issue?",
+      type: "choice",
+      options: [
+        { value: "Light", labelKey: "flow.questions.severity.light" },
+        { value: "Medium", labelKey: "flow.questions.severity.medium" },
+        { value: "Severe", labelKey: "flow.questions.severity.severe" }
+      ]
+    },
+    {
+      textKey: "flow.questions.q4",
+      fallback: "Have you noticed any other symptoms?",
+      type: "choice",
+      options: [
+        { value: "Fever", labelKey: "entry.options.fever" },
+        { value: "Nausea or vomiting", labelKey: "entry.options.nausea" },
+        { value: "Cough or breathing difficulty", labelKey: "entry.options.breathing" },
+        { value: "Diarrhea", labelKey: "entry.options.diarrhea" },
+        { value: "Chest pain", labelKey: "entry.options.chest" },
+        { value: "Dizziness or fatigue", labelKey: "entry.options.dizzy" }
+      ]
+    }
   ];
   const BASE_QUESTION_COUNT = questions.length;
 
@@ -114,21 +172,410 @@
   let sessionHistory = [];
 
   const ICONS = {
-    clock: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l2.5 1.5"/></svg>`,
-    sun: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 3v2M12 19v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M3 12h2M19 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>`,
-    calendarDay: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><circle cx="12" cy="15" r="2"/></svg>`,
-    calendarRange: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M8 15h8M10 13v4M14 13v4"/></svg>`,
-    calendarWeek: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M6 15h12M6 18h8"/></svg>`,
-    gauge: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5.5 19a8.5 8.5 0 1 1 13 0Z"/><path d="M12 12l3.5 3.5"/><path d="M7 12h.01M12 7v.01M17 12h.01M12 17h.01"/></svg>`,
-    thermo: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 14.76A3 3 0 1 1 10 14V5a2 2 0 1 1 4 0z"/><path d="M10 11h4"/></svg>`,
-    lungs: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v8M12 11c-1.5-2-4-3-6-2V19c2 0 3.5-.5 5-2m1-6c1.5-2 4-3 6-2V19c-2 0-3.5-.5-5-2"/></svg>`,
-    heart: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-6.5-4.35-8.5-8.04C1.5 8.58 3.5 5 6.75 5c2.07 0 3.25 1.32 3.25 1.32S11.93 5 14 5c3.25 0 5.25 3.58 3.5 6.96C18.5 15.65 12 20 12 20Z"/></svg>`,
-    stomach: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3v4a4 4 0 0 1-4 4H9.5c-2.5 0-4.5 2-4.5 5a6 6 0 0 0 12 0c0-1.6-.7-3.05-1.8-4"/></svg>`,
-    dizzy: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><path d="m9 9 1.5 1.5M15 15l-1.5-1.5M15 9l-1.5 1.5M9 15l1.5-1.5M9.75 18.5c.7-.3 1.5-.5 2.25-.5s1.55.2 2.25.5"/></svg>`,
-    rest: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 14h16M5 7v11M19 7v11"/><path d="M9.5 11a1.5 1.5 0 1 0 0-3"/></svg>`,
-    walk: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="5" r="1.5"/><path d="M9 21l1-4 3-3m3 7-1-5-2-2m1-3-2-1-2 1-1.5 2M16 13l2-2"/></svg>`,
-    swirl: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M10 4a7 7 0 1 1 4 13c-3 0-4-3-2-4 3-2 1-6-2-6-4 0-6 5-3 8"/></svg>`,
-    question: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 7a3 3 0 1 1 6 0c0 2-3 3-3 5"/><path d="M12 17h.01"/></svg>`
+    clock: `<svg viewBox="0 0 80 80" focusable="false" role="presentation">
+  <defs>
+    <radialGradient id="clockGlow" cx="48%" cy="32%" r="70%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.96"/>
+      <stop offset="45%" stop-color="#ffe3bc" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#ff9a4c"/>
+    </radialGradient>
+    <linearGradient id="clockFace" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fff7ec"/>
+      <stop offset="55%" stop-color="#ffdaba"/>
+      <stop offset="100%" stop-color="#ffa565"/>
+    </linearGradient>
+    <linearGradient id="clockHand" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffcf6d"/>
+      <stop offset="100%" stop-color="#ff6b3b"/>
+    </linearGradient>
+  </defs>
+  <g fill="none">
+    <circle cx="40" cy="40" r="34" fill="url(#clockGlow)"/>
+    <ellipse cx="40" cy="62" rx="18" ry="6" fill="#803113" opacity="0.18"/>
+    <circle cx="36" cy="36" r="18" fill="url(#clockFace)" stroke="#ffb36d" stroke-width="3"/>
+    <path d="M36 22v14l10 6" stroke="url(#clockHand)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="36" cy="36" r="3.5" fill="#ffffff" stroke="#ff7b3d" stroke-width="1.5"/>
+    <circle cx="36" cy="24" r="2.4" fill="#fff1e2" opacity="0.7"/>
+    <circle cx="26" cy="36" r="2" fill="#fff1e2" opacity="0.6"/>
+    <circle cx="36" cy="46" r="2" fill="#fff1e2" opacity="0.6"/>
+  </g>
+</svg>`,
+    calendarDay: `<svg viewBox="0 0 80 80" focusable="false" role="presentation">
+  <defs>
+    <radialGradient id="calDayGlow" cx="50%" cy="30%" r="72%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.96"/>
+      <stop offset="45%" stop-color="#dff7ff" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#4db6ff"/>
+    </radialGradient>
+    <linearGradient id="calDayBody" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#f4fbff"/>
+      <stop offset="55%" stop-color="#cfeeef"/>
+      <stop offset="100%" stop-color="#6fd0ff"/>
+    </linearGradient>
+    <linearGradient id="calDayClip" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#7dd8ff"/>
+    </linearGradient>
+  </defs>
+  <g fill="none">
+    <circle cx="40" cy="40" r="34" fill="url(#calDayGlow)"/>
+    <ellipse cx="40" cy="62" rx="18" ry="6" fill="#1b4d71" opacity="0.2"/>
+    <rect x="22" y="18" width="36" height="44" rx="10" fill="url(#calDayBody)" stroke="#8adfff" stroke-width="2.6"/>
+    <rect x="28" y="14" width="24" height="12" rx="6" fill="url(#calDayClip)" stroke="#9ce3ff" stroke-width="2"/>
+    <path d="M28 30h24" stroke="#4fbaff" stroke-width="4" stroke-linecap="round"/>
+    <rect x="34" y="38" width="12" height="12" rx="4" fill="#ffffff" stroke="#3aa3ef" stroke-width="2.4"/>
+    <path d="M38 44h6" stroke="#37a2f2" stroke-width="3" stroke-linecap="round"/>
+  </g>
+</svg>`,
+    calendarRange: `<svg viewBox="0 0 80 80" focusable="false" role="presentation">
+  <defs>
+    <radialGradient id="calRangeGlow" cx="48%" cy="28%" r="74%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.95"/>
+      <stop offset="45%" stop-color="#ffe0ef" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#ff6fae"/>
+    </radialGradient>
+    <linearGradient id="calRangeBody" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#fff3fa"/>
+      <stop offset="60%" stop-color="#ffd0e7"/>
+      <stop offset="100%" stop-color="#ff85c1"/>
+    </linearGradient>
+    <linearGradient id="calRangeHighlight" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffe6f3"/>
+      <stop offset="100%" stop-color="#ff7fb9"/>
+    </linearGradient>
+  </defs>
+  <g fill="none">
+    <circle cx="40" cy="40" r="34" fill="url(#calRangeGlow)"/>
+    <ellipse cx="40" cy="62" rx="18" ry="6" fill="#7c2450" opacity="0.18"/>
+    <rect x="22" y="18" width="36" height="44" rx="10" fill="url(#calRangeBody)" stroke="#ffa1cc" stroke-width="2.6"/>
+    <rect x="28" y="14" width="24" height="12" rx="6" fill="url(#calRangeHighlight)" stroke="#ffb7d8" stroke-width="2"/>
+    <path d="M28 30h24" stroke="#ff8dc3" stroke-width="4" stroke-linecap="round"/>
+    <rect x="30" y="38" width="10" height="12" rx="4" fill="#ffffff" stroke="#ff7fb9" stroke-width="2.4"/>
+    <rect x="40" y="38" width="14" height="12" rx="4" fill="#ffffff" stroke="#ff7fb9" stroke-width="2.4"/>
+    <path d="M32 44h6M42 44h10" stroke="#ff73b3" stroke-width="3" stroke-linecap="round"/>
+  </g>
+</svg>`,
+    calendarWeek: `<svg viewBox="0 0 80 80" focusable="false" role="presentation">
+  <defs>
+    <radialGradient id="calWeekGlow" cx="52%" cy="30%" r="74%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.94"/>
+      <stop offset="45%" stop-color="#dff8d1" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#63d07b"/>
+    </radialGradient>
+    <linearGradient id="calWeekBody" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#effff0"/>
+      <stop offset="55%" stop-color="#cbf4d3"/>
+      <stop offset="100%" stop-color="#7ae39f"/>
+    </linearGradient>
+    <linearGradient id="calWeekClip" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#83e5a0"/>
+    </linearGradient>
+  </defs>
+  <g fill="none">
+    <circle cx="40" cy="40" r="34" fill="url(#calWeekGlow)"/>
+    <ellipse cx="40" cy="62" rx="18" ry="6" fill="#1b6a32" opacity="0.18"/>
+    <rect x="22" y="18" width="36" height="44" rx="10" fill="url(#calWeekBody)" stroke="#8deeab" stroke-width="2.6"/>
+    <rect x="28" y="14" width="24" height="12" rx="6" fill="url(#calWeekClip)" stroke="#95f0b3" stroke-width="2"/>
+    <path d="M28 30h24" stroke="#62d684" stroke-width="4" stroke-linecap="round"/>
+    <path d="M28 40h24" stroke="#51cf77" stroke-width="4" stroke-linecap="round"/>
+    <path d="M28 48h24" stroke="#46c76c" stroke-width="4" stroke-linecap="round"/>
+  </g>
+</svg>`,
+    severityLight: `<svg viewBox="0 0 80 80" focusable="false" role="presentation">
+  <defs>
+    <radialGradient id="sevLightGlow" cx="50%" cy="35%" r="72%">
+      <stop offset="0%" stop-color="#f5fbff" stop-opacity="0.95"/>
+      <stop offset="45%" stop-color="#d0ecff" stop-opacity="0.92"/>
+      <stop offset="100%" stop-color="#4b9dff"/>
+    </radialGradient>
+    <linearGradient id="sevLightWave" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#e6f5ff"/>
+      <stop offset="60%" stop-color="#9cd1ff"/>
+      <stop offset="100%" stop-color="#4b9dff"/>
+    </linearGradient>
+    <linearGradient id="sevLightMeter" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.95"/>
+      <stop offset="100%" stop-color="#7ab6ff" stop-opacity="0.85"/>
+    </linearGradient>
+  </defs>
+  <g fill="none">
+    <circle cx="40" cy="40" r="34" fill="url(#sevLightGlow)"/>
+    <ellipse cx="40" cy="62" rx="18" ry="6" fill="#1a4f8f" opacity="0.18"/>
+    <path d="M20 48c4-12 20-20 32-12" stroke="url(#sevLightWave)" stroke-width="8" stroke-linecap="round" opacity="0.4"/>
+    <path d="M28 50c3-7 14-12 20-8" stroke="url(#sevLightWave)" stroke-width="9" stroke-linecap="round"/>
+    <circle cx="48" cy="42" r="9" fill="url(#sevLightMeter)" stroke="#3b89ef" stroke-width="2.6"/>
+    <path d="M48 36v6" stroke="#3b89ef" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="48" cy="44" r="2.6" fill="#ffffff" opacity="0.85"/>
+  </g>
+</svg>`,
+    severityModerate: `<svg viewBox="0 0 80 80" focusable="false" role="presentation">
+  <defs>
+    <radialGradient id="sevModGlow" cx="50%" cy="34%" r="72%">
+      <stop offset="0%" stop-color="#fff9e8" stop-opacity="0.95"/>
+      <stop offset="45%" stop-color="#ffe6a8" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#ffb629"/>
+    </radialGradient>
+    <linearGradient id="sevModBody" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fff7d0"/>
+      <stop offset="60%" stop-color="#ffe087"/>
+      <stop offset="100%" stop-color="#ffb629"/>
+    </linearGradient>
+    <linearGradient id="sevModMark" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#fff0c2"/>
+      <stop offset="100%" stop-color="#ff8f0f"/>
+    </linearGradient>
+  </defs>
+  <g fill="none">
+    <circle cx="40" cy="40" r="34" fill="url(#sevModGlow)"/>
+    <ellipse cx="40" cy="62" rx="18" ry="6" fill="#91601b" opacity="0.2"/>
+    <path d="M40 18 61 56a4 4 0 0 1-3.5 6H22.5a4 4 0 0 1-3.5-6Z" fill="url(#sevModBody)" stroke="#ffbe42" stroke-width="3"/>
+    <path d="M40 28v14" stroke="url(#sevModMark)" stroke-width="6" stroke-linecap="round"/>
+    <circle cx="40" cy="48" r="3.6" fill="#ff8f0f" stroke="#fff1c9" stroke-width="2"/>
+  </g>
+</svg>`,
+    severitySevere: `<svg viewBox="0 0 80 80" focusable="false" role="presentation">
+  <defs>
+    <radialGradient id="sevSevereGlow" cx="50%" cy="34%" r="72%">
+      <stop offset="0%" stop-color="#ffe6ec" stop-opacity="0.95"/>
+      <stop offset="45%" stop-color="#ff9aa9" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#ff394f"/>
+    </radialGradient>
+    <linearGradient id="sevSevereBody" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffe3e9"/>
+      <stop offset="55%" stop-color="#ff7887"/>
+      <stop offset="100%" stop-color="#ff1f3d"/>
+    </linearGradient>
+    <linearGradient id="sevSevereLight" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#ff8d99" stop-opacity="0.6"/>
+    </linearGradient>
+  </defs>
+  <g fill="none">
+    <circle cx="40" cy="40" r="34" fill="url(#sevSevereGlow)"/>
+    <ellipse cx="40" cy="62" rx="18" ry="6" fill="#6f1322" opacity="0.22"/>
+    <rect x="26" y="18" width="28" height="32" rx="8" fill="url(#sevSevereBody)" stroke="#ff4459" stroke-width="3"/>
+    <path d="M26 38h28" stroke="#ff8d99" stroke-width="4" opacity="0.45"/>
+    <circle cx="40" cy="52" r="12" fill="#2b0a13" opacity="0.35"/>
+    <path d="M30 22c3 6 10 6 10 6s7 0 10-6" stroke="url(#sevSevereLight)" stroke-width="4" stroke-linecap="round" opacity="0.9"/>
+    <path d="M40 30v10" stroke="#fff0f2" stroke-width="5" stroke-linecap="round"/>
+    <path d="M40 44v8" stroke="#ffb0ba" stroke-width="5" stroke-linecap="round"/>
+    <circle cx="40" cy="56" r="4.5" fill="#ffffff" stroke="#ff3c55" stroke-width="2"/>
+  </g>
+</svg>`,
+    thermo: `<svg viewBox="0 0 80 80" focusable="false" role="presentation">
+  <defs>
+    <radialGradient id="thermoGlow" cx="48%" cy="30%" r="72%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.95"/>
+      <stop offset="45%" stop-color="#ffe2df" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#ff5f7f"/>
+    </radialGradient>
+    <linearGradient id="thermoBody" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#fff3f4"/>
+      <stop offset="55%" stop-color="#ffd1d7"/>
+      <stop offset="100%" stop-color="#ff6d86"/>
+    </linearGradient>
+    <linearGradient id="thermoMercury" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ff9fb1"/>
+      <stop offset="100%" stop-color="#ff275a"/>
+    </linearGradient>
+  </defs>
+  <g fill="none">
+    <circle cx="40" cy="40" r="34" fill="url(#thermoGlow)"/>
+    <ellipse cx="40" cy="62" rx="18" ry="6" fill="#741f33" opacity="0.18"/>
+    <rect x="30" y="18" width="12" height="34" rx="6" fill="url(#thermoBody)" stroke="#ff8da4" stroke-width="2.4"/>
+    <circle cx="36" cy="55" r="11" fill="url(#thermoMercury)" stroke="#ff476c" stroke-width="3"/>
+    <rect x="34" y="22" width="4.5" height="24" rx="2.2" fill="#ff275a" opacity="0.8"/>
+    <path d="M38 28h6" stroke="#ff9fb1" stroke-width="3" stroke-linecap="round" opacity="0.7"/>
+    <path d="M38 36h6" stroke="#ff9fb1" stroke-width="3" stroke-linecap="round" opacity="0.7"/>
+    <path d="M38 44h6" stroke="#ff9fb1" stroke-width="3" stroke-linecap="round" opacity="0.7"/>
+  </g>
+</svg>`,
+    lungs: `<svg viewBox="0 0 80 80" focusable="false" role="presentation">
+  <defs>
+    <radialGradient id="lungsGlow" cx="50%" cy="34%" r="72%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.95"/>
+      <stop offset="45%" stop-color="#e0f7ff" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#66c7ff"/>
+    </radialGradient>
+    <linearGradient id="lungsLeft" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f3fbff"/>
+      <stop offset="100%" stop-color="#7dd4ff"/>
+    </linearGradient>
+    <linearGradient id="lungsRight" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#f3fbff"/>
+      <stop offset="100%" stop-color="#5fc3ff"/>
+    </linearGradient>
+  </defs>
+  <g fill="none">
+    <circle cx="40" cy="40" r="34" fill="url(#lungsGlow)"/>
+    <ellipse cx="40" cy="63" rx="18" ry="6" fill="#154a71" opacity="0.2"/>
+    <path d="M38 20c1.2 0 2 1 2 2v16c0 6-3 14-12 18-6 2.7-10-1-10-5V37c0-6 5-11 10-9 4 1.6 10-3 10-8Z" fill="url(#lungsLeft)" stroke="#8ad9ff" stroke-width="2.6"/>
+    <path d="M42 20c-1.2 0-2 1-2 2v16c0 6 3 14 12 18 6 2.7 10-1 10-5V37c0-6-5-11-10-9-4 1.6-10-3-10-8Z" fill="url(#lungsRight)" stroke="#6fcbff" stroke-width="2.6"/>
+    <path d="M40 16v16" stroke="#4db1ff" stroke-width="4" stroke-linecap="round"/>
+    <path d="M28 36c4 1 7 4 8 8" stroke="#53b5ff" stroke-width="3" stroke-linecap="round"/>
+    <path d="M52 36c-4 1-7 4-8 8" stroke="#53b5ff" stroke-width="3" stroke-linecap="round"/>
+  </g>
+</svg>`,
+    heart: `<svg viewBox="0 0 80 80" focusable="false" role="presentation">
+  <defs>
+    <radialGradient id="heartGlow" cx="48%" cy="32%" r="72%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.94"/>
+      <stop offset="45%" stop-color="#ffe2f0" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#ff5f8b"/>
+    </radialGradient>
+    <linearGradient id="heartBody" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fff0f6"/>
+      <stop offset="60%" stop-color="#ff9fba"/>
+      <stop offset="100%" stop-color="#ff4f7a"/>
+    </linearGradient>
+  </defs>
+  <g fill="none">
+    <circle cx="40" cy="40" r="34" fill="url(#heartGlow)"/>
+    <ellipse cx="40" cy="62" rx="18" ry="6" fill="#771732" opacity="0.2"/>
+    <path d="M40 56C28 47 22 41 20 34c-2-6 2-13 9-15 4-1 8 1 11 4 3-3 7-5 11-4 7 2 11 9 9 15-2 7-8 13-20 22Z" fill="url(#heartBody)" stroke="#ff6f98" stroke-width="3"/>
+    <path d="M30 25c3-2 7-1 9 3" stroke="#fff5f8" stroke-width="3.2" stroke-linecap="round" opacity="0.8"/>
+  </g>
+</svg>`,
+    stomach: `<svg viewBox="0 0 80 80" focusable="false" role="presentation">
+  <defs>
+    <radialGradient id="stomachGlow" cx="50%" cy="34%" r="72%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.95"/>
+      <stop offset="45%" stop-color="#e9ffeb" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#64d690"/>
+    </radialGradient>
+    <linearGradient id="stomachBody" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f2fff5"/>
+      <stop offset="60%" stop-color="#baffca"/>
+      <stop offset="100%" stop-color="#56c880"/>
+    </linearGradient>
+    <linearGradient id="stomachHighlight" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#8ef4ae" stop-opacity="0.7"/>
+    </linearGradient>
+  </defs>
+  <g fill="none">
+    <circle cx="40" cy="40" r="34" fill="url(#stomachGlow)"/>
+    <ellipse cx="40" cy="62" rx="18" ry="6" fill="#1d6b3a" opacity="0.2"/>
+    <path d="M44 20c0 10 4 14 7 18 4 4 5 10 1 15-5 7-16 11-24 7-7-3-10-12-6-20 4-8 4-11 3-17" fill="url(#stomachBody)" stroke="#80e5a5" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M33 28c2 4 0 8-3 13" stroke="#ffffff" stroke-width="3" stroke-linecap="round" opacity="0.65"/>
+    <path d="M40 30c2 3 5 4 8 3" stroke="url(#stomachHighlight)" stroke-width="3" stroke-linecap="round" opacity="0.8"/>
+  </g>
+</svg>`,
+    dizzy: `<svg viewBox="0 0 80 80" focusable="false" role="presentation">
+  <defs>
+    <radialGradient id="dizzyGlow" cx="50%" cy="34%" r="72%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.95"/>
+      <stop offset="45%" stop-color="#ffe6e0" stop-opacity="0.88"/>
+      <stop offset="100%" stop-color="#ff6a6a"/>
+    </radialGradient>
+    <linearGradient id="dizzySwirl" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.95"/>
+      <stop offset="60%" stop-color="#ffd0c7"/>
+      <stop offset="100%" stop-color="#ff856e"/>
+    </linearGradient>
+  </defs>
+  <g fill="none">
+    <circle cx="40" cy="40" r="34" fill="url(#dizzyGlow)"/>
+    <ellipse cx="40" cy="62" rx="18" ry="6" fill="#821f1f" opacity="0.2"/>
+    <path d="M26 32c3-8 14-11 21-5 6 5 2 13-5 15-7 2-9 9-4 12 5 3 12 1 14-4" stroke="url(#dizzySwirl)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+    <g stroke="#ff9a8f" stroke-width="4" stroke-linecap="round">
+      <path d="M28 22l6 6"/>
+      <path d="M52 22l-6 6"/>
+      <path d="M28 50l6-6"/>
+      <path d="M52 50l-6-6"/>
+    </g>
+    <circle cx="40" cy="36" r="3.6" fill="#ffffff" opacity="0.85"/>
+  </g>
+</svg>`,
+    rest: `<svg viewBox="0 0 80 80" focusable="false" role="presentation">
+  <defs>
+    <radialGradient id="restGlow" cx="50%" cy="32%" r="72%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.95"/>
+      <stop offset="45%" stop-color="#e0ecff" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#638cff"/>
+    </radialGradient>
+    <linearGradient id="restBed" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f6f8ff"/>
+      <stop offset="60%" stop-color="#d0dcff"/>
+      <stop offset="100%" stop-color="#6c88ff"/>
+    </linearGradient>
+  </defs>
+  <g fill="none">
+    <circle cx="40" cy="40" r="34" fill="url(#restGlow)"/>
+    <ellipse cx="40" cy="62" rx="18" ry="6" fill="#21367d" opacity="0.2"/>
+    <rect x="22" y="30" width="36" height="22" rx="6" fill="url(#restBed)" stroke="#7b92ff" stroke-width="3"/>
+    <circle cx="30" cy="34" r="6" fill="#ffffff" stroke="#7b92ff" stroke-width="2.4"/>
+    <path d="M26 44h24" stroke="#506ffc" stroke-width="5" stroke-linecap="round"/>
+  </g>
+</svg>`,
+    walk: `<svg viewBox="0 0 80 80" focusable="false" role="presentation">
+  <defs>
+    <radialGradient id="walkGlow" cx="50%" cy="32%" r="72%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.95"/>
+      <stop offset="45%" stop-color="#e8f7ff" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#4fd0ff"/>
+    </radialGradient>
+    <linearGradient id="walkBody" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f5fbff"/>
+      <stop offset="60%" stop-color="#a8e6ff"/>
+      <stop offset="100%" stop-color="#4fc7ff"/>
+    </linearGradient>
+  </defs>
+  <g fill="none">
+    <circle cx="40" cy="40" r="34" fill="url(#walkGlow)"/>
+    <ellipse cx="40" cy="62" rx="18" ry="6" fill="#14617c" opacity="0.22"/>
+    <path d="M38 20c2 0 4 1.4 4 3.4 0 3-4 4-4 6.6" stroke="#4fc7ff" stroke-width="4" stroke-linecap="round"/>
+    <path d="M34 32c-3 4-7 7-10 7" stroke="#69d8ff" stroke-width="4" stroke-linecap="round"/>
+    <path d="m40 34 8 4-4 8" stroke="#2a9ed4" stroke-width="4" stroke-linecap="round"/>
+    <path d="m36 38-2 6" stroke="#2a9ed4" stroke-width="4" stroke-linecap="round"/>
+    <path d="M36 44c-2 5-4 12-4 16" stroke="#2a9ed4" stroke-width="4" stroke-linecap="round"/>
+    <path d="M48 40c0 4-2 10-2 14" stroke="#2a9ed4" stroke-width="4" stroke-linecap="round"/>
+    <path d="M32 60h10" stroke="#2a9ed4" stroke-width="4" stroke-linecap="round"/>
+    <path d="M44 60h8" stroke="#2a9ed4" stroke-width="4" stroke-linecap="round"/>
+  </g>
+</svg>`,
+    swirl: `<svg viewBox="0 0 80 80" focusable="false" role="presentation">
+  <defs>
+    <radialGradient id="swirlGlow" cx="50%" cy="30%" r="74%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.95"/>
+      <stop offset="45%" stop-color="#f2e6ff" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#9d6bff"/>
+    </radialGradient>
+    <linearGradient id="swirlBody" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f9f3ff"/>
+      <stop offset="55%" stop-color="#d8c5ff"/>
+      <stop offset="100%" stop-color="#8057ff"/>
+    </linearGradient>
+  </defs>
+  <g fill="none">
+    <circle cx="40" cy="40" r="34" fill="url(#swirlGlow)"/>
+    <ellipse cx="40" cy="62" rx="18" ry="6" fill="#37237a" opacity="0.2"/>
+    <path d="M32 28c5-8 18-10 24 0 5 8-1 18-10 18-9 0-11 10-2 12 7 2 12-4 12-9" stroke="url(#swirlBody)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="32" cy="28" r="4" fill="#ffffff" opacity="0.7"/>
+    <circle cx="54" cy="38" r="3.5" fill="#ffffff" opacity="0.65"/>
+  </g>
+</svg>`,
+    question: `<svg viewBox="0 0 80 80" focusable="false" role="presentation">
+  <defs>
+    <radialGradient id="questionGlow" cx="50%" cy="32%" r="72%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.95"/>
+      <stop offset="45%" stop-color="#e7edff" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#5e78ff"/>
+    </radialGradient>
+    <linearGradient id="questionBubble" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f6f8ff"/>
+      <stop offset="60%" stop-color="#d1d9ff"/>
+      <stop offset="100%" stop-color="#7088ff"/>
+    </linearGradient>
+  </defs>
+  <g fill="none">
+    <circle cx="40" cy="40" r="34" fill="url(#questionGlow)"/>
+    <ellipse cx="40" cy="62" rx="18" ry="6" fill="#1d2c7a" opacity="0.18"/>
+    <path d="M28 28c0-6 5-10 12-10 7 0 12 4 12 10 0 4-2 7-6 9-3 1.5-4 3-4 6" fill="none" stroke="url(#questionBubble)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="40" cy="58" r="4.5" fill="url(#questionBubble)" stroke="#6a82ff" stroke-width="2"/>
+  </g>
+</svg>`
   };
 
   function getChoiceIcon(option){
@@ -137,9 +584,9 @@
     if(text.includes('2-3') || text.includes('few days') || text.includes('couple of days')) return ICONS.calendarRange;
     if(text.includes('week')) return ICONS.calendarWeek;
     if(text.includes('day')) return ICONS.calendarDay;
-    if(text.includes('light')) return ICONS.sun;
-    if(text.includes('medium')) return ICONS.gauge;
-    if(text.includes('severe')) return ICONS.dizzy;
+    if(text.includes('light')) return ICONS.severityLight;
+    if(text.includes('medium')) return ICONS.severityModerate;
+    if(text.includes('severe')) return ICONS.severitySevere;
     if(text.includes('fever')) return ICONS.thermo;
     if(text.includes('nausea') || text.includes('vomit')) return ICONS.stomach;
     if(text.includes('cough') || text.includes('breath')) return ICONS.lungs;
@@ -147,12 +594,26 @@
     if(text.includes('chest')) return ICONS.heart;
     if(text.includes('dizziness') || text.includes('fatigue')) return ICONS.dizzy;
     if(text.includes('none')) return ICONS.question;
-    if(text.includes('eat')) return ICONS.stomach;
     if(text.includes('rest')) return ICONS.rest;
     if(text.includes('moving') || text.includes('standing')) return ICONS.walk;
-    if(text.includes('random')) return ICONS.swirl;
-    if(text.includes('sure')) return ICONS.question;
-    return ICONS.question;
+  if(text.includes('random')) return ICONS.swirl;
+  if(text.includes('sure')) return ICONS.question;
+  return ICONS.question;
+}
+
+  function setupEntryPresetOptions(){
+    if(!entryPresetButtons.length) return;
+    entryPresetButtons.forEach(btn=>{
+      const value = btn.dataset.option || btn.textContent.trim();
+      const iconSlot = btn.querySelector('.choice-icon');
+      if(iconSlot){
+        iconSlot.innerHTML = getChoiceIcon(value);
+      }
+      btn.addEventListener('click', ()=>{
+        if(!value) return;
+        openGuidedFlow({ prefill:value, startIndex:1, autoFocus:false });
+      });
+    });
   }
 
   function savePrefs(){ localStorage.setItem(PREF_KEY, JSON.stringify(prefs)); }
@@ -212,15 +673,58 @@
     return cur;
   }
   function applyStrings(){
+    const lang = prefs.lang || 'en';
+    if(document.documentElement){
+      document.documentElement.setAttribute('lang', lang);
+    }
+    const titleCopy = translate('meta.title', document.title);
+    if(titleCopy) document.title = titleCopy;
+
     document.querySelectorAll('[data-i18n]').forEach(el=>{
-      const key = el.getAttribute('data-i18n'); const val = t(key);
+      const key = el.getAttribute('data-i18n');
+      if(!key) return;
+      const fallback = el.getAttribute('data-i18n-fallback') || el.textContent;
+      const argsAttr = el.getAttribute('data-i18n-args');
+      let val = translate(key, fallback);
+      if(argsAttr){
+        try{
+          const args = JSON.parse(argsAttr);
+          val = formatTemplate(val, args);
+        }catch(err){}
+      }
       if(val!=null) el.textContent = val;
     });
+
+    document.querySelectorAll('[data-i18n-html]').forEach(el=>{
+      const key = el.getAttribute('data-i18n-html');
+      if(!key) return;
+      const fallback = el.getAttribute('data-i18n-fallback') || el.innerHTML;
+      const val = translate(key, fallback);
+      if(val!=null) el.innerHTML = val;
+    });
+
     document.querySelectorAll('[data-i18n-placeholder]').forEach(el=>{
-      const key = el.getAttribute('data-i18n-placeholder'); const val = t(key);
+      const key = el.getAttribute('data-i18n-placeholder');
+      if(!key) return;
+      const fallback = el.getAttribute('placeholder') || '';
+      const val = translate(key, fallback);
       if(val!=null) el.setAttribute('placeholder', val);
     });
+
+    document.querySelectorAll('[data-i18n-attr]').forEach(el=>{
+      const mapping = el.getAttribute('data-i18n-attr');
+      if(!mapping) return;
+      mapping.split(';').forEach(entry=>{
+        const [attr, key] = entry.split(':').map(part=>part && part.trim());
+        if(!attr || !key) return;
+        const fallback = el.getAttribute(attr) || '';
+        const val = translate(key, fallback);
+        if(val!=null) el.setAttribute(attr, val);
+      });
+    });
+
     updateLanguageToggleUI();
+    updateProgressDisplay(currentQuestion);
   }
   function isAuthed(){ return !!(auth && auth.email); }
   function persistAuth(){ if(isAuthed()){ localStorage.setItem(AUTH_KEY, JSON.stringify(auth)); } else { localStorage.removeItem(AUTH_KEY); }}
@@ -240,7 +744,7 @@
     if(isAuthed()) return;
     evt?.preventDefault();
     showAuthModal('login');
-    showAuthMessage('Please log in to view your history.', 'error');
+    showAuthMessage(translate('history.loginPrompt', 'Please log in to view your history.'), 'error');
   }
   function initPrefsUI(){
     if(langSelect) langSelect.value = prefs.lang||'en';
@@ -334,23 +838,46 @@
   }
   function updateProgressDisplay(index){
     const total = Math.max(1, BASE_QUESTION_COUNT);
-    let label;
-    if(index >= total){
-      label = "All questions complete";
-    } else {
-      const step = Math.max(1, index + 1);
-      const clampedStep = Math.min(total, step);
-      label = `Question ${clampedStep} of ${total}`;
+    if(questionProgress){
+      if(index >= total){
+        questionProgress.setAttribute('data-i18n', 'flow.progressComplete');
+        questionProgress.removeAttribute('data-i18n-args');
+        questionProgress.textContent = translate('flow.progressComplete', 'All questions complete');
+      } else {
+        const step = Math.max(1, index + 1);
+        const clampedStep = Math.min(total, step);
+        questionProgress.setAttribute('data-i18n', 'flow.progress');
+        const args = { current: clampedStep, total };
+        questionProgress.setAttribute('data-i18n-args', JSON.stringify(args));
+        const template = translate('flow.progress', 'Question {current} of {total}');
+        questionProgress.textContent = formatTemplate(template, args);
+      }
     }
-    if(questionProgress) questionProgress.textContent = label;
-    if(entryProgress) entryProgress.textContent = label;
+    if(entryProgress){
+      if(index >= total){
+        entryProgress.setAttribute('data-i18n', 'flow.progressComplete');
+        entryProgress.removeAttribute('data-i18n-args');
+        entryProgress.textContent = translate('flow.progressComplete', 'All questions complete');
+      } else {
+        const step = Math.max(1, index + 1);
+        const clampedStep = Math.min(total, step);
+        entryProgress.setAttribute('data-i18n', 'flow.progress');
+        const args = { current: clampedStep, total };
+        entryProgress.setAttribute('data-i18n-args', JSON.stringify(args));
+        const template = translate('flow.progress', 'Question {current} of {total}');
+        entryProgress.textContent = formatTemplate(template, args);
+      }
+    }
   }
   function setEntryChoiceDefault(){
     if(entrySpeakBtn){
       entrySpeakBtn.disabled = false;
       entrySpeakBtn.classList.remove('is-listening');
       const textEl = entrySpeakBtn.querySelector('.question-btn-label, .entry-label, .mic-text');
-      if(textEl) textEl.textContent = MIC_COPY.idle.fallback;
+      if(textEl){
+        textEl.setAttribute('data-i18n', MIC_COPY.idle.key);
+        textEl.textContent = translate(MIC_COPY.idle.key, MIC_COPY.idle.fallback);
+      }
     }
     if(entryTypeBtn){
       entryTypeBtn.disabled = false;
@@ -452,39 +979,88 @@
     if(!histCards || !histEmpty) return;
     histCards.innerHTML = '';
     if(!isAuthed()){
-      histEmpty.textContent = 'Log in to see your recent check-ins.';
-      histEmpty.classList.remove('is-hidden');
+      if(histEmpty){
+        histEmpty.setAttribute('data-i18n', 'history.loginPrompt');
+        histEmpty.setAttribute('data-i18n-fallback', 'Log in to see your recent check-ins.');
+        histEmpty.textContent = translate('history.loginPrompt', 'Log in to see your recent check-ins.');
+        histEmpty.classList.remove('is-hidden');
+      }
       return;
     }
     const entries = readHist().slice(0,4);
     if(!entries.length){
-      histEmpty.textContent = 'No saved check-ins yet. Your next check-in will appear here.';
-      histEmpty.classList.remove('is-hidden');
+      if(histEmpty){
+        histEmpty.setAttribute('data-i18n', 'history.emptyModal');
+        histEmpty.setAttribute('data-i18n-fallback', 'No saved check-ins yet. Your next check-in will appear here.');
+        histEmpty.textContent = translate('history.emptyModal', 'No saved check-ins yet. Your next check-in will appear here.');
+        histEmpty.classList.remove('is-hidden');
+      }
       return;
     }
     histEmpty.classList.add('is-hidden');
     entries.forEach(entry=>{
       const card = document.createElement('article');
       const date = new Date(entry.ts||Date.now());
-      const severityLabel = normalizeDisplay(entry.severity) || 'Not rated';
-      const severityLevel = severityLevelFromText(severityLabel);
-      const severityChipText = severityLevel === 'unknown' ? 'Reviewing' : toTitleCase(severityLevel);
-      const severityDescription = severityLabel ? severityLabel.split('(')[0].trim() : 'Not rated';
-      const conditionLabel = normalizeDisplay(entry.condition) || 'General check-in';
-      const preview = clipText(normalizeDisplay(entry.transcript)|| 'No transcript captured.');
+      const severityLabelRaw = normalizeDisplay(entry.severity) || '';
+      const severityLevel = severityLevelFromText(severityLabelRaw);
+      const severityKey = severityLevel && severityLevel !== 'unknown'
+        ? `history.severity.${severityLevel}`
+        : 'history.severity.none';
+      const severityChipText = severityLevel === 'unknown'
+        ? translate('history.reviewing', 'Reviewing')
+        : translate(severityKey, toTitleCase(severityLevel || 'none'));
+      const severityDescription = severityLabelRaw
+        ? severityLabelRaw.split('(')[0].trim()
+        : translate('history.severity.none', 'No severity');
+      const usedSeverityFallback = !severityLabelRaw;
+
+      const conditionRaw = normalizeDisplay(entry.condition);
+      const usedConditionFallback = !conditionRaw;
+      const conditionLabel = conditionRaw || translate('history.unknownCondition', 'General check-in');
+
+      const transcriptRaw = normalizeDisplay(entry.transcript);
+      const snippetFallback = translate('history.noText', 'No symptoms captured.');
+      const previewSource = transcriptRaw || snippetFallback;
+      const previewText = clipText(previewSource);
+      const previewUsesFallback = !transcriptRaw;
+
       const adviceText = normalizeDisplay(entry.advice);
+      const adviceHeading = translate('analysis.adviceTitle', 'Suggested next steps');
+
       const formattedTime = date.toLocaleString([], { dateStyle:'medium', timeStyle:'short' });
       card.className = `history-card history-card--${severityLevel}`;
       card.innerHTML = `
         <header class="history-card-head">
-          <span class=\"history-chip history-chip--${severityLevel}\">${severityChipText}</span>
-          <time class=\"history-time\" datetime=\"${date.toISOString()}\">${formattedTime}</time>
+          <span class="history-chip history-chip--${severityLevel}">${severityChipText}</span>
+          <time class="history-time" datetime="${date.toISOString()}">${formattedTime}</time>
         </header>
-        <h3 class=\"history-condition\">${conditionLabel}</h3>
-        <p class=\"history-severity\">${severityDescription}</p>
-        <p class=\"history-snippet\">${preview}</p>
-        ${adviceText ? `<div class=\"history-advice\"><span>Next steps</span><p>${adviceText}</p></div>` : ''}
+        <h3 class="history-condition">${conditionLabel}</h3>
+        <p class="history-severity">${severityDescription}</p>
+        <p class="history-snippet">${previewText}</p>
+        ${adviceText ? `<div class="history-advice"><span data-i18n="analysis.adviceTitle">${adviceHeading}</span><p>${adviceText}</p></div>` : ''}
       `;
+      const chipEl = card.querySelector('.history-chip');
+      if(chipEl){
+        if(severityLevel === 'unknown'){
+          chipEl.setAttribute('data-i18n', 'history.reviewing');
+        } else if(severityLevel){
+          chipEl.setAttribute('data-i18n', severityKey);
+        }
+      }
+      if(usedConditionFallback){
+        card.querySelector('.history-condition')?.setAttribute('data-i18n', 'history.unknownCondition');
+      }
+      if(usedSeverityFallback){
+        card.querySelector('.history-severity')?.setAttribute('data-i18n', 'history.severity.none');
+      }
+      if(previewUsesFallback){
+        card.querySelector('.history-snippet')?.setAttribute('data-i18n', 'history.noText');
+      }
+      if(adviceText){
+        const adviceLabel = card.querySelector('.history-advice span');
+        adviceLabel?.setAttribute('data-i18n', 'analysis.adviceTitle');
+        adviceLabel?.setAttribute('data-i18n-fallback', adviceHeading);
+      }
       histCards.appendChild(card);
     });
   }
@@ -510,8 +1086,8 @@
   }
   function showHistoryModal(){
     if(!isAuthed()){
-      showAuthModal('login');
-      showAuthMessage('Please log in to view your history.', 'error');
+    showAuthModal('login');
+    showAuthMessage(translate('history.loginPrompt', 'Please log in to view your history.'), 'error');
       return;
     }
     renderHistory();
@@ -543,10 +1119,18 @@
   }
 
   function resetAnalysisView(){
-    setAnalysisText(analysisCondition, null, DEFAULT_CONDITION);
-    setAnalysisText(analysisSeverity, null, DEFAULT_SEVERITY);
-    setAnalysisText(analysisAdvice, null, DEFAULT_ADVICE);
-    if(analysisTimestamp) analysisTimestamp.textContent = DEFAULT_TIMESTAMP;
+    const fallbackCondition = translate('analysis.defaultCondition', FALLBACK_ANALYSIS.condition);
+    const fallbackSeverity = translate('analysis.defaultSeverity', FALLBACK_ANALYSIS.severity);
+    const fallbackAdvice = translate('analysis.defaultAdvice', FALLBACK_ANALYSIS.advice);
+    setAnalysisText(analysisCondition, null, 'analysis.defaultCondition', fallbackCondition);
+    setAnalysisText(analysisSeverity, null, 'analysis.defaultSeverity', fallbackSeverity);
+    setAnalysisText(analysisAdvice, null, 'analysis.defaultAdvice', fallbackAdvice);
+    if(analysisTimestamp){
+      analysisTimestamp.setAttribute('data-i18n', 'analysis.timestamp');
+      analysisTimestamp.setAttribute('data-i18n-fallback', FALLBACK_ANALYSIS.timestamp);
+      analysisTimestamp.removeAttribute('data-i18n-args');
+      analysisTimestamp.textContent = translate('analysis.timestamp', FALLBACK_ANALYSIS.timestamp);
+    }
     analysisCard?.classList.add('is-hidden');
     refreshBtn?.classList.add('is-hidden');
     applySeverityTheme('unknown');
@@ -594,7 +1178,11 @@
     updateProgressDisplay(index);
     document.querySelector('#choicesContainer')?.remove();
     if(index >= questions.length){
-      questionText && (questionText.textContent = "Thanks! Your responses have been recorded.");
+      if(questionText){
+        questionText.setAttribute('data-i18n', 'flow.thanks');
+        questionText.setAttribute('data-i18n-fallback', 'Thanks! Your responses have been recorded.');
+        questionText.textContent = translate('flow.thanks', 'Thanks! Your responses have been recorded.');
+      }
       if(answerInput) answerInput.style.display='none';
       if(answerInputWrap) answerInputWrap.style.display='none';
       if(questionActions) questionActions.style.display='none';
@@ -603,12 +1191,20 @@
       return;
     }
     const q = questions[index];
-    if(questionHeading) questionHeading.textContent = q.text;
+    if(questionHeading){
+      if(q.textKey) questionHeading.setAttribute('data-i18n', q.textKey);
+      if(q.fallback) questionHeading.setAttribute('data-i18n-fallback', q.fallback);
+      questionHeading.textContent = translate(q.textKey, q.fallback || '');
+    }
     if(questionText){
       if(q.type === 'choice'){
-        questionText.textContent = "Choose the option that fits best.";
+        questionText.setAttribute('data-i18n', 'flow.choiceHint');
+        questionText.setAttribute('data-i18n-fallback', 'Choose the option that fits best.');
+        questionText.textContent = translate('flow.choiceHint', 'Choose the option that fits best.');
       } else {
-        questionText.textContent = "Type a quick response below.";
+        questionText.setAttribute('data-i18n', 'flow.textHint');
+        questionText.setAttribute('data-i18n-fallback', 'Type a quick response below.');
+        questionText.textContent = translate('flow.textHint', 'Type a quick response below.');
       }
     }
     if(q.type === 'text'){
@@ -640,9 +1236,18 @@
         const btn = document.createElement('button');
         btn.type = 'button';
         btn.className = 'choiceBtn choice-card';
-        btn.innerHTML = `<span class="choice-icon">${getChoiceIcon(opt)}</span><span class="choice-label">${opt}</span>`;
+        const iconSpan = document.createElement('span');
+        iconSpan.className = 'choice-icon';
+        iconSpan.innerHTML = getChoiceIcon(opt.value || opt.label || opt);
+        const labelSpan = document.createElement('span');
+        labelSpan.className = 'choice-label';
+        if(opt.labelKey) labelSpan.setAttribute('data-i18n', opt.labelKey);
+        const fallbackLabel = typeof opt === 'string' ? opt : (opt.value || opt.label || '');
+        if(opt.labelKey) labelSpan.setAttribute('data-i18n-fallback', fallbackLabel);
+        labelSpan.textContent = translate(opt.labelKey, fallbackLabel);
+        btn.append(iconSpan, labelSpan);
         btn.addEventListener('click',()=>{
-          saveAnswer(opt);
+          saveAnswer(opt.value || opt.label || opt);
           currentQuestion++;
           showQuestion(currentQuestion);
         });
@@ -652,13 +1257,21 @@
     }
   }
 
-  function setAnalysisText(node, text, fallback){
+  function setAnalysisText(node, text, key, fallback){
     if(!node) return;
-    if(text && text !== fallback){
+    if(text && text.trim()){
       node.textContent = text;
       node.classList.remove('muted');
+      if(key){
+        node.removeAttribute('data-i18n');
+        node.removeAttribute('data-i18n-fallback');
+      }
     } else {
-      node.textContent = fallback;
+      if(key){
+        node.setAttribute('data-i18n', key);
+        if(fallback) node.setAttribute('data-i18n-fallback', fallback);
+      }
+      node.textContent = translate(key, fallback || '');
       node.classList.add('muted');
     }
   }
@@ -688,19 +1301,27 @@
   function setMicLabel(state){
     recordingState = state;
     const copy = MIC_COPY[state] || MIC_COPY.idle;
-    if(micText){ micText.setAttribute('data-i18n', copy.key); }
+    if(micText){
+      micText.setAttribute('data-i18n', copy.key);
+      micText.setAttribute('data-i18n-fallback', copy.fallback);
+      micText.textContent = translate(copy.key, copy.fallback);
+    }
     micButton?.classList.toggle('is-listening', state==='listening');
     const activeButton = activeMicButton && activeMicButton !== micButton ? activeMicButton : micButton;
     if(activeButton && activeButton !== micButton){
       const textEl = activeButton.querySelector('.question-btn-label, .entry-label, .mic-text');
-      if(textEl) textEl.textContent = copy.fallback;
+      if(textEl){
+        textEl.setAttribute('data-i18n', copy.key);
+        textEl.setAttribute('data-i18n-fallback', copy.fallback);
+        textEl.textContent = translate(copy.key, copy.fallback);
+      }
       activeButton.classList.toggle('is-listening', state==='listening');
     }
     applyStrings();
   }
   async function startRecording(){
     if(recordingState==='submitting') return;
-    if(!navigator.mediaDevices?.getUserMedia){ alert('Audio recording is not supported in this browser.'); return; }
+    if(!navigator.mediaDevices?.getUserMedia){ alert(translate('errors.mediaUnsupported', FALLBACK_ERRORS.mediaUnsupported)); return; }
     const button = activeMicButton || micButton;
     try{
       if(button) button.disabled = true;
@@ -714,7 +1335,7 @@
       setMicLabel('listening');
     } catch(err){
       console.error(err);
-      alert('Could not access the microphone. Please check permissions.');
+      alert(translate('errors.microphone', FALLBACK_ERRORS.microphone));
       setMicLabel('idle');
     } finally {
       if(button){
@@ -758,12 +1379,12 @@
         }
         setMicLabel('idle');
       } catch(err){
-        alert('Audio submission failed.');
+        alert(translate('errors.audioSubmit', FALLBACK_ERRORS.audioSubmit));
         console.error(err);
         setMicLabel('idle');
       }
     } else {
-      alert('No audio captured. Please try again.');
+      alert(translate('errors.noAudio', FALLBACK_ERRORS.noAudio));
       setMicLabel('idle');
     }
     if(button){
@@ -805,6 +1426,9 @@
       const transcriptText = normalizeDisplay(data.raw_text || data.transcription || data.transcript || data.nlp_text || answersForSend[0]);
 
       const parsed = parseAnalysis(data.result || '');
+      const defaultConditionText = translate('analysis.defaultCondition', FALLBACK_ANALYSIS.condition);
+      const defaultSeverityText = translate('analysis.defaultSeverity', FALLBACK_ANALYSIS.severity);
+      const defaultAdviceText = translate('analysis.defaultAdvice', FALLBACK_ANALYSIS.advice);
 
       // === 🧠 Smarter language formatting for model results ===
       // 🩺 Predicted condition: Title-cased, clean
@@ -814,7 +1438,7 @@ if(conditionSource){
 }
 let conditionDisplay = conditionSource
   ? toTitleCase(conditionSource)
-  : DEFAULT_CONDITION;
+  : defaultConditionText;
 
 // 🎚️ Severity: Natural, human phrasing
 let severitySource = normalizeDisplay(parsed.severity) || normalizeDisplay(data.severity) || '';
@@ -823,24 +1447,23 @@ let severityText = severitySource
   .replace(/\(.*?\)/g, '')
   .trim();
 
+let severityDisplay = defaultSeverityText;
 if (severityText) {
   const lower = severityText.toLowerCase();
   if (lower.includes('severe')) {
-    severityDisplay = "This condition appears severe.";
+    severityDisplay = translate('analysis.severitySevere', 'This condition appears severe.');
   } else if (lower.includes('moderate')) {
-    severityDisplay = "This condition appears moderate.";
+    severityDisplay = translate('analysis.severityModerate', 'This condition appears moderate.');
   } else if (lower.includes('mild') || lower.includes('light')) {
-    severityDisplay = "This condition appears mild.";
+    severityDisplay = translate('analysis.severityMild', 'This condition appears mild.');
   } else {
-    severityDisplay = `Current severity: ${toTitleCase(severityText)}.`;
+    const severityTemplate = translate('analysis.severityGeneric', 'Current severity: {severity}.');
+    severityDisplay = formatTemplate(severityTemplate, { severity: toTitleCase(severityText) });
   }
-} else {
-  severityDisplay = DEFAULT_SEVERITY;
 }
 
-
-let adviceDisplay = normalizeDisplay(parsed.advice) || normalizeDisplay(data.advice) || DEFAULT_ADVICE;
-if (adviceDisplay !== DEFAULT_ADVICE) {
+let adviceDisplay = normalizeDisplay(parsed.advice) || normalizeDisplay(data.advice) || defaultAdviceText;
+if (adviceDisplay !== defaultAdviceText) {
   // Remove stray letters or symbols
   adviceDisplay = adviceDisplay
     .replace(/^u\s*/i, '') // removes “U ” or “u ”
@@ -859,13 +1482,18 @@ if (adviceDisplay !== DEFAULT_ADVICE) {
 
 
       // ✅ Apply updated outputs
-      setAnalysisText(analysisCondition, conditionDisplay, DEFAULT_CONDITION);
-      setAnalysisText(analysisSeverity, severityDisplay, DEFAULT_SEVERITY);
-      setAnalysisText(analysisAdvice, adviceDisplay, DEFAULT_ADVICE);
+      setAnalysisText(analysisCondition, conditionDisplay, 'analysis.defaultCondition', defaultConditionText);
+      setAnalysisText(analysisSeverity, severityDisplay, 'analysis.defaultSeverity', defaultSeverityText);
+      setAnalysisText(analysisAdvice, adviceDisplay, 'analysis.defaultAdvice', defaultAdviceText);
       applySeverityTheme(severitySource || severityDisplay);
       if(analysisTimestamp){
         const now = new Date();
-        analysisTimestamp.textContent = `Updated ${now.toLocaleTimeString([], { hour:'numeric', minute:'2-digit' })}`;
+        const timeString = now.toLocaleTimeString([], { hour:'numeric', minute:'2-digit' });
+        const updatedTemplate = translate('analysis.updated', 'Updated {time}');
+        analysisTimestamp.setAttribute('data-i18n', 'analysis.updated');
+        analysisTimestamp.setAttribute('data-i18n-fallback', 'Updated {time}');
+        analysisTimestamp.setAttribute('data-i18n-args', JSON.stringify({ time: timeString }));
+        analysisTimestamp.textContent = formatTemplate(updatedTemplate, { time: timeString });
       }
 
       analysisCard?.classList.remove('is-hidden');
@@ -886,7 +1514,7 @@ if (adviceDisplay !== DEFAULT_ADVICE) {
       return data;
     } catch(err){
       console.error(err);
-      if(!options.silent){ alert('Upload failed'); }
+      if(!options.silent){ alert(translate('errors.uploadFailed', FALLBACK_ERRORS.uploadFailed)); }
       setMicLabel('idle');
       throw err;
     }
@@ -975,7 +1603,7 @@ if (adviceDisplay !== DEFAULT_ADVICE) {
   nextBtn?.addEventListener('click', ()=>{
     const ans = (answerInput?.value||'').trim();
     if(ans){ saveAnswer(ans); currentQuestion++; showQuestion(currentQuestion); }
-    else alert('Please add your answer before continuing.');
+    else alert(translate('flow.requireAnswer', 'Please add your answer before continuing.'));
   });
   answerInput?.addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); nextBtn?.click(); } });
   showGuidedBtn?.addEventListener('click', ()=>openGuidedFlow({ autoFocus:true }));
@@ -1056,5 +1684,6 @@ if (adviceDisplay !== DEFAULT_ADVICE) {
   renderHistory();
   updateAuthUI();
   resetExperience();
+  setupEntryPresetOptions();
   applyStrings();
 })();
