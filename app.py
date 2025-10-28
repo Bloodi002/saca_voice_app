@@ -2,6 +2,7 @@ from pathlib import Path
 import json
 import os
 import uuid
+from typing import Union
 
 from fastapi import FastAPI, UploadFile, File, Form, Request
 from fastapi.responses import FileResponse, HTMLResponse, JSONResponse
@@ -16,11 +17,32 @@ app = FastAPI(title="SACA Voice App")
 RESULTS_DIR = Path("results")
 RESULTS_DIR.mkdir(exist_ok=True)
 
+STATIC_DIR = Path("static")
+
 # Serve static files (JS/CSS)
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # Templates folder
 templates = Jinja2Templates(directory="templates")
+templates.env.auto_reload = True
+
+
+def static_url(request: Request, path: Union[str, os.PathLike]) -> str:
+    """Return cache-busted static asset URL based on file mtime."""
+    if isinstance(path, os.PathLike):
+        path_str = os.fspath(path)
+    else:
+        path_str = path or ""
+    clean_path = path_str.lstrip("/")
+    file_path = STATIC_DIR / clean_path
+    try:
+        version = str(int(file_path.stat().st_mtime))
+    except FileNotFoundError:
+        version = "0"
+    return f"{request.url_for('static', path=clean_path)}?v={version}"
+
+
+templates.env.globals["static_url"] = static_url
 
 # Load AI components
 MODELS = load_models(base_dir="models")
