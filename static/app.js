@@ -57,6 +57,11 @@
   const analysisAdvice = qs('#analysisAdvice');
   const analysisTimestamp = qs('#analysisTimestamp');
   const severityRow = qs('#severityRow');
+  const severityPointer = qs('#severityPointer');
+  const severityDetail = qs('#severityDetail');
+  const severityDetailIcon = qs('#severityDetailIcon');
+  const severityDetailTitle = qs('#severityDetailTitle');
+  const severityDetailSummary = qs('#severityDetailSummary');
   const entryChoice = qs('#entryChoice');
   const entrySpeakBtn = qs('#entrySpeak');
   const entryTypeBtn = qs('#entryType');
@@ -96,8 +101,20 @@
   const langLabel = qs('#langLabel');
 
   const SEVERITY_CLASSES = ['severity-unknown','severity-mild','severity-moderate','severity-severe'];
+  const SEVERITY_ICON_MAP = {
+    unknown:'❔',
+    mild:'🙂',
+    moderate:'😟',
+    severe:'🚨'
+  };
+  const SEVERITY_DETAIL_CONTENT = {
+    unknown:{ titleKey:null, titleFallback:"Severity detail", descKey:null, descFallback:"We'll highlight the severity once your check-in is complete." },
+    mild:{ titleKey:'analysis.severityLevel.mild.title', titleFallback:"Mild", descKey:'analysis.severityLevel.mild.desc', descFallback:"Symptoms are light and manageable at home." },
+    moderate:{ titleKey:'analysis.severityLevel.moderate.title', titleFallback:"Moderate", descKey:'analysis.severityLevel.moderate.desc', descFallback:"Things are getting worse - consider medical advice soon." },
+    severe:{ titleKey:'analysis.severityLevel.severe.title', titleFallback:"Severe", descKey:'analysis.severityLevel.severe.desc', descFallback:"Serious symptoms - seek urgent medical help." }
+  };
   const MIC_COPY = {
-    idle: { key:'home.mic', fallback:'Tap here to speak' },
+    idle: { key:'home.mic', fallback:'Tap to speak' },
     listening: { key:'home.micListening', fallback:'Listening... tap to stop' },
     submitting: { key:'home.micSubmitting', fallback:'Submitting...' }
   };
@@ -125,6 +142,7 @@
       textKey: "flow.questions.q2",
       fallback: "How long have you been feeling this?",
       type: "choice",
+      allowMultiple: false,
       options: [
         { value: "A few hours", labelKey: "flow.questions.duration.fewHours" },
         { value: "A day", labelKey: "flow.questions.duration.day" },
@@ -146,6 +164,8 @@
       textKey: "flow.questions.q4",
       fallback: "Have you noticed any other symptoms?",
       type: "choice",
+      useEntryIcons: true,
+      allowMultiple: true,
       options: [
         { value: "Fever", labelKey: "entry.options.fever" },
         { value: "Nausea or vomiting", labelKey: "entry.options.nausea" },
@@ -170,6 +190,7 @@
   let entryFlowMode = null;
   let pendingNormalizedText = "";
   let sessionHistory = [];
+  let multiChoiceSelections = new Set();
 
   const ICONS = {
     clock: `<svg viewBox="0 0 80 80" focusable="false" role="presentation">
@@ -973,9 +994,42 @@
     if(severityRow){
       severityRow.dataset.severity = level;
     }
+    if(severityPointer){
+      severityPointer.dataset.level = level;
+    }
+    if(severityDetail){
+      severityDetail.dataset.level = level;
+      severityDetail.classList.toggle('is-unknown', !level || level === 'unknown');
+    }
+    if(severityDetailIcon){
+      severityDetailIcon.textContent = SEVERITY_ICON_MAP[level] || SEVERITY_ICON_MAP.unknown;
+    }
+    const detailCopy = SEVERITY_DETAIL_CONTENT[level] || SEVERITY_DETAIL_CONTENT.unknown;
+    if(severityDetailTitle){
+      const titleText = detailCopy.titleKey ? translate(detailCopy.titleKey, detailCopy.titleFallback) : detailCopy.titleFallback;
+      severityDetailTitle.textContent = titleText;
+      if(detailCopy.titleKey){
+        severityDetailTitle.setAttribute('data-i18n', detailCopy.titleKey);
+        severityDetailTitle.setAttribute('data-i18n-fallback', detailCopy.titleFallback);
+      }else{
+        severityDetailTitle.removeAttribute('data-i18n');
+        severityDetailTitle.removeAttribute('data-i18n-fallback');
+      }
+    }
+    if(severityDetailSummary){
+      const summaryText = detailCopy.descKey ? translate(detailCopy.descKey, detailCopy.descFallback) : detailCopy.descFallback;
+      severityDetailSummary.textContent = summaryText;
+      if(detailCopy.descKey){
+        severityDetailSummary.setAttribute('data-i18n', detailCopy.descKey);
+        severityDetailSummary.setAttribute('data-i18n-fallback', detailCopy.descFallback);
+      }else{
+        severityDetailSummary.removeAttribute('data-i18n');
+        severityDetailSummary.removeAttribute('data-i18n-fallback');
+      }
+    }
     return level;
   }
-  function renderHistory(){
+function renderHistory(){
     if(!histCards || !histEmpty) return;
     histCards.innerHTML = '';
     if(!isAuthed()){
@@ -1138,8 +1192,10 @@
   function resetFlow(){
     currentQuestion = 0;
     currentAnswers = [];
+    multiChoiceSelections.clear();
     questionText && (questionText.textContent = "");
     document.querySelector('#choicesContainer')?.remove();
+    document.querySelector('#multiChoiceActions')?.remove();
     if(answerInput){
       answerInput.value='';
       answerInput.style.display='block';
@@ -1177,6 +1233,7 @@
   function showQuestion(index){
     updateProgressDisplay(index);
     document.querySelector('#choicesContainer')?.remove();
+    document.querySelector('#multiChoiceActions')?.remove();
     if(index >= questions.length){
       if(questionText){
         questionText.setAttribute('data-i18n', 'flow.thanks');
@@ -1191,16 +1248,24 @@
       return;
     }
     const q = questions[index];
+    const isChoice = q.type === 'choice';
+    const allowMultiple = isChoice && !!q.allowMultiple;
     if(questionHeading){
       if(q.textKey) questionHeading.setAttribute('data-i18n', q.textKey);
       if(q.fallback) questionHeading.setAttribute('data-i18n-fallback', q.fallback);
       questionHeading.textContent = translate(q.textKey, q.fallback || '');
     }
     if(questionText){
-      if(q.type === 'choice'){
-        questionText.setAttribute('data-i18n', 'flow.choiceHint');
-        questionText.setAttribute('data-i18n-fallback', 'Choose the option that fits best.');
-        questionText.textContent = translate('flow.choiceHint', 'Choose the option that fits best.');
+      if(isChoice){
+        if(allowMultiple){
+          questionText.setAttribute('data-i18n', 'flow.multiChoiceHint');
+          questionText.setAttribute('data-i18n-fallback', 'Select all that apply.');
+          questionText.textContent = translate('flow.multiChoiceHint', 'Select all that apply.');
+        } else {
+          questionText.setAttribute('data-i18n', 'flow.choiceHint');
+          questionText.setAttribute('data-i18n-fallback', 'Choose the option that fits best.');
+          questionText.textContent = translate('flow.choiceHint', 'Choose the option that fits best.');
+        }
       } else {
         questionText.setAttribute('data-i18n', 'flow.textHint');
         questionText.setAttribute('data-i18n-fallback', 'Type a quick response below.');
@@ -1232,28 +1297,116 @@
       if(optionCount >= 6){
         choicesDiv.classList.add('choice-grid--cols3');
       }
+      if(q.useEntryIcons){
+        choicesDiv.classList.add('entry-choice-options');
+      }
+      if(allowMultiple){
+        multiChoiceSelections.clear();
+      }
       q.options.forEach(opt=>{
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = 'choiceBtn choice-card';
-        const iconSpan = document.createElement('span');
-        iconSpan.className = 'choice-icon';
-        iconSpan.innerHTML = getChoiceIcon(opt.value || opt.label || opt);
-        const labelSpan = document.createElement('span');
-        labelSpan.className = 'choice-label';
+        const resolvedValue = opt.value || opt.label || opt;
+        const normalizedValue = typeof resolvedValue === 'string' ? resolvedValue.trim().toLowerCase() : '';
+        const value = resolvedValue;
+        const templateBtn = q.useEntryIcons
+          ? entryPresetButtons.find(preset=>{
+              const presetValue = (preset.dataset.option || preset.textContent || '').trim().toLowerCase();
+              return presetValue === normalizedValue;
+            })
+          : null;
+        let btn;
+        let iconSpan;
+        let labelSpan;
+        if(templateBtn){
+          btn = templateBtn.cloneNode(true);
+          btn.type = 'button';
+          btn.classList.remove('is-selected');
+          btn.removeAttribute('aria-pressed');
+          iconSpan = btn.querySelector('.choice-icon');
+          labelSpan = btn.querySelector('.choice-label');
+          const templateIcon = templateBtn.querySelector('.choice-icon');
+          const iconMarkup = templateIcon ? templateIcon.innerHTML : getChoiceIcon(resolvedValue);
+          if(iconSpan){
+            iconSpan.innerHTML = iconMarkup;
+          } else {
+            iconSpan = document.createElement('span');
+            iconSpan.className = 'choice-icon';
+            iconSpan.innerHTML = iconMarkup;
+            btn.insertBefore(iconSpan, btn.firstChild);
+          }
+          if(!labelSpan){
+            labelSpan = document.createElement('span');
+            labelSpan.className = 'choice-label';
+            btn.appendChild(labelSpan);
+          }
+        } else {
+          btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'choiceBtn choice-card';
+          if(q.useEntryIcons){
+            btn.classList.add('entry-choice-card');
+          }
+          iconSpan = document.createElement('span');
+          iconSpan.className = 'choice-icon';
+          iconSpan.innerHTML = getChoiceIcon(resolvedValue);
+          labelSpan = document.createElement('span');
+          labelSpan.className = 'choice-label';
+          btn.append(iconSpan, labelSpan);
+        }
+        btn.dataset.value = value;
+        if(q.useEntryIcons){
+          btn.dataset.option = value;
+        }
         if(opt.labelKey) labelSpan.setAttribute('data-i18n', opt.labelKey);
-        const fallbackLabel = typeof opt === 'string' ? opt : (opt.value || opt.label || '');
+        const fallbackLabel = typeof opt === 'string' ? opt : (resolvedValue || '');
         if(opt.labelKey) labelSpan.setAttribute('data-i18n-fallback', fallbackLabel);
         labelSpan.textContent = translate(opt.labelKey, fallbackLabel);
-        btn.append(iconSpan, labelSpan);
-        btn.addEventListener('click',()=>{
-          saveAnswer(opt.value || opt.label || opt);
-          currentQuestion++;
-          showQuestion(currentQuestion);
-        });
+        if(allowMultiple){
+          btn.classList.add('choice-card--toggle');
+          btn.setAttribute('aria-pressed', 'false');
+          btn.addEventListener('click',()=>{
+            const isSelected = !btn.classList.contains('is-selected');
+            btn.classList.toggle('is-selected', isSelected);
+            btn.setAttribute('aria-pressed', isSelected ? 'true' : 'false');
+            if(isSelected){
+              multiChoiceSelections.add(value);
+            } else {
+              multiChoiceSelections.delete(value);
+            }
+          });
+        } else {
+          btn.addEventListener('click',()=>{
+            saveAnswer(value);
+            currentQuestion++;
+            showQuestion(currentQuestion);
+          });
+        }
         choicesDiv.appendChild(btn);
       });
       questionText?.insertAdjacentElement('afterend', choicesDiv);
+      if(allowMultiple){
+        const actionsWrap = document.createElement('div');
+        actionsWrap.id = 'multiChoiceActions';
+        actionsWrap.className = 'question-actions multi-choice-actions';
+        const continueBtn = document.createElement('button');
+        continueBtn.type = 'button';
+        continueBtn.className = 'question-btn question-btn--primary';
+        continueBtn.setAttribute('data-i18n', 'flow.next');
+        continueBtn.setAttribute('data-i18n-fallback', 'Next');
+        continueBtn.textContent = translate('flow.next', 'Next');
+        continueBtn.addEventListener('click', ()=>{
+          if(!multiChoiceSelections.size){
+            alert(translate('flow.requireAnswer', 'Please add your answer before continuing.'));
+            return;
+          }
+          const combinedAnswer = Array.from(multiChoiceSelections).join(', ');
+          saveAnswer(combinedAnswer);
+          multiChoiceSelections.clear();
+          currentQuestion++;
+          showQuestion(currentQuestion);
+        });
+        actionsWrap.appendChild(continueBtn);
+        choicesDiv.insertAdjacentElement('afterend', actionsWrap);
+      }
     }
   }
 
@@ -1432,13 +1585,16 @@
 
       // === 🧠 Smarter language formatting for model results ===
       // 🩺 Predicted condition: Title-cased, clean
-let conditionSource = normalizeDisplay(parsed.condition) || normalizeDisplay(data.condition);
-if(conditionSource){
-  conditionSource = conditionSource.replace(/\(.*?\)/g,'').trim();
-}
-let conditionDisplay = conditionSource
-  ? toTitleCase(conditionSource)
-  : defaultConditionText;
+      let conditionSource = normalizeDisplay(parsed.condition) || normalizeDisplay(data.condition);
+      if (conditionSource) {
+        conditionSource = conditionSource
+          .replace(/^["']+|["']+$/g, '') // strip surrounding quotes
+          .replace(/\(.*?\)/g, '') // drop parenthetical extras
+          .trim();
+      }
+      let conditionDisplay = conditionSource
+        ? toTitleCase(conditionSource)
+        : defaultConditionText;
 
 // 🎚️ Severity: Natural, human phrasing
 let severitySource = normalizeDisplay(parsed.severity) || normalizeDisplay(data.severity) || '';

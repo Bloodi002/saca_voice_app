@@ -2,7 +2,6 @@ from pathlib import Path
 import json
 import os
 import uuid
-from typing import Union
 
 from fastapi import FastAPI, UploadFile, File, Form, Request
 from fastapi.responses import FileResponse, HTMLResponse, JSONResponse
@@ -17,36 +16,26 @@ app = FastAPI(title="SACA Voice App")
 RESULTS_DIR = Path("results")
 RESULTS_DIR.mkdir(exist_ok=True)
 
-STATIC_DIR = Path("static")
-
 # Serve static files (JS/CSS)
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # Templates folder
 templates = Jinja2Templates(directory="templates")
-templates.env.auto_reload = True
-
-
-def static_url(request: Request, path: Union[str, os.PathLike]) -> str:
-    """Return cache-busted static asset URL based on file mtime."""
-    if isinstance(path, os.PathLike):
-        path_str = os.fspath(path)
-    else:
-        path_str = path or ""
-    clean_path = path_str.lstrip("/")
-    file_path = STATIC_DIR / clean_path
-    try:
-        version = str(int(file_path.stat().st_mtime))
-    except FileNotFoundError:
-        version = "0"
-    return f"{request.url_for('static', path=clean_path)}?v={version}"
-
-
-templates.env.globals["static_url"] = static_url
 
 # Load AI components
 MODELS = load_models(base_dir="models")
-VOICE_PIPE = VoiceToTextPipeline()  # Initialize speech-to-text pipeline
+
+_DEFAULT_MAPPING = Path("assets/Translated.csv")
+if _DEFAULT_MAPPING.exists():
+    _normalizer_config = {
+        "csv_path": str(_DEFAULT_MAPPING),
+        "swap_columns": True,
+        "fuzzy_cutoff": 0.6,
+    }
+else:
+    _normalizer_config = {}
+
+VOICE_PIPE = VoiceToTextPipeline(normalizer_config=_normalizer_config)
 
 _KNOWN_AUDIO_EXTENSIONS = {".wav", ".webm", ".ogg", ".mp3", ".m4a", ".flac"}
 
@@ -157,11 +146,22 @@ async def upload_audio(
     if not primary_text:
         primary_text = (audio_norm or typed_norm or normalized_audio or "").strip()
     base_text = (norm_text or raw_text or "").strip()
-    free_text_segment = base_text.rstrip(".")
-    if not free_text_segment:
-        free_text_segment = "no description provided"
+    normalized_primary = ""
+    if primary_text:
+        try:
+            _, normalized_primary = VOICE_PIPE.process_text(primary_text)
+        except Exception:
+            normalized_primary = ""
 
-    free_text_segment = _clean(primary_text)
+    free_text_segment = (normalized_primary or base_text).rstrip(".").strip()
+    if not free_text_segment:
+        free_text_segment = _clean(primary_text or "no description provided")
+    else:
+        free_text_segment = _clean(free_text_segment)
+
+    display_text = _clean(primary_text)
+    if not display_text:
+        display_text = free_text_segment
     model_input = ", ".join(
         [
             f"{free_text_segment}",
@@ -192,7 +192,7 @@ async def upload_audio(
             "severity": severity_line,
             "questions": questions,
             "user_answers": user_answers,
-            "free_text": free_text_segment,
+            "free_text": display_text or free_text_segment,
             "download": filename,
         }
     )
