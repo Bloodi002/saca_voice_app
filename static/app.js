@@ -71,6 +71,10 @@
   const entryTextCancel = qs('#entryTextCancel');
   const entryPresetContainer = qs('#entrySymptomOptions');
   const entryPresetButtons = entryPresetContainer ? Array.from(entryPresetContainer.querySelectorAll('.entry-choice-card')) : [];
+  const entryPresetButtonMap = new Map(entryPresetButtons.map(btn=>{
+    const key = (btn.dataset.option || btn.textContent || '').trim().toLowerCase();
+    return [key, btn];
+  }));
   const refreshBtn = qs('#resetExperience');
   const historyCard = qs('#historyCard');
   const homeCards = qs('#homeCards');
@@ -97,8 +101,6 @@
   const signupPass = qs('#signupPass');
   const signupConfirm = qs('#signupConfirm');
   const authMessage = qs('#authMessage');
-  const langToggle = qs('#langToggle');
-  const langLabel = qs('#langLabel');
 
   const SEVERITY_CLASSES = ['severity-unknown','severity-mild','severity-moderate','severity-severe'];
   const SEVERITY_ICON_MAP = {
@@ -125,11 +127,12 @@
   let auth = null;
   try{ auth = JSON.parse(localStorage.getItem(AUTH_KEY)||'null'); }
   catch(err){ auth = null; }
-  if(!prefs.lang || !['en','ae'].includes(prefs.lang)) prefs.lang = 'en';
-  const LANGUAGE_SEQUENCE = ['en','ae'];
+  if(!prefs.lang || !['en','ae','pit'].includes(prefs.lang)) prefs.lang = 'en';
+  const LANGUAGE_SEQUENCE = ['en','ae','pit'];
   const LANGUAGE_META = {
-    en:{ labelKey:'languageEn', toggleKey:'switchToAe', next:'ae' },
-    ae:{ labelKey:'languageAe', toggleKey:'switchToEnglish', next:'en' }
+    en:{ labelKey:'languageEn' },
+    ae:{ labelKey:'languageAe' },
+    pit:{ labelKey:'languagePit' }
   };
   const langSelect = qs('#langSelect');
   const themeSelect = qs('#themeSelect');
@@ -653,39 +656,26 @@
     const meta = LANGUAGE_META[lang] || LANGUAGE_META.en;
     const currentStrings = STR?.[prefs.lang||'en']?.ui;
     const fallbackStrings = STR?.en?.ui;
-    if(meta){
-      if(currentStrings && currentStrings[meta.labelKey]) return currentStrings[meta.labelKey];
-      if(fallbackStrings && fallbackStrings[meta.labelKey]) return fallbackStrings[meta.labelKey];
+    const key = meta?.labelKey;
+    if(key){
+      if(currentStrings && currentStrings[key]) return currentStrings[key];
+      if(fallbackStrings && fallbackStrings[key]) return fallbackStrings[key];
     }
     return lang?.toUpperCase?.()||'EN';
   }
-  function toggleCopyForLanguage(lang){
-    const meta = LANGUAGE_META[lang] || LANGUAGE_META.en;
-    const strings = STR?.[lang]?.ui;
-    const fallbackStrings = STR?.en?.ui;
-    if(meta){
-      if(strings && strings[meta.toggleKey]) return strings[meta.toggleKey];
-      if(fallbackStrings && fallbackStrings[meta.toggleKey]) return fallbackStrings[meta.toggleKey];
-    }
-    return 'Switch language';
-  }
   function updateLanguageToggleUI(){
-    if(langLabel){
-      langLabel.textContent = labelForLanguage(prefs.lang||'en');
+    if(!langSelect) return;
+    const options = Array.from(langSelect.options);
+    options.forEach(opt=>{
+      opt.textContent = labelForLanguage(opt.value);
+    });
+    const available = options.map(opt=>opt.value);
+    if(!available.includes(prefs.lang)){
+      const fallback = available[0] || LANGUAGE_SEQUENCE[0] || 'en';
+      prefs.lang = fallback;
+      savePrefs();
     }
-    if(langToggle){
-      langToggle.setAttribute('aria-label', toggleCopyForLanguage(prefs.lang||'en'));
-      langToggle.setAttribute('data-lang', prefs.lang||'en');
-    }
-  }
-  function nextLanguage(current){
-    const available = getAvailableLanguages();
-    const currentLang = available.includes(current) ? current : available[0] || 'en';
-    const metaNext = LANGUAGE_META[currentLang]?.next;
-    if(metaNext && available.includes(metaNext)) return metaNext;
-    if(available.length < 2) return currentLang;
-    const idx = available.indexOf(currentLang);
-    return available[(idx+1)%available.length];
+    langSelect.value = prefs.lang || options[0]?.value || 'en';
   }
 
   function t(path){
@@ -1307,12 +1297,16 @@ function renderHistory(){
         const resolvedValue = opt.value || opt.label || opt;
         const normalizedValue = typeof resolvedValue === 'string' ? resolvedValue.trim().toLowerCase() : '';
         const value = resolvedValue;
-        const templateBtn = q.useEntryIcons
-          ? entryPresetButtons.find(preset=>{
+        let templateBtn = null;
+        if(q.useEntryIcons){
+          templateBtn = entryPresetButtonMap.get(normalizedValue) || null;
+          if(!templateBtn){
+            templateBtn = entryPresetButtons.find(preset=>{
               const presetValue = (preset.dataset.option || preset.textContent || '').trim().toLowerCase();
               return presetValue === normalizedValue;
-            })
-          : null;
+            }) || null;
+          }
+        }
         let btn;
         let iconSpan;
         let labelSpan;
@@ -1563,6 +1557,7 @@ function renderHistory(){
     if(audioBlob) formData.append('file', audioBlob, 'user_audio.wav');
     formData.append('answers', JSON.stringify({ answers: answersForSend }));
     formData.append('mode', mode);
+    formData.append('language', prefs.lang || 'en');
     if(mode === 'predict' && pendingNormalizedText){
       formData.append('normalized_audio', pendingNormalizedText);
     }
@@ -1742,15 +1737,6 @@ if (adviceDisplay !== defaultAdviceText) {
   historyDismiss?.addEventListener('click', hideHistoryModal);
 
   authEls.forEach(el=>el.addEventListener('click', guardProtectedLink));
-  langToggle?.addEventListener('click', ()=>{
-    const current = prefs.lang || 'en';
-    const next = nextLanguage(current);
-    if(next === current) return;
-    prefs.lang = next;
-    savePrefs();
-    if(langSelect) langSelect.value = next;
-    applyStrings();
-  });
   langSelect?.addEventListener('change', ()=>{ prefs.lang=langSelect.value; savePrefs(); applyStrings(); });
   themeSelect?.addEventListener('change', ()=>{ prefs.theme=themeSelect.value; savePrefs(); applyTheme(); });
   contrastToggle?.addEventListener('change', ()=>{ prefs.contrast=contrastToggle.checked?'high':'normal'; savePrefs(); applyContrast(); });

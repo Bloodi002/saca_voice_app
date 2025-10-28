@@ -52,6 +52,7 @@ async def upload_audio(
     answers: str = Form(None),
     mode: str = Form("predict"),
     normalized_audio: str = Form(""),
+    language: str = Form("en"),
 ):
     """Handle uploaded audio or form answers."""
     filename = None
@@ -61,6 +62,8 @@ async def upload_audio(
     raw_text = ""
     free_text_raw = ""
     user_answers = []
+    language = (language or "").strip().lower()
+    skip_conversion = language in {"en", "ae", "english", "aboriginal english"}
 
     # === 1. Handle audio upload and transcription ===
     if file:
@@ -78,6 +81,8 @@ async def upload_audio(
             raw_text = raw_from_audio
             free_text_raw = raw_from_audio
             audio_norm = norm_from_audio
+            if skip_conversion:
+                audio_norm = raw_from_audio
             if mode == "transcribe":
                 return JSONResponse(
                     {
@@ -100,7 +105,10 @@ async def upload_audio(
             user_answers = data.get("answers", [])
             text_from_form = " ".join(user_answers).strip()
             if text_from_form:
-                _, text_norm = VOICE_PIPE.process_text(text_from_form)
+                if skip_conversion:
+                    text_norm = text_from_form
+                else:
+                    _, text_norm = VOICE_PIPE.process_text(text_from_form)
                 if not raw_text:
                     raw_text = text_from_form
                 if not free_text_raw:
@@ -149,7 +157,10 @@ async def upload_audio(
     normalized_primary = ""
     if primary_text:
         try:
-            _, normalized_primary = VOICE_PIPE.process_text(primary_text)
+            if skip_conversion:
+                normalized_primary = primary_text
+            else:
+                _, normalized_primary = VOICE_PIPE.process_text(primary_text)
         except Exception:
             normalized_primary = ""
 

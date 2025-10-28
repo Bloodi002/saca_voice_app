@@ -10,17 +10,20 @@
 <header>
   <div class="logo"><a href="#home">SACA</a></div>
   <div class="actions">
-    <button type="button" id="langToggle" class="nav-toggle nav-toggle-btn" aria-label="Switch language">
+    <div class="nav-toggle nav-select" role="group">
       <span class="toggle-icon" aria-hidden="true">
         <svg viewBox="0 0 24 24" focusable="false" role="presentation">
           <path d="M4 4h16M4 10h8M4 16h6M12 14l4-4 4 4M16 10v8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </span>
       <div class="toggle-copy">
-        <span class="toggle-title" data-i18n="ui.language">Language</span>
-        <span class="toggle-sub" id="langLabel">English</span>
+        <select id="langSelect" class="nav-select-input" aria-label="Select language">
+          <option value="en" data-i18n="ui.languageEn">Plain English</option>
+          <option value="ae" data-i18n="ui.languageAe">Aboriginal English</option>
+          <option value="pit" data-i18n="ui.languagePit">Pitjantjatra</option>
+        </select>
       </div>
-    </button>
+    </div>
     <label class="nav-toggle">
       <input type="checkbox" id="contrastToggle" aria-label="Toggle high contrast mode"/>
       <span class="toggle-visual">
@@ -179,7 +182,7 @@
         </div>
       </div>
       <div class="analysis-body">
-        <section class="analysis-item" id="conditionRow">
+        <section class="analysis-item condition-panel" id="conditionRow">
           <span class="analysis-item-icon" aria-hidden="true">
             <svg viewBox="0 0 24 24" focusable="false" role="presentation">
               <rect x="5" y="4" width="14" height="17" rx="2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
@@ -189,7 +192,7 @@
           </span>
           <div class="analysis-item-copy">
             <h4 data-i18n="analysis.conditionTitle">Likely condition</h4>
-            <p id="analysisCondition" class="analysis-copy muted" data-i18n="analysis.defaultCondition">We'll share the likely condition once we review your details.</p>
+            <p id="analysisCondition" class="analysis-copy condition-basic" data-i18n="analysis.defaultCondition">We'll share the likely condition once we review your details.</p>
           </div>
         </section>
         <section class="analysis-item severity-panel" id="severityRow" data-severity="unknown">
@@ -337,8 +340,8 @@
     </div>
   </div>
 </div>
-<script src="{{ request.url_for('static', path='/strings.js') }}?v=20240602"></script>
-<script src="{{ request.url_for('static', path='/app.js') }}?v=20241018"></script>
+<script src="{{ request.url_for('static', path='/strings.js') }}?v=20240603"></script>
+<script src="{{ request.url_for('static', path='/app.js') }}?v=20241019"></script>
 </body>
 </html>
 
