@@ -115,6 +115,14 @@
     moderate:{ titleKey:'analysis.severityLevel.moderate.title', titleFallback:"Moderate", descKey:'analysis.severityLevel.moderate.desc', descFallback:"Things are getting worse - consider medical advice soon." },
     severe:{ titleKey:'analysis.severityLevel.severe.title', titleFallback:"Severe", descKey:'analysis.severityLevel.severe.desc', descFallback:"Serious symptoms - seek urgent medical help." }
   };
+  const MODEL_TEXT_TRANSLATIONS = {
+    pit:{
+      'things are getting worse - consider medical advice soon':"Ngura alatji wiya, ngangkaṟi kutjupa alatjitu kanyini.",
+      'serious symptoms - seek urgent medical help':"Nyangatja ngura ngaranyi tjitji palumpa – ngalkulari papa wiru alatji medical tjungu alatji.",
+      'consider consulting a healthcare professional within 24 hours':"Pakatjara wiru kutjupa ngayuku ngura kanyini kunpu wangka tjungu 24 awa tjungu.",
+      'seek immediate medical attention':"Tjara ngayuku mukuringanyi wiru alatjitu."
+    }
+  };
   const MIC_COPY = {
     idle: { key:'home.mic', fallback:'Tap to speak' },
     listening: { key:'home.micListening', fallback:'Listening... tap to stop' },
@@ -138,6 +146,37 @@
   const themeSelect = qs('#themeSelect');
   const contrastToggle = qs('#contrastToggle');
   const easyToggle = qs('#easyToggle');
+
+  function normalizeModelString(text){
+    return text
+      .normalize('NFKD')
+      .replace(/[^a-z0-9\s]/gi,'')
+      .replace(/\s+/g,' ')
+      .trim()
+      .toLowerCase();
+  }
+  function translateModelText(text){
+    if(!text) return null;
+    const lang = prefs.lang || 'en';
+    const langMap = MODEL_TEXT_TRANSLATIONS[lang];
+    if(!langMap) return null;
+    const key = normalizeModelString(text);
+    const normalizedEntries = [];
+    for(const [source, translated] of Object.entries(langMap)){
+      const normalizedSource = normalizeModelString(source);
+      if(!normalizedSource) continue;
+      normalizedEntries.push([normalizedSource, translated]);
+      if(normalizedSource === key){
+        return translated;
+      }
+    }
+    for(const [normalizedSource, translated] of normalizedEntries){
+      if(key.includes(normalizedSource) || normalizedSource.includes(key)){
+        return translated;
+      }
+    }
+    return null;
+  }
 
   const questions = [
     { textKey: "flow.questions.q1", fallback: "How are you feeling today?", type: "text" },
@@ -1615,19 +1654,25 @@ if (severityText) {
 
 let adviceDisplay = normalizeDisplay(parsed.advice) || normalizeDisplay(data.advice) || defaultAdviceText;
 if (adviceDisplay !== defaultAdviceText) {
-  // Remove stray letters or symbols
-  adviceDisplay = adviceDisplay
-    .replace(/^u\s*/i, '') // removes “U ” or “u ”
-    .replace(/^\s*a\s*/i, '') // removes leading "a "
-    .replace(/\s+/g, ' ')
-    .trim();
-
-  // Ensure capitalization and full stop
-  if (adviceDisplay && !/^[A-Z]/.test(adviceDisplay)) {
-    adviceDisplay = adviceDisplay.charAt(0).toUpperCase() + adviceDisplay.slice(1);
-  }
-  if (adviceDisplay && !/[.!?]$/.test(adviceDisplay)) {
-    adviceDisplay += '.';
+  const localizedAdvice = translateModelText(adviceDisplay);
+  if(localizedAdvice){
+    adviceDisplay = localizedAdvice;
+  } else {
+    adviceDisplay = adviceDisplay
+      .replace(/^u\s*/i, '')
+      .replace(/^\s*a\s*/i, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+    if (adviceDisplay && !/^[A-Z]/.test(adviceDisplay)) {
+      adviceDisplay = adviceDisplay.charAt(0).toUpperCase() + adviceDisplay.slice(1);
+    }
+    if (adviceDisplay && !/[.!?]$/.test(adviceDisplay)) {
+      adviceDisplay += '.';
+    }
+    const cleanedLocalizedAdvice = translateModelText(adviceDisplay);
+    if(cleanedLocalizedAdvice){
+      adviceDisplay = cleanedLocalizedAdvice;
+    }
   }
 }
 
