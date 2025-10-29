@@ -24,7 +24,18 @@ templates = Jinja2Templates(directory="templates")
 
 # Load AI components
 MODELS = load_models(base_dir="models")
-VOICE_PIPE = VoiceToTextPipeline()  # Initialize speech-to-text pipeline
+
+_DEFAULT_MAPPING = Path("assets/Translated.csv")
+if _DEFAULT_MAPPING.exists():
+    _normalizer_config = {
+        "csv_path": str(_DEFAULT_MAPPING),
+        "swap_columns": True,
+        "fuzzy_cutoff": 0.6,
+    }
+else:
+    _normalizer_config = {}
+
+VOICE_PIPE = VoiceToTextPipeline(normalizer_config=_normalizer_config)
 
 _KNOWN_AUDIO_EXTENSIONS = {".wav", ".webm", ".ogg", ".mp3", ".m4a", ".flac"}
 
@@ -41,6 +52,7 @@ async def upload_audio(
     answers: str = Form(None),
     mode: str = Form("predict"),
     normalized_audio: str = Form(""),
+    language: str = Form("en"),
 ):
     """Handle uploaded audio or form answers."""
     filename = None
@@ -50,6 +62,8 @@ async def upload_audio(
     raw_text = ""
     free_text_raw = ""
     user_answers = []
+    language = (language or "").strip().lower()
+    skip_conversion = language in {"en", "ae", "english", "aboriginal english"}
 
     # === 1. Handle audio upload and transcription ===
     if file:
@@ -67,6 +81,8 @@ async def upload_audio(
             raw_text = raw_from_audio
             free_text_raw = raw_from_audio
             audio_norm = norm_from_audio
+            if skip_conversion:
+                audio_norm = raw_from_audio
             if mode == "transcribe":
                 return JSONResponse(
                     {
@@ -89,7 +105,10 @@ async def upload_audio(
             user_answers = data.get("answers", [])
             text_from_form = " ".join(user_answers).strip()
             if text_from_form:
-                _, text_norm = VOICE_PIPE.process_text(text_from_form)
+                if skip_conversion:
+                    text_norm = text_from_form
+                else:
+                    _, text_norm = VOICE_PIPE.process_text(text_from_form)
                 if not raw_text:
                     raw_text = text_from_form
                 if not free_text_raw:
@@ -135,11 +154,25 @@ async def upload_audio(
     if not primary_text:
         primary_text = (audio_norm or typed_norm or normalized_audio or "").strip()
     base_text = (norm_text or raw_text or "").strip()
-    free_text_segment = base_text.rstrip(".")
-    if not free_text_segment:
-        free_text_segment = "no description provided"
+    normalized_primary = ""
+    if primary_text:
+        try:
+            if skip_conversion:
+                normalized_primary = primary_text
+            else:
+                _, normalized_primary = VOICE_PIPE.process_text(primary_text)
+        except Exception:
+            normalized_primary = ""
 
-    free_text_segment = _clean(primary_text)
+    free_text_segment = (normalized_primary or base_text).rstrip(".").strip()
+    if not free_text_segment:
+        free_text_segment = _clean(primary_text or "no description provided")
+    else:
+        free_text_segment = _clean(free_text_segment)
+
+    display_text = _clean(primary_text)
+    if not display_text:
+        display_text = free_text_segment
     model_input = ", ".join(
         [
             f"{free_text_segment}",
@@ -170,7 +203,7 @@ async def upload_audio(
             "severity": severity_line,
             "questions": questions,
             "user_answers": user_answers,
-            "free_text": free_text_segment,
+            "free_text": display_text or free_text_segment,
             "download": filename,
         }
     )

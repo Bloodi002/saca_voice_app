@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en" data-contrast="normal">
 <head>
   <meta charset="utf-8" />
@@ -8,19 +8,22 @@
 </head>
 <body>
 <header>
-  <div class="logo"><a href="#home">SACA</a></div>
+  <div class="logo"><a href="#home">SwinSACA</a></div>
   <div class="actions">
-    <button type="button" id="langToggle" class="nav-toggle nav-toggle-btn" aria-label="Switch language">
+    <div class="nav-toggle nav-select" role="group">
       <span class="toggle-icon" aria-hidden="true">
         <svg viewBox="0 0 24 24" focusable="false" role="presentation">
           <path d="M4 4h16M4 10h8M4 16h6M12 14l4-4 4 4M16 10v8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </span>
       <div class="toggle-copy">
-        <span class="toggle-title" data-i18n="ui.language">Language</span>
-        <span class="toggle-sub" id="langLabel">English</span>
+        <select id="langSelect" class="nav-select-input" aria-label="Select language">
+          <option value="en" data-i18n="ui.languageEn">Plain English</option>
+          <option value="ae" data-i18n="ui.languageAe">Aboriginal English</option>
+          <option value="pit" data-i18n="ui.languagePit">Pitjantjatra</option>
+        </select>
       </div>
-    </button>
+    </div>
     <label class="nav-toggle">
       <input type="checkbox" id="contrastToggle" aria-label="Toggle high contrast mode"/>
       <span class="toggle-visual">
@@ -179,7 +182,7 @@
         </div>
       </div>
       <div class="analysis-body">
-        <section class="analysis-item" id="conditionRow">
+        <section class="analysis-item condition-panel" id="conditionRow">
           <span class="analysis-item-icon" aria-hidden="true">
             <svg viewBox="0 0 24 24" focusable="false" role="presentation">
               <rect x="5" y="4" width="14" height="17" rx="2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
@@ -189,20 +192,44 @@
           </span>
           <div class="analysis-item-copy">
             <h4 data-i18n="analysis.conditionTitle">Likely condition</h4>
-            <p id="analysisCondition" class="analysis-copy muted" data-i18n="analysis.defaultCondition">We'll share the likely condition once we review your details.</p>
+            <p id="analysisCondition" class="analysis-copy condition-basic" data-i18n="analysis.defaultCondition">We'll share the likely condition once we review your details.</p>
           </div>
         </section>
-        <section class="analysis-item" id="severityRow" data-severity="unknown">
-          <span class="analysis-item-icon" id="severityIcon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" focusable="false" role="presentation">
-              <path d="M5.5 19a8.5 8.5 0 1 1 13 0Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M12 12l3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M7 12h.01M12 7v.01M17 12h.01M12 17h.01" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </span>
-          <div class="analysis-item-copy">
-            <h4 data-i18n="analysis.severityTitle">What we're seeing</h4>
-            <p id="analysisSeverity" class="analysis-copy muted" data-i18n="analysis.defaultSeverity">We're still gauging how serious things are.</p>
+        <section class="analysis-item severity-panel" id="severityRow" data-severity="unknown">
+          <div class="severity-panel-header">
+            <span class="analysis-item-icon" id="severityIcon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" focusable="false" role="presentation">
+                <path d="M5.5 19a8.5 8.5 0 1 1 13 0Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M12 12l3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 12h.01M12 7v.01M17 12h.01M12 17h.01" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+            <h4 class="severity-panel-title" data-i18n="analysis.severityTitle">Probable severity</h4>
+          </div>
+          <div class="severity-panel-body analysis-item-copy">
+            <div class="severity-slider" role="group" aria-labelledby="analysisSeverityLabel">
+              <p id="analysisSeverityLabel" class="severity-slider-label" data-i18n="analysis.severityScaleLabel">Severity scale</p>
+              <div class="severity-track" aria-hidden="true">
+                <div class="severity-track-grid" aria-hidden="true">
+                  <span class="severity-tick"></span>
+                  <span class="severity-tick"></span>
+                  <span class="severity-tick"></span>
+                  <span class="severity-tick"></span>
+                  <span class="severity-tick"></span>
+                </div>
+                <span class="severity-pointer" id="severityPointer" data-level="unknown" aria-hidden="true"></span>
+              </div>
+              <div class="severity-levels">
+                <div class="severity-level is-active" id="severityDetail" data-level="unknown" role="group" aria-live="polite">
+                  <span class="severity-icon" id="severityDetailIcon" aria-hidden="true">&#10067;</span>
+                  <div class="severity-info">
+                    <span class="severity-title" id="severityDetailTitle">Severity detail</span>
+                    <p class="severity-summary" id="severityDetailSummary">We'll highlight the severity once your check-in is complete.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <p id="analysisSeverity" class="analysis-copy muted is-hidden" data-i18n="analysis.defaultSeverity">We're still gauging how serious things are.</p>
           </div>
         </section>
         <section class="analysis-item" id="adviceRow">
@@ -313,7 +340,9 @@
     </div>
   </div>
 </div>
-<script src="{{ request.url_for('static', path='/strings.js') }}?v=20240602"></script>
-<script src="{{ request.url_for('static', path='/app.js') }}?v=20241018"></script>
+<script src="{{ request.url_for('static', path='/strings.js') }}?v=20240603"></script>
+<script src="{{ request.url_for('static', path='/app.js') }}?v=20241019"></script>
 </body>
 </html>
+
+
